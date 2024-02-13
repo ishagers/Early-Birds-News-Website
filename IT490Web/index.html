@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"> 
+    <title>Early Bird</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+    <div class="title">Early Bird News Log In</div>
+    <form action="login.php" method="post">
+        <p>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </p>
+        <p>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </p>
+        <p>
+            <button type="submit">Login</button>
+        </p>
+        <p>
+            <a href="createAccount.html" class="pageDirect">Create Account</a>
+        </p>
+    </form>
+    </div>
+    <div id="phaserGame">
+    <script type="text/javascript" src="phaser.min.js"></script>
+    <script type="text/javascript" src="Scene1.js"></script>
+    <script type="text/javascript" src="Scene2.js"></script>
+    <script type="text/javascript" src="game.js"></script>
+</div>
+</body>
+</html>
