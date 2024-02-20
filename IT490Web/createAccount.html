@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+    <div class="title">Create Account</div>
+    <form action="createAccount.php" method="post">
+        <p>
+            <label for="new_username">Username</label>
+            <input type="text" id="new_username" name="new_username" required>
+        </p>
+        <p>
+            <label for="new_password">Password</label>
+            <input type="password" id="new_password" name="new_password" required>
+        </p>
+        <p>
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+        </p>
+        <p>
+            <button type="submit">Create Account</button>
+        </p>
+    </form>
+    </div>
+</body>
+</html>
