@@ -1,0 +1,6 @@
+{"timestamp":542518,"category":"fog.validation","name":"validate_early_event"}
+{"timestamp":543082,"category":"webcompatreporting","name":"reason_dropdown","extra":{"setting":"disabled"}}
+{"timestamp":543668,"category":"nimbus_events","name":"validation_failed","extra":{"experiment":"next-generation-accessibility-engine-powering-screen-readers","reason":"invalid-feature","feature":"accessibilityCache"}}
+{"timestamp":566756,"category":"serp","name":"impression","extra":{"shopping_tab_displayed":"false","provider":"google","is_private":"false","impression_id":"bc9f0949-e797-4494-828c-b6a72cf82290","source":"urlbar","tagged":"true","is_shopping_page":"false","partner_code":"ubuntu-sn"}}
+{"timestamp":568301,"category":"serp","name":"abandonment","extra":{"impression_id":"bc9f0949-e797-4494-828c-b6a72cf82290","reason":"navigation"}}
+{"timestamp":9339392,"category":"nimbus_events","name":"validation_failed","extra":{"feature":"accessibilityCache","experiment":"next-generation-accessibility-engine-powering-screen-readers","reason":"invalid-feature"}}
