@@ -8,7 +8,7 @@
 <body>
     <div class="container">
     <div class="title">Early Bird News Log In</div>
-    <form action="routes/login.php" method="post">
+    <form action="routes/Login.php" method="post">
         <p>
             <label for="username">Username</label>
             <input type="text" id="username" name="username" required>
@@ -21,15 +21,52 @@
             <button type="submit">Login</button>
         </p>
         <p>
-            <a href="routes/createAccount.html" class="pageDirect">Create Account</a>
+            <a href="routes/createAccount.php" class="pageDirect">Create Account</a>
         </p>
     </form>
     </div>
-    <div id="phaserGame">
-    <script type="text/javascript" src="phaser.min.js"></script>
-    <script type="text/javascript" src="Scene1.js"></script>
-    <script type="text/javascript" src="Scene2.js"></script>
-    <script type="text/javascript" src="game.js"></script>
-</div>
 </body>
 </html>
+
+<script>
+function sendLoginRequest() {
+    var formData = new FormData(document.querySelector('form'));
+
+    fetch('login.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Start polling for the result using the correlationId
+        pollForResponse(data.correlationId);
+    });
+}
+
+function pollForResponse(correlationId) {
+    fetch(`check_login_response.php?correlationId=${correlationId}`)
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === 'waiting') {
+            // Repeat polling after a delay if waiting
+            setTimeout(() => pollForResponse(correlationId), 2000);
+        } else {
+            // Handle authentication result (success or failure)
+            alert(data.message);
+            if (data.status === 'success') {
+                //successful authentication
+                window.location.href = 'routes/mainMenu.html';
+            }
+            else (data.status === 'success'){
+
+            }
+        }
+    });
+}
+
+// Attach the sendLoginRequest function to the form's submit event
+document.querySelector('form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the form from submitting normally
+    sendLoginRequest();
+});
+</script>

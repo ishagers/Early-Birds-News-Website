@@ -27,15 +27,17 @@
     margin-bottom: 20px; 
 }
 
-input[type="text"],
-input[type="password"]{
+input {
     width: 100%;
     padding: 10px 15px;
-    background-color: green; 
-    color: white; 
-    text-decoration: none; 
-    box-sizing: border-box; 
+    background-color: green;
+    color: white;
+    text-decoration: none;
+    box-sizing: border-box;
     text-align: left;
+    border: 1px solid #ccc;
+    background-color: white;
+    color: black;
 }
 
 button,
@@ -57,15 +59,3 @@ label{
 }
 
 
-input[type="text"],
-input[type="password"] {
-    border: 1px solid #ccc; 
-    background-color: white; 
-    color: black; 
-}
-
-#phaserGame {
-    margin: auto;
-    position: fixed;
-    padding-top: 650px;
-}
