@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php'; // FOR RABBITMQ COMPOSER DEPENDENCIES
+require_once __DIR__ . '../vendor/autoload.php'; // FOR RABBITMQ COMPOSER DEPENDENCIES
 
 
 use PhpAmqpLib\Connection\AMQPStreamConnection; //Necessary classes to connect with RabbitMQ to
