@@ -1,0 +1,11 @@
+{
+    "name": "root/it490web",
+    "autoload": {
+        "psr-4": {
+            "Root\\It490web\\": "src/"
+        }
+    },
+    "require": {
+        "php-amqplib/php-amqplib": "^3.6"
+    }
+}
