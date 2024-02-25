@@ -1,50 +1,43 @@
 <?php
-// require_once __DIR__ . '/vendor/autoload.php'; // EDITED OUT, ADJUST PATH
+require_once __DIR__ . '/vendor/autoload.php'; // FOR RABBITMQ COMPOSER DEPENDENCIES
 
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PhpAmqpLib\Message\AMQPMessage;
 
-// Check if the form was submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+use PhpAmqpLib\Connection\AMQPStreamConnection; //Necessary classes to connect with RabbitMQ to
+use PhpAmqpLib\Message\AMQPMessage;             //work with AMQP messages
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") { //Form submission via POST and retrieves data from form
     $name = $_POST['name'];
     $email = $_POST['email'];
     $username = $_POST['new_username'];
     $password = $_POST['new_password'];
     $confirmPassword = $_POST['confirm_password'];
 
-    // Simple validation: Ensure passwords match
-    if ($password !== $confirmPassword) {
-        echo "<script>alert('Passwords do not match. Please try again.');</script>";
+    if ($password !== $confirmPassword) { //MAKE SURE PASSWORDS ARE THE SAME
+        echo "<script>alert('Passwords do not match. Please try again.'); window.location.href='accountCreation.php';</script>";
     } else {
-        // Hash the password before sending it to RabbitMQ
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT); //HASH PASSWORD
 
-        // Assume successful validation
-        // Connect to RabbitMQ
-        $connection = new AMQPStreamConnection('localhost', 5672, 'admin', 'admin'); // Adjust these values
-        $channel = $connection->channel();
+        $connection = new AMQPStreamConnection('10.147.17.178', 15672, 'admin', 'admin'); //ESTABLISH RABBITMQ CONNECTION
+        $channel = $connection->channel(); //OPENS A CHANNEL ON THE CONNECTION FOR COMMUNICATION
 
-        // Declare a queue
         $queueName = 'account_creation';
-        $channel->queue_declare($queueName, false, true, false, false);
+        $channel->queue_declare($queueName, false, true, false, false); //DECLARES A QUEUE WITH NAME 'account_creation'
 
-        // Prepare the message payload with the hashed password
-        $data = json_encode([
+        $data = json_encode([ //ENCODE VALUES AS JSON STRING
             'name' => $name,
             'email' => $email,
             'username' => $username,
             'password' => $hashedPassword,
         ]);
-        $msg = new AMQPMessage($data, ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]);
+        $msg = new AMQPMessage($data, ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]);// WRAP VALUES IT A AMQP MESSAGE
 
-        // Publish the message
-        $channel->basic_publish($msg, '', $queueName);
+        $channel->basic_publish($msg, '', $queueName); //SEND MESSAGE TO 'account_creation' QUEUE
 
         // Close the channel and connection
         $channel->close();
         $connection->close();
 
-        echo "<script>alert('Account creation request sent successfully.');</script>";
+        echo "<script>alert('Account creation request sent successfully.'); window.location.href='../index.html';</script>";
     }
 }
 ?>

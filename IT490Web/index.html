@@ -31,40 +31,69 @@
 <script>
 function sendLoginRequest() {
     var formData = new FormData(document.querySelector('form'));
+    // Disable the login button to prevent multiple submissions
+    document.querySelector('button[type="submit"]').disabled = true;
+    // Optionally, show a loading indicator here
 
-    fetch('login.php', {
+    fetch('routes/Login.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         // Start polling for the result using the correlationId
         pollForResponse(data.correlationId);
+    })
+    .catch(error => {
+        console.error('Error during login request:', error);
+        alert('There was a problem with the login request.');
+        // Re-enable the login button upon failure
+        document.querySelector('button[type="submit"]').disabled = false;
+        // Optionally, hide the loading indicator here
     });
 }
 
 function pollForResponse(correlationId) {
     fetch(`check_login_response.php?correlationId=${correlationId}`)
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok during polling');
+        }
+        return response.json();
+    })
     .then(data => {
         if(data.status === 'waiting') {
             // Repeat polling after a delay if waiting
             setTimeout(() => pollForResponse(correlationId), 2000);
         } else {
-            // Handle authentication result (success or failure)
+            // Handle authentication result
             alert(data.message);
             if (data.status === 'success') {
-                //successful authentication
+                // Successful authentication, redirect
                 window.location.href = 'routes/mainMenu.html';
-            }
-            else (data.status === 'success'){
-
+            } else {
+                // Authentication failed or another status returned
+                // Optionally, handle different statuses here
+                // Re-enable the login button so the user can try again
+                document.querySelector('button[type="submit"]').disabled = false;
+                // Optionally, hide the loading indicator here
             }
         }
+    })
+    .catch(error => {
+        console.error('Error during response polling:', error);
+        alert('There was a problem checking the login status.');
+        // Re-enable the login button upon failure
+        document.querySelector('button[type="submit"]').disabled = false;
+        // Optionally, hide the loading indicator here
     });
 }
 
-// Attach the sendLoginRequest function to the form's submit event
 document.querySelector('form').addEventListener('submit', function(event) {
     event.preventDefault(); // Prevent the form from submitting normally
     sendLoginRequest();
