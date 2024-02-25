@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '../vendor/autoload.php'; // FOR RABBITMQ COMPOSER DEPENDENCIES
+require_once __DIR__ . '/vendor/autoload.php'; // FOR RABBITMQ COMPOSER DEPENDENCIES
 
 
 use PhpAmqpLib\Connection\AMQPStreamConnection; //Necessary classes to connect with RabbitMQ to
@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { //Form submission via POST and retri
     } else {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT); //HASH PASSWORD
 
-        $connection = new AMQPStreamConnection('10.147.17.178', 15672, 'admin', 'admin'); //ESTABLISH RABBITMQ CONNECTION
+        $connection = new AMQPStreamConnection('10.147.17.178', 15672, 'test', 'test'); //ESTABLISH RABBITMQ CONNECTION
         $channel = $connection->channel(); //OPENS A CHANNEL ON THE CONNECTION FOR COMMUNICATION
 
         $queueName = 'account_creation';
