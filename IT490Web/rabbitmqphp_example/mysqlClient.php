@@ -1,14 +1,12 @@
-#!/usr/bin/php
 <?php
 // MySQL connection parameters
-$servername = "10.147.17.233"; // Your MySQL server host
-$username = "IT490DB"; // Your MySQL username
-$password = "IT490DB"; // Your MySQL password
-$database = "EARLYBIRD"; // Your MySQL database name
-$port = "3306"; //Port
+$servername = "10.147.17.233";
+$username = "IT490DB"; 
+$password = "IT490DB"; 
+$database = "EARLYBIRD"; 
 
 // Create connection
-$conn = new mysqli($servername, $username, $password, $database, $port);
+$conn = new mysqli($servername, $username, $password, $database);
 
 // Check connection
 if ($conn->connect_error) {
