@@ -14,16 +14,15 @@ if ($conn->connect_error) {
 }
 echo "<p>Connected successfully</p>";
 
-$sql = "SELECT * FROM users"; // Note: Corrected the SQL statement by removing the comment syntax
+$sql = "SELECT * FROM users"; 
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
-    // Start table
-    echo "<table border='1'><tr><th>ID</th><th>Username</th><th>Email</th></tr>"; // Adjust the column headers as needed
+    echo "<table border='1'><tr><th>hash</th><th>Username</th><th>Email</th></tr>"; 
 
     // Output data of each row
     while ($row = $result->fetch_assoc()) {
-        echo "<tr><td>" . $row["id"] . "</td><td>" . $row["username"] . "</td><td>" . $row["email"] . "</td></tr>"; // Adjust to match your column names
+        echo "<tr><td>" . $row["hash"] . "</td><td>" . $row["username"] . "</td><td>" . $row["email"] . "</td></tr>";
     }
 
     // End table
