@@ -1,11 +1,11 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php'; // FOR RABBITMQ COMPOSER DEPENDENCIES
+//require_once __DIR__ . '/vendor/autoload.php'; // FOR RABBITMQ COMPOSER DEPENDENCIES
 require("session.php");
 //To access Database RabbitMQ Publisher
 require('SQLPublish.php');
 
-use PhpAmqpLib\Connection\AMQPStreamConnection; //Necessary classes to connect with RabbitMQ to
-use PhpAmqpLib\Message\AMQPMessage;             //work with AMQP messages
+//use PhpAmqpLib\Connection\AMQPStreamConnection; //Necessary classes to connect with RabbitMQ to
+//use PhpAmqpLib\Message\AMQPMessage;             //work with AMQP messages
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") { //Form submission via POST and retrieves data from form
     $name = $_POST['name'];
