@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { //CHECK FORM SUBMISSION
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $connection = new AMQPStreamConnection('10.147.17.178', 15672, 'test', 'test'); //ESTABLISH RABBITMQ CONNECTION
+    $connection = new AMQPStreamConnection('10.147.17.178', 5672, 'test', 'test'); //ESTABLISH RABBITMQ CONNECTION
     $channel = $connection->channel(); //Opens a channel over the established connection
 
     $queueName = 'login_requests';

@@ -3,48 +3,40 @@
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
+require_once('createAccountSQL.php'); // Ensure this file has the createUser function
 
-function doLogin($username,$password)
+function doLogin($username, $password)
 {
-    // lookup username in databas
-    // check password
+    // Your login logic here
     return true;
-    //return false if not valid
 }
 
-function doCreateAccount($username, $password)
+function doCreateAccount($name, $email, $username, $hashedPassword)
 {
-    // lookup username in databas
-    // check password
-    return true;
-    //return false if not valid
+    createUser($name, $username, $email, $hashedPassword, 'defaultRole'); 
+    return true; 
 }
 
 function requestProcessor($request)
 {
-  echo "received request".PHP_EOL;
-  var_dump($request);
-  if(!isset($request['type']))
-  {
-    return "ERROR: unsupported message type";
-  }
-  switch ($request['type'])
-  {
-    case "login":
-      return doLogin($request['username'],$request['password']);
-    case "validate_session":
-      return doValidate($request['sessionId']);
-    case "create_account": // New case for handling account creation
-      return doCreateAccount($request['password'], $request['username']); // Assume doCreateAccount is a function you will implement
-  }
-  return array("returnCode" => '0', 'message'=>"Server received request and processed");
+    echo "received request" . PHP_EOL;
+    var_dump($request);
+    if (!isset($request['type'])) {
+        return "ERROR: unsupported message type";
+    }
+    switch ($request['type']) {
+        case "login":
+            return doLogin($request['username'], $request['password']);
+        case "create_account":
+            // Ensure the correct parameters are passed to doCreateAccount
+            return doCreateAccount($request['name'], $request['email'], $request['username'], $request['password']);
+    }
+    return array("returnCode" => '0', 'message' => "Server received request and processed");
 }
 
-$server = new rabbitMQServer("testRabbitMQ.ini","testServer");
+$server = new rabbitMQServer("testRabbitMQ.ini", "testServer");
 
-echo "testRabbitMQServer BEGIN".PHP_EOL;
+echo "testRabbitMQServer BEGIN" . PHP_EOL;
 $server->process_requests('requestProcessor');
-echo "testRabbitMQServer END".PHP_EOL;
-exit();
+echo "testRabbitMQServer END" . PHP_EOL;
 ?>
-
