@@ -43,7 +43,7 @@ if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['n
                 session_start();
             }
 
-            $_SESSION['username'] = $_POST['Username'];
+            $_SESSION['username'] = $_POST['username'];
             echo $_SESSION['username'];
             header("Refresh: 2; url=../index.html");
         } else {
@@ -82,12 +82,12 @@ if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['n
 <html lang="en">
 <head>
     <title>Create Account</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../routes/styles.css" />
 </head>
 <body>
     <div class="container">
         <div class="title">Create Account</div>
-        <form action="createAccount.php" method="POST">
+        <form method="POST">
             <p>
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" required />
