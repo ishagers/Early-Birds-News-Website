@@ -17,13 +17,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { //Form submission via POST and retri
     } else {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT); //HASH PASSWORD
 
-        $connection = new AMQPStreamConnection('10.147.17.178', 15672, 'test', 'test'); //ESTABLISH RABBITMQ CONNECTION
+        $connection = new AMQPStreamConnection('10.147.17.178', 5672, 'test', 'test'); //ESTABLISH RABBITMQ CONNECTION
         $channel = $connection->channel(); //OPENS A CHANNEL ON THE CONNECTION FOR COMMUNICATION
 
-        $queueName = 'account_creation';
-        $channel->queue_declare($queueName, false, true, false, false); //DECLARES A QUEUE WITH NAME 'account_creation'
+        $queueName = 'testQueue';
+        $channel->queue_declare($queueName, false, true, false, false); //DECLARES A QUEUE WITH NAME 'testQueue'
 
         $data = json_encode([ //ENCODE VALUES AS JSON STRING
+            'type' => 'create_account', // Specify the action type
             'name' => $name,
             'email' => $email,
             'username' => $username,
@@ -31,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { //Form submission via POST and retri
         ]);
         $msg = new AMQPMessage($data, ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]);// WRAP VALUES IT A AMQP MESSAGE
 
-        $channel->basic_publish($msg, '', $queueName); //SEND MESSAGE TO 'account_creation' QUEUE
+        $channel->basic_publish($msg, '', $queueName); //SEND MESSAGE TO 'testQueue' QUEUE
 
         // Close the channel and connection
         $channel->close();

@@ -26,6 +26,8 @@ function requestProcessor($request)
       return doLogin($request['username'],$request['password']);
     case "validate_session":
       return doValidate($request['sessionId']);
+    case "create_account": // New case for handling account creation
+      return doCreateAccount($request); // Assume doCreateAccount is a function you will implement
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
