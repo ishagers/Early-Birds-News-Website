@@ -10,7 +10,7 @@ require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
 function publisher($array){
-  $client = new rabbitMQClient("testRabbitMQ.ini","SQLServer");
+  $client = new rabbitMQClient("testRabbitMQ.ini","testQueue");
   $response = $client->send_request($array);
   return $response;
 }

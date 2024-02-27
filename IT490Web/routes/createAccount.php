@@ -7,7 +7,7 @@ require('SQLPublish.php');
 //use PhpAmqpLib\Connection\AMQPStreamConnection; //Necessary classes to connect with RabbitMQ to
 //use PhpAmqpLib\Message\AMQPMessage;             //work with AMQP messages
 
-if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['name']) && !empty($_POST['email'])) {
+if (!empty($_POST['new_username']) && !empty($_POST['new_password']) && !empty($_POST['name']) && !empty($_POST['email'])) {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $username = $_POST['new_username'];
@@ -79,15 +79,17 @@ if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['n
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <title>Create Account</title>
     <link rel="stylesheet" href="../routes/styles.css" />
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <meta content="utf-8" http-equiv="encoding" />
 </head>
 <body>
     <div class="container">
         <div class="title">Create Account</div>
-        <form method="POST">
+        <form method="post">
             <p>
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" required />
