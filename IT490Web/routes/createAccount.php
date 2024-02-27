@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php'; // FOR RABBITMQ COMPOSER DEPENDENCIES
-
+require("session.php");
+//To access Database RabbitMQ Publisher
+require('SQLPublish.php');
 
 use PhpAmqpLib\Connection\AMQPStreamConnection; //Necessary classes to connect with RabbitMQ to
 use PhpAmqpLib\Message\AMQPMessage;             //work with AMQP messages
@@ -17,6 +19,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { //Form submission via POST and retri
     } else {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT); //HASH PASSWORD
 
+        //Setting array and its values to send to RabbitMQ
+        $queryValues = array();
+
+        $queryValues['type'] = 'create_account';
+        $queryValues['username'] = $username;
+        $queryValues['password'] = $hashedPassword;
+        $queryValues['name'] = $name;
+        $queryValues['email'] = $email;
+
+        //Printing Array and executing SQL Publisher function
+        print_r($queryValues);
+        $result = publisher($queryValues);
+
+        //If returned 1, it means it was pushed to the database. Otherwise, echo error
+        if($result == 1){
+            echo "Just signed up: ";
+
+            if(isset($_SESSION)){
+                session_destroy();
+                session_start();
+            }else{
+                session_start();
+            }
+
+            $_SESSION['username'] = $_POST['Username'];
+            echo $_SESSION['username'];
+            header("Refresh: 2; url=index.php");
+        }else{
+            echo $result;
+        }
+
+        /* OLD CONNECTION (NOT WORKING)
         $connection = new AMQPStreamConnection('10.147.17.178', 5672, 'test', 'test'); //ESTABLISH RABBITMQ CONNECTION
         $channel = $connection->channel(); //OPENS A CHANNEL ON THE CONNECTION FOR COMMUNICATION
 
@@ -39,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { //Form submission via POST and retri
         $connection->close();
 
         echo "<script>alert('Account creation request sent successfully.'); window.location.href='../index.html';</script>";
-    }
+    }*/
 }
 ?>
 
@@ -52,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { //Form submission via POST and retri
 <body>
     <div class="container">
         <div class="title">Create Account</div>
-        <form action="createAccount.php" method="post">
+        <form method="post">
             <p>
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" required />
