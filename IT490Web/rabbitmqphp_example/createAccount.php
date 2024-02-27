@@ -7,7 +7,7 @@ require('SQLPublish.php');
 //use PhpAmqpLib\Connection\AMQPStreamConnection; //Necessary classes to connect with RabbitMQ to
 //use PhpAmqpLib\Message\AMQPMessage;             //work with AMQP messages
 
-if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['name']) && !empty($_POST['email'])) {
+if (!empty($_POST['new_username']) && !empty($_POST['new_password']) && !empty($_POST['name']) && !empty($_POST['email'])) {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $username = $_POST['new_username'];
@@ -32,20 +32,21 @@ if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['n
         print_r($queryValues);
         $result = publisher($queryValues);
 
-        //If returned 1, it means it was pushed to the database. Otherwise, echo error
-        if ($result == 1) {
+        //If returned 0, it means it was pushed to the database. Otherwise, echo error
+        if ($result == 0) {
             echo "Just signed up: ";
 
             if (isset($_SESSION)) {
                 session_destroy();
                 session_start();
+                session_regenerate_id(true);
             } else {
                 session_start();
             }
 
-            $_SESSION['username'] = $_POST['Username'];
+            $_SESSION['username'] = $_POST['new_username'];
             echo $_SESSION['username'];
-            header("Refresh: 2; url=index.php");
+            header("Refresh: 2; url=../index.html");
         } else {
             echo $result;
         }
@@ -79,15 +80,17 @@ if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['n
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <title>Create Account</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../routes/styles.css" />
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <meta content="utf-8" http-equiv="encoding" />
 </head>
 <body>
     <div class="container">
         <div class="title">Create Account</div>
-        <form action="createAccount.php" method="POST">
+        <form method="post">
             <p>
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" required />
