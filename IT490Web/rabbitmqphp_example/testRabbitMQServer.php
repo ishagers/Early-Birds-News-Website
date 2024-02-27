@@ -13,8 +13,14 @@ function doLogin($username, $password)
 
 function doCreateAccount($name, $email, $username, $hashedPassword)
 {
-    createUser($name, $username, $email, $hashedPassword, 'defaultRole'); 
-    return true; 
+    $result = createUser($name, $username, $email, $hashedPassword, 'defaultRole');
+    if ($result['status']) { // Adjusted from ['success'] to ['status']
+        // Account creation successful
+        return ["returnCode" => '0', 'message' => "Account created successfully"]; // Use generic success message or $result['message']
+    } else {
+        // Account creation failed
+        return ["returnCode" => '1', 'message' => $result['message']]; // Use $result['message'] directly
+    }
 }
 
 function requestProcessor($request)
@@ -34,7 +40,7 @@ function requestProcessor($request)
     return array("returnCode" => '0', 'message' => "Server received request and processed");
 }
 
-$server = new rabbitMQServer("testRabbitMQ.ini", "testServer");
+$server = new rabbitMQServer("testRabbitMQ.ini", "testQueue");
 
 echo "testRabbitMQServer BEGIN" . PHP_EOL;
 $server->process_requests('requestProcessor');

@@ -32,18 +32,19 @@ if (!empty($_POST['new_username']) && !empty($_POST['new_password']) && !empty($
         print_r($queryValues);
         $result = publisher($queryValues);
 
-        //If returned 1, it means it was pushed to the database. Otherwise, echo error
-        if ($result == 1) {
+        //If returned 0, it means it was pushed to the database. Otherwise, echo error
+        if ($result == 0) {
             echo "Just signed up: ";
 
             if (isset($_SESSION)) {
                 session_destroy();
                 session_start();
+                session_regenerate_id(true);
             } else {
                 session_start();
             }
 
-            $_SESSION['username'] = $_POST['username'];
+            $_SESSION['username'] = $_POST['new_username'];
             echo $_SESSION['username'];
             header("Refresh: 2; url=../index.html");
         } else {

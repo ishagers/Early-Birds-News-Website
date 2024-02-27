@@ -7,6 +7,9 @@ function createUser($name, $username, $email, $hash, $role)
     $dbPassword = "IT490DB";
     $database = "EARLYBIRD";
 
+    // Initialize the response array
+    $response = array('status' => false, 'message' => '');
+
     try {
         // Establishing the database connection
         $conn = new PDO("mysql:host=$servername;dbname=$database", $dbUsername, $dbPassword);
@@ -26,14 +29,20 @@ function createUser($name, $username, $email, $hash, $role)
         // Execute the statement
         $stmt->execute();
 
-        echo "New user created successfully";
+        // Update response status and message on success
+        $response['status'] = true;
+        $response['message'] = "New user created successfully";
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        // Update response message on error
+        $response['message'] = "Error: " . $e->getMessage();
     } finally {
         // Close connection
         if ($conn) {
             $conn = null;
         }
     }
+
+    // Return the response array
+    return $response;
 }
 
