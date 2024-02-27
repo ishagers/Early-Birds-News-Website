@@ -1,13 +1,13 @@
 <?php
-//require_once __DIR__ . '/vendor/autoload.php'; // FOR RABBITMQ COMPOSER DEPENDENCIES
 require("session.php");
+//require_once __DIR__ . '/vendor/autoload.php'; // FOR RABBITMQ COMPOSER DEPENDENCIES
 //To access Database RabbitMQ Publisher
 require('SQLPublish.php');
 
 //use PhpAmqpLib\Connection\AMQPStreamConnection; //Necessary classes to connect with RabbitMQ to
 //use PhpAmqpLib\Message\AMQPMessage;             //work with AMQP messages
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") { //Form submission via POST and retrieves data from form
+if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['name']) && !empty($_POST['email'])) {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $username = $_POST['new_username'];
@@ -33,20 +33,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { //Form submission via POST and retri
         $result = publisher($queryValues);
 
         //If returned 1, it means it was pushed to the database. Otherwise, echo error
-        if($result == 1){
+        if ($result == 1) {
             echo "Just signed up: ";
 
-            if(isset($_SESSION)){
+            if (isset($_SESSION)) {
                 session_destroy();
                 session_start();
-            }else{
+            } else {
                 session_start();
             }
 
             $_SESSION['username'] = $_POST['Username'];
             echo $_SESSION['username'];
             header("Refresh: 2; url=index.php");
-        }else{
+        } else {
             echo $result;
         }
 
@@ -74,6 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { //Form submission via POST and retri
 
         echo "<script>alert('Account creation request sent successfully.'); window.location.href='../index.html';</script>";
     }*/
+    }
 }
 ?>
 
@@ -86,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { //Form submission via POST and retri
 <body>
     <div class="container">
         <div class="title">Create Account</div>
-        <form method="post">
+        <form action="createAccount.php" method="POST">
             <p>
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" required />
