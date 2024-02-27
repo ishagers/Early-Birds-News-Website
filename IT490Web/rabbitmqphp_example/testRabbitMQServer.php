@@ -12,6 +12,14 @@ function doLogin($username,$password)
     //return false if not valid
 }
 
+function doCreateAccount($username, $password)
+{
+    // lookup username in databas
+    // check password
+    return true;
+    //return false if not valid
+}
+
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
@@ -27,7 +35,7 @@ function requestProcessor($request)
     case "validate_session":
       return doValidate($request['sessionId']);
     case "create_account": // New case for handling account creation
-      return doCreateAccount($request); // Assume doCreateAccount is a function you will implement
+      return doCreateAccount($request['password'], $request['username']); // Assume doCreateAccount is a function you will implement
   }
   return array("returnCode" => '0', 'message'=>"Server received request and processed");
 }
