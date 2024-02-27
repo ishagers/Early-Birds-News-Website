@@ -45,7 +45,7 @@ if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['n
 
             $_SESSION['username'] = $_POST['Username'];
             echo $_SESSION['username'];
-            header("Refresh: 2; url=../index.html");
+            header("Refresh: 2; url=index.php");
         } else {
             echo $result;
         }
