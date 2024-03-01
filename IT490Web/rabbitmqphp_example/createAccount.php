@@ -51,30 +51,6 @@ if (!empty($_POST['new_username']) && !empty($_POST['new_password']) && !empty($
             echo $result;
         }
 
-        /* OLD CONNECTION (NOT WORKING)
-        $connection = new AMQPStreamConnection('10.147.17.178', 5672, 'test', 'test'); //ESTABLISH RABBITMQ CONNECTION
-        $channel = $connection->channel(); //OPENS A CHANNEL ON THE CONNECTION FOR COMMUNICATION
-
-        $queueName = 'testQueue';
-        $channel->queue_declare($queueName, false, true, false, false); //DECLARES A QUEUE WITH NAME 'testQueue'
-
-        $data = json_encode([ //ENCODE VALUES AS JSON STRING
-            'type' => 'create_account', // Specify the action type
-            'name' => $name,
-            'email' => $email,
-            'username' => $username,
-            'password' => $hashedPassword,
-        ]);
-        $msg = new AMQPMessage($data, ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]);// WRAP VALUES IT A AMQP MESSAGE
-
-        $channel->basic_publish($msg, '', $queueName); //SEND MESSAGE TO 'testQueue' QUEUE
-
-        // Close the channel and connection
-        $channel->close();
-        $connection->close();
-
-        echo "<script>alert('Account creation request sent successfully.'); window.location.href='../index.html';</script>";
-    }*/
     }
 }
 ?>
