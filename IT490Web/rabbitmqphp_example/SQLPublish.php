@@ -11,9 +11,7 @@ require_once('rabbitMQLib.inc');
 
 function publisher($array){
   $client = new rabbitMQClient("testRabbitMQ.ini","testExchange");
-    $client->setPort(5672);
   $response = $client->send_request($array);
   return $response;
 }
 ?>
-
