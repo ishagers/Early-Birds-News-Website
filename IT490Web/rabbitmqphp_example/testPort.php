@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 $host = '10.147.17.178'; // The host IP where RabbitMQ server is running
 $port = 5672; // The port RabbitMQ is listening on
 $timeout = 2; // Timeout in seconds
