@@ -3,7 +3,6 @@ require('session.php');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
 require('rabbitmqphp_example/SQLPublish.php');
 
 if (!empty($_POST['username']) && !empty($_POST['password'])) {
@@ -24,7 +23,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         }
 
         $_SESSION['username'] = $_POST['username'];
-        header("Location: mainMenu.html"); // Redirect to the home page or dashboard
+        header("Location: routes/mainMenu.html"); // Redirect to the home page or dashboard
         exit();
     } else {
         // Login failed
