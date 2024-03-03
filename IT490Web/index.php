@@ -37,8 +37,6 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
 <head>
     <title>Early Bird</title>
     <link rel="stylesheet" href="routes/styles.css" />
-    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
-    <meta content="utf-8" http-equiv="encoding" />
 </head>
 <body>
     <div class="container">
