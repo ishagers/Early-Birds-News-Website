@@ -36,14 +36,15 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8" />
     <title>Early Bird</title>
     <link rel="stylesheet" href="routes/styles.css" />
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <meta content="utf-8" http-equiv="encoding" />
 </head>
 <body>
     <div class="container">
         <div class="title">Early Bird News Log In</div>
-        <form action="index.php" method="post">
+        <form method="post">
             <p>
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required />

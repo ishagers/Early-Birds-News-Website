@@ -1,11 +1,6 @@
 <?php
 require("session.php");
-//require_once __DIR__ . '/vendor/autoload.php'; // FOR RABBITMQ COMPOSER DEPENDENCIES
-//To access Database RabbitMQ Publisher
 require('SQLPublish.php');
-
-//use PhpAmqpLib\Connection\AMQPStreamConnection; //Necessary classes to connect with RabbitMQ to
-//use PhpAmqpLib\Message\AMQPMessage;             //work with AMQP messages
 
 if (!empty($_POST['new_username']) && !empty($_POST['new_password']) && !empty($_POST['name']) && !empty($_POST['email'])) {
     $name = $_POST['name'];
