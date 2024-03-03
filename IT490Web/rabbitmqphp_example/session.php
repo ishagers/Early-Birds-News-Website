@@ -3,7 +3,7 @@
 
     if(isset($_SESSION ['username'])){
         echo "<p> Logged in as: " . $_SESSION['username']. "</p>";
-        echo '<p><a href = "../routes/mainMenu.html">Log Out </a></p>';
+        echo '<p><a href = "../index.php">Log Out</a></p>';
     }
 
     function checkLogin(){
