@@ -33,8 +33,8 @@ if (!empty($_POST['new_username']) && !empty($_POST['new_password']) && !empty($
         $result = publisher($queryValues);
 
         //If returned 0, it means it was pushed to the database. Otherwise, echo error
-        if ($result == 0) {
-            echo "Just signed up: ";
+        if ($result == 1) {
+            echo "User Created!";
 
             if (isset($_SESSION)) {
                 session_destroy();

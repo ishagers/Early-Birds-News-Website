@@ -3,18 +3,26 @@
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
-require_once('createAccountSQL.php'); // Ensure this file has the createUser function
+require_once('databaseFunctions.php');
 
 function doLogin($username, $password)
 {
-    // Your login logic here
-    return true;
+    // Assuming login function returns an associative array with 'status' and 'message'
+    $result = login($username, $password);
+
+    if ($result['status']) {
+        // Login successful
+        return ["returnCode" => '0', 'message' => "Login successful"];
+    } else {
+        // Login failed
+        return ["returnCode" => '1', 'message' => "Invalid username or password"];
+    }
 }
 
 function doCreateAccount($name, $email, $username, $hashedPassword)
 {
     $result = createUser($name, $username, $email, $hashedPassword, 'defaultRole');
-    if ($result['status']) { // Adjusted from ['success'] to ['status']
+    if ($result['status']) {
         // Account creation successful
         return ["returnCode" => '0', 'message' => "Account created successfully"]; // Use generic success message or $result['message']
     } else {
@@ -33,8 +41,8 @@ function requestProcessor($request)
     switch ($request['type']) {
         case "login":
             return doLogin($request['username'], $request['password']);
+
         case "create_account":
-            // Ensure the correct parameters are passed to doCreateAccount
             return doCreateAccount($request['name'], $request['email'], $request['username'], $request['password']);
     }
     return array("returnCode" => '0', 'message' => "Server received request and processed");
