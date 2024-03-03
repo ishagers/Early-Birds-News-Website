@@ -23,7 +23,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         }
 
         $_SESSION['username'] = $_POST['username'];
-        header("Location: routes/mainMenu.html"); // Redirect to the home page or dashboard
+        header("Location: mainMenu.php"); // Redirect to the home page or dashboard
         exit();
     } else {
         // Login failed
