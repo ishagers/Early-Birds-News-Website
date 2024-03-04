@@ -40,10 +40,13 @@ function requestProcessor($request)
     }
     switch ($request['type']) {
         case "login":
+            echo "You have succesfully logged in.";
             return doLogin($request['username'], $request['password']);
-
+           
         case "create_account":
+            echo "You have succesfully created an account!";
             return doCreateAccount($request['name'], $request['email'], $request['username'], $request['password']);
+             
     }
     return array("returnCode" => '0', 'message' => "Server received request and processed");
 }
