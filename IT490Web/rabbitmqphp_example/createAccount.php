@@ -2,6 +2,10 @@
 require("session.php");
 require('SQLPublish.php');
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (!empty($_POST['new_username']) && !empty($_POST['new_password']) && !empty($_POST['name']) && !empty($_POST['email'])) {
     $name = $_POST['name'];
     $email = $_POST['email'];
@@ -24,29 +28,19 @@ if (!empty($_POST['new_username']) && !empty($_POST['new_password']) && !empty($
         $queryValues['email'] = $email;
 
         //Printing Array and executing SQL Publisher function
-        print_r($queryValues);
+        //print_r($queryValues);
         $result = publisher($queryValues);
 
         //If returned 0, it means it was pushed to the database. Otherwise, echo error
         if ($result == 0) {
-            echo "<script>alert('User Created!)'";
-
-            if (isset($_SESSION)) {
-                session_destroy();
-                session_start();
-                session_regenerate_id(true);
-                header("Location: ../index.php");
-            } else {
-                session_start();
-            }
-
-            $_SESSION['username'] = $_POST['new_username'];
-            echo $_SESSION['username'];
-            header("Refresh: 2; url=../index.php");
+            $_SESSION['username'] = $username; // Set the username in the session
+            // Use JavaScript for redirect to ensure the alert is shown before redirecting
+            echo "<script>alert('User Created Successfully!'); window.location.href = '../index.php';</script>";
+            exit();
         } else {
-            echo $result;
+            echo "<script>alert('" . htmlspecialchars($result) . "'); window.location.href='accountCreation.php';</script>";
+            exit();
         }
-
     }
 }
 ?>
