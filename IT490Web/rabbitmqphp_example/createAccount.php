@@ -30,12 +30,13 @@ if (!empty($_POST['new_username']) && !empty($_POST['new_password']) && !empty($
         //If returned 0, it means it was pushed to the database. Otherwise, echo error
         if ($result == 1) {
             echo "<script>alert('User Created!)'";
-            header("Refresh: .1; url=../index.php");
+            header("Location: ../index.php");
 
             if (isset($_SESSION)) {
                 session_destroy();
                 session_start();
                 session_regenerate_id(true);
+                header("Location: ../index.php");
             } else {
                 session_start();
             }
