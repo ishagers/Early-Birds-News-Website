@@ -38,7 +38,7 @@ if (!empty($_POST['new_username']) && !empty($_POST['new_password']) && !empty($
             echo "<script>alert('User Created Successfully!'); window.location.href = '../index.php';</script>";
             exit();
         } else {
-            echo "<script>alert('Account Created!'); window.location.href='accountCreation.php';</script>";
+            echo "<script>alert('Account Created! Please Sign in.'); window.location.href='../index.php';</script>";
             exit();
         }
     }
