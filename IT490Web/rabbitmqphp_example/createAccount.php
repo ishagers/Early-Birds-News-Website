@@ -24,12 +24,13 @@ if (!empty($_POST['new_username']) && !empty($_POST['new_password']) && !empty($
         $queryValues['email'] = $email;
 
         //Printing Array and executing SQL Publisher function
-        print_r($queryValues);
+        //print_r($queryValues);
         $result = publisher($queryValues);
 
         //If returned 0, it means it was pushed to the database. Otherwise, echo error
         if ($result == 1) {
             echo "<script>alert('User Created!)'";
+            header("Refresh: .1; url=../index.php");
 
             if (isset($_SESSION)) {
                 session_destroy();
