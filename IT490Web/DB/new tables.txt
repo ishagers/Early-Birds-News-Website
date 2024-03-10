@@ -1,0 +1,29 @@
+CREATE TABLE articles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    
+);
+CREATE TABLE ratings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    article_id INT,
+    rating INT,
+    FOREIGN KEY(article_id) REFERENCES articles(id)
+);
+
+CREATE TABLE preferences (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    topics TEXT NOT NULL
+);
+
+
+CREATE TABLE comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    article_id INT,
+    user_id INT,
+    comment TEXT NOT NULL,
+    FOREIGN KEY(article_id) REFERENCES articles(id)
+    -- Note for juan: Add a FOREIGN KEY for user_id based on your user table structure
+);
