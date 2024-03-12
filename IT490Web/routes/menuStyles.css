@@ -70,3 +70,45 @@ body {
         margin: 10px 0;
     }
 }
+
+.article-form {
+    max-width: 600px; /* Adjust based on your preference */
+    margin: 40px auto; /* Center the form with automatic margins */
+    padding: 20px;
+    border: 2px solid #007BFF; /* Cool blue border */
+    border-radius: 10px; /* Rounded corners */
+    background-color: #f4f4f4; /* Light background for the form area */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+}
+
+    /* Form elements */
+    .article-form form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px; /* Space between form elements */
+    }
+
+    .article-form label {
+        font-weight: bold;
+        margin-bottom: 5px; /* Space between label and input */
+    }
+
+    .article-form input[type="text"],
+    .article-form textarea,
+    .article-form input[type="submit"] {
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc; /* Light border for inputs */
+        font-size: 16px; /* Larger font size for readability */
+    }
+
+    .article-form input[type="submit"] {
+        background-color: #007BFF; /* Cool blue background for submit button */
+        color: #ffffff; /* White text color */
+        cursor: pointer; /* Changes the cursor to indicate it's clickable */
+        border: none; /* Removes the border */
+    }
+
+    .article-form input[type="submit"]:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
