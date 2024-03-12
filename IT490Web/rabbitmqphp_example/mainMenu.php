@@ -15,7 +15,7 @@ checkLogin(); // Call the checkLogin function to ensure the user is logged in
     </div>
     <div class="nav-bar">
         <ul>
-            <li><a href="live-feed.php">Live Feed</a></li>
+            <li><a href="writeArticle.php">Create Article</a></li>
             <li><a href="article-history.php">Article History</a></li>
             <li><a href="keyword-settings.php">Keyword Settings</a></li>
             <li><a href="account-settings.php">Account Settings</a></li>

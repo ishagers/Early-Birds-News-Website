@@ -4,7 +4,19 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 require_once('databaseFunctions.php');
+function doCreateArticle($title, $content,$author)
+{
+    // Assuming login function returns an associative array with 'status' and 'message'
+    $result = createArticle($title, $content, $author);
 
+    if ($result['status']) {
+        // Login successful
+        return ["returnCode" => '0', 'message' => "Saved Article"];
+    } else {
+        // Login failed
+        return ["returnCode" => '1', 'message' => "return 1 Error"];
+    }
+}
 function doLogin($username, $password)
 {
     // Assuming login function returns an associative array with 'status' and 'message'
@@ -42,11 +54,14 @@ function requestProcessor($request)
         case "login":
             echo "You have succesfully logged in.";
             return doLogin($request['username'], $request['password']);
-           
+
         case "create_account":
             echo "You have succesfully created an account!";
             return doCreateAccount($request['name'], $request['email'], $request['username'], $request['password']);
-             
+
+        case "create_article":
+            echo "Article Create ";
+            return doCreateArticle($request['title'], $request['content'], $request['author']);
     }
     return array("returnCode" => '0', 'message' => "Server received request and processed");
 }

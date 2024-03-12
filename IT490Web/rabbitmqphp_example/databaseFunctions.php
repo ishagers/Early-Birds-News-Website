@@ -97,3 +97,39 @@ function login($username, $password)
     return $response;
 }
 
+function createArticle($title, $content, $author)
+{
+    $response = array('status' => false, 'message' => '');
+
+    try {
+        $conn = getDatabaseConnection(); // Reuse the database connection function
+
+        // SQL statement to insert a new article
+        $sql = "INSERT INTO articles (title, content, author_id) VALUES (:title, :content, :author_id)";
+
+        // Prepare and bind parameters
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':title', $title);
+        $stmt->bindParam(':content', $content);
+        $stmt->bindParam(':author_id', $author_id);
+
+        // Execute the statement
+        $stmt->execute();
+
+        // Update response status and message on success
+        if ($stmt->rowCount() > 0) {
+            $response['status'] = true;
+            $response['message'] = "Article created successfully";
+        } else {
+            // No rows affected
+            $response['message'] = "Failed to create article";
+        }
+    } catch (PDOException $e) {
+        // Update response message on error
+        $response['message'] = "Error: " . $e->getMessage();
+    }
+
+    // Return the response array
+    return $response;
+}
+
