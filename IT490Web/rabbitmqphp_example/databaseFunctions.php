@@ -217,11 +217,11 @@ function getCommentsByArticleId($articleId)
 
     try {
         $conn = getDatabaseConnection();
-        $sql = "SELECT c.id, c.comment, u.username, c.created_at
-                FROM comments c
-                JOIN users u ON c.user_id = u.id
-                WHERE c.article_id = :articleId
-                ORDER BY c.created_at DESC";
+        $sql = "SELECT c.id, c.comment, u.username
+            FROM comments c
+            JOIN users u ON c.user_id = u.id
+            WHERE c.article_id = :articleId
+            ORDER BY c.id DESC";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
         $stmt->execute();
