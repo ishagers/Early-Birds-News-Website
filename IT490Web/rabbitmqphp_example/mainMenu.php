@@ -16,16 +16,14 @@ $articleData = fetchRecentArticles(10);
     <script>
         $(document).ready(function () {
             // Event listener for each article title
-            $('.article-title').click(function () {
-                var articleId = $(this).data('article-id'); // Get the ID of the clicked article
-
+            $(document).on('click', '.article-title', function () {
+                var articleId = $(this).data('article-id');
                 // AJAX request to get the article details
                 $.ajax({
-                    url: 'getArticleDetails.php', // PHP script to fetch article details
+                    url: 'getArticleDetails.php',
                     type: 'GET',
                     data: { 'id': articleId },
                     success: function (response) {
-                        // Populate the article-details div with the response
                         $('#article-details').html(response);
                     },
                     error: function () {
