@@ -12,6 +12,9 @@ checkLogin(); // Call the checkLogin function to ensure the user is logged in
 <body>
     <div class="header">
         <h1>Early Bird Articles</h1>
+        <div class="user-info">
+            Logged in as: <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
+        </div>
     </div>
     <div class="nav-bar">
         <ul>

@@ -6,6 +6,7 @@ if (!empty($_POST['title']) && !empty($_POST['content'])) {
     $title = $_POST['title'];
     $content = $_POST['content'];
     $author = $_SESSION['username'];
+
     //Setting array and its values to send to RabbitMQ
     $queryValues = array();
 
@@ -24,7 +25,7 @@ if (!empty($_POST['title']) && !empty($_POST['content'])) {
         echo "<script>alert('Article Successfully Saved'); window.location.href = 'mainMenu.php';</script>";
         exit();
     } else {
-        echo "<script>alert('Result did not = 0'); window.location.href='../index.php';</script>";
+        echo "<script>alert('Error'); window.location.href='../index.php';</script>";
         exit();
     }
 }
@@ -41,6 +42,9 @@ if (!empty($_POST['title']) && !empty($_POST['content'])) {
 <body>
     <div class="header">
         <h1>Early Bird Articles</h1>
+        <div class="user-info">
+            Logged in as: <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
+        </div>
     </div>
     <div class="nav-bar">
         <ul>
@@ -51,7 +55,7 @@ if (!empty($_POST['title']) && !empty($_POST['content'])) {
     </div>
 
     <div class="article-form">
-        <form action="writeArticle.php" method="post">
+        <form method="post">
             <label for="title">Article Title:</label><br />
             <input type="text" id="title" name="title" required /><br />
             <label for="content">Content:</label><br />

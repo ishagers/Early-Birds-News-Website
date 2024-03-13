@@ -112,3 +112,20 @@ body {
     .article-form input[type="submit"]:hover {
         background-color: #0056b3; /* Darker blue on hover */
     }
+
+.user-info {
+    text-align: right;
+    margin-right: 20px;
+    margin-top: 10px;
+    color: #fff;
+}
+
+    .user-info a {
+        color: #FFD700; /* Gold color for the logout link for contrast */
+        text-decoration: none;
+        padding-left: 10px;
+    }
+
+        .user-info a:hover {
+            text-decoration: underline;
+        }
