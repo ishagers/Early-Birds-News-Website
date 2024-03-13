@@ -271,3 +271,37 @@ function getRatingsByArticleId($articleId)
 
     return $response;
 }
+
+function getAverageRatingByArticleId($articleId)
+{
+    $response = array('status' => false, 'averageRating' => null, 'message' => '');
+
+    try {
+        $conn = getDatabaseConnection();
+        $sql = "SELECT AVG(rating) AS averageRating FROM ratings WHERE article_id = :articleId";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Check if the query was successful
+        if ($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $averageRating = $row['averageRating'];
+
+            if ($averageRating !== null) {
+                $response['status'] = true;
+                $response['averageRating'] = round($averageRating, 2); // Round to 2 decimal places
+                $response['message'] = "Average rating fetched successfully";
+            } else {
+                $response['message'] = "No ratings found for this article";
+            }
+        } else {
+            $response['message'] = "No ratings found for this article";
+        }
+    } catch (PDOException $e) {
+        $response['message'] = "Database error: " . $e->getMessage();
+    }
+
+    return $response;
+}
+
