@@ -14,26 +14,24 @@ $articleData = fetchRecentArticles(3);
     <!-- Include jQuery for AJAX calls -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        $(document).ready(function () {
-            // Event listener for each article title
-            $('.article-title').on('click', function () {
-                var articleId = $(this).data('article-id');
-                console.log('Article ID clicked:', articleId); // Debug line to check the captured article ID
+            $(document).ready(function () {
+        $('.article-title').click(function () {
+            var articleId = $(this).attr('data-article-id'); // Changed to use attr()
+            console.log('Article ID clicked:', articleId); // To debug
 
-                // AJAX request to get the article details
-                $.ajax({
-                    url: 'getArticleDetails.php',
-                    type: 'GET',
-                    data: { 'id': articleId },
-                    success: function (response) {
-                        $('#article-details').html(response);
-                    },
-                    error: function () {
-                        $('#article-details').html("<p>Error loading article.</p>");
-                    }
-                });
+            $.ajax({
+                url: 'getArticleDetails.php',
+                type: 'GET',
+                data: { 'id': articleId },
+                success: function (response) {
+                    $('#article-details').html(response);
+                },
+                error: function () {
+                    $('#article-details').html("<p>Error loading article.</p>");
+                }
             });
         });
+    });
     </script>
 </head>
 <body>
