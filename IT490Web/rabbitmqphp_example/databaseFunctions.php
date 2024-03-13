@@ -172,3 +172,101 @@ function fetchRecentArticles($limit = 10)
 
     return $response;
 }
+
+function getArticleById($articleId)
+{
+    $response = array('status' => false, 'message' => '', 'article' => null);
+
+    try {
+        $conn = getDatabaseConnection(); // Reuse the database connection function
+
+        // SQL statement to select an article by ID
+        $sql = "SELECT a.id, a.title, a.content, a.publication_date, u.username AS author
+                FROM articles a
+                JOIN users u ON a.author_id = u.id
+                WHERE a.id = :articleId";
+
+        // Prepare and bind parameters
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
+
+        // Execute the statement
+        $stmt->execute();
+
+        // Check if the article exists
+        if ($stmt->rowCount() == 1) {
+            $article = $stmt->fetch(PDO::FETCH_ASSOC);
+            $response['status'] = true;
+            $response['message'] = "Article fetched successfully";
+            $response['article'] = $article;
+        } else {
+            $response['message'] = "Article not found";
+        }
+    } catch (PDOException $e) {
+        // Update response message on error
+        $response['message'] = "Database error: " . $e->getMessage();
+    }
+
+    return $response;
+}
+
+function getCommentsByArticleId($articleId)
+{
+    $response = array('status' => false, 'message' => '', 'comments' => array());
+
+    try {
+        $conn = getDatabaseConnection();
+        $sql = "SELECT c.id, c.comment, u.username, c.created_at
+                FROM comments c
+                JOIN users u ON c.user_id = u.id
+                WHERE c.article_id = :articleId
+                ORDER BY c.created_at DESC";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!empty($comments)) {
+            $response['status'] = true;
+            $response['message'] = "Comments fetched successfully";
+            $response['comments'] = $comments;
+        } else {
+            $response['message'] = "No comments found for this article";
+        }
+    } catch (PDOException $e) {
+        $response['message'] = "Database error: " . $e->getMessage();
+    }
+
+    return $response;
+}
+
+function getRatingsByArticleId($articleId)
+{
+    $response = array('status' => false, 'message' => '', 'ratings' => array());
+
+    try {
+        $conn = getDatabaseConnection();
+        $sql = "SELECT r.rating, u.username
+                FROM ratings r
+                JOIN users u ON r.user_id = u.id
+                WHERE r.article_id = :articleId";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $ratings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!empty($ratings)) {
+            $response['status'] = true;
+            $response['message'] = "Ratings fetched successfully";
+            $response['ratings'] = $ratings;
+        } else {
+            $response['message'] = "No ratings found for this article";
+        }
+    } catch (PDOException $e) {
+        $response['message'] = "Database error: " . $e->getMessage();
+    }
+
+    return $response;
+}

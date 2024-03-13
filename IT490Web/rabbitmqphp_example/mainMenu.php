@@ -11,6 +11,30 @@ $articleData = fetchRecentArticles(10);
     <meta charset="UTF-8" />
     <title>Early Bird Articles - Main Menu</title>
     <link rel="stylesheet" href="../routes/menuStyles.css" />
+    <!-- Include jQuery for AJAX calls -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Event listener for each article title
+            $('.article-title').click(function () {
+                var articleId = $(this).data('article-id'); // Get the ID of the clicked article
+
+                // AJAX request to get the article details
+                $.ajax({
+                    url: 'getArticleDetails.php', // PHP script to fetch article details
+                    type: 'GET',
+                    data: { 'id': articleId },
+                    success: function (response) {
+                        // Populate the article-details div with the response
+                        $('#article-details').html(response);
+                    },
+                    error: function () {
+                        $('#article-details').html("<p>Error loading article.</p>");
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="header">
@@ -27,18 +51,26 @@ $articleData = fetchRecentArticles(10);
             <li><a href="account-settings.php">Account Settings</a></li>
         </ul>
     </div>
-    <div class="articles-section">
+
+    <!-- Article Titles -->
+    <div class="articles-list">
         <?php if ($articleData['status']): ?>
             <?php foreach ($articleData['articles'] as $article): ?>
                 <div class="article">
-                    <h3><?php echo htmlspecialchars($article['title']); ?></h3>
-                    <p><?php echo nl2br(htmlspecialchars($article['content'])); ?></p>
+                    <h3 class="article-title" data-article-id="<?php echo $article['id']; ?>">
+                        <?php echo htmlspecialchars($article['title']); ?>
+                    </h3>
                     <small>Published on: <?php echo date('F j, Y, g:i a', strtotime($article['publication_date'])); ?></small>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
             <p><?php echo $articleData['message']; ?></p>
         <?php endif; ?>
+    </div>
+
+    <!-- Article Details: Content, Comments, Ratings -->
+    <div id="article-details" class="article-details">
+        <!-- Article content, comments, and ratings will be loaded here -->
     </div>
 
     <div class="logout-button">
