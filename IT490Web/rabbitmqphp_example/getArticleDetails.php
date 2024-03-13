@@ -9,6 +9,7 @@ if (isset($_GET['id'])) {
     $articleId = $_GET['id'];
 
     $article = getArticleById($articleId);
+    echo "Received article ID: " . htmlspecialchars($articleId) . "<br/>";
 
     if ($article['status']) {
         echo "<h2>" . htmlspecialchars($article['title']) . "</h2>";
