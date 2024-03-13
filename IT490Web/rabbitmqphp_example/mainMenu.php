@@ -3,7 +3,7 @@ require('session.php');
 require('databaseFunctions.php');
 checkLogin();
 
-$articleData = fetchRecentArticles(10);
+$articleData = fetchRecentArticles(3);
 ?>
 <!DOCTYPE html>
 <html lang="en">

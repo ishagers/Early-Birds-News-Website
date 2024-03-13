@@ -44,4 +44,3 @@ if (isset($_GET['id'])) {
     echo "<p>No article ID provided.</p>";
 }
 
-?>
