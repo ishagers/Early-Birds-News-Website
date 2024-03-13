@@ -152,7 +152,8 @@ function fetchRecentArticles($limit = 3)
 
     try {
         $conn = getDatabaseConnection();
-        $sql = "SELECT title, content, author_id, publication_date FROM articles ORDER BY publication_date DESC LIMIT :limit";
+        // Include the `id` in the SELECT statement
+        $sql = "SELECT id, title, content, author_id, publication_date FROM articles ORDER BY publication_date DESC LIMIT :limit";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
