@@ -104,25 +104,38 @@ function createArticle($title, $content, $author)
     try {
         $conn = getDatabaseConnection(); // Reuse the database connection function
 
-        // SQL statement to insert a new article
-        $sql = "INSERT INTO articles (title, content, author_id) VALUES (:title, :content, :author_id)";
+        // First, get the author_id from the users table using the username
+        $userSql = "SELECT id FROM users WHERE username = :username LIMIT 1";
+        $userStmt = $conn->prepare($userSql);
+        $userStmt->bindParam(':username', $author);
+        $userStmt->execute();
+        $user = $userStmt->fetch(PDO::FETCH_ASSOC);
 
-        // Prepare and bind parameters
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':title', $title);
-        $stmt->bindParam(':content', $content);
-        $stmt->bindParam(':author_id', $author_id);
+        if ($user) {
+            $author_id = $user['id']; // Use the fetched author ID
 
-        // Execute the statement
-        $stmt->execute();
+            // SQL statement to insert a new article
+            $sql = "INSERT INTO articles (title, content, author_id) VALUES (:title, :content, :author_id)";
 
-        // Update response status and message on success
-        if ($stmt->rowCount() > 0) {
-            $response['status'] = true;
-            $response['message'] = "Article created successfully";
+            // Prepare and bind parameters
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':title', $title);
+            $stmt->bindParam(':content', $content);
+            $stmt->bindParam(':author_id', $author_id);
+
+            // Execute the statement
+            $stmt->execute();
+
+            // Update response status and message on success
+            if ($stmt->rowCount() > 0) {
+                $response['status'] = true;
+                $response['message'] = "Article created successfully";
+            } else {
+                // No rows affected
+                $response['message'] = "Failed to create article";
+            }
         } else {
-            // No rows affected
-            $response['message'] = "Failed to create article";
+            $response['message'] = "Author username not found";
         }
     } catch (PDOException $e) {
         // Update response message on error
@@ -133,3 +146,29 @@ function createArticle($title, $content, $author)
     return $response;
 }
 
+function fetchRecentArticles($limit = 10)
+{
+    $response = array('status' => false, 'articles' => array(), 'message' => '');
+
+    try {
+        $conn = getDatabaseConnection();
+        $sql = "SELECT title, content, author_id, publication_date FROM articles ORDER BY publication_date DESC LIMIT :limit";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!empty($articles)) {
+            $response['status'] = true;
+            $response['articles'] = $articles;
+            $response['message'] = "Articles fetched successfully";
+        } else {
+            $response['message'] = "No articles found";
+        }
+    } catch (PDOException $e) {
+        $response['message'] = "Database error: " . $e->getMessage();
+    }
+
+    return $response;
+}

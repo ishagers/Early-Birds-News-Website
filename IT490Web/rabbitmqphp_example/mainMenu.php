@@ -1,6 +1,9 @@
 <?php
-require('session.php'); // Adjust the path as necessary
-checkLogin(); // Call the checkLogin function to ensure the user is logged in
+require('session.php');
+require('databaseFunctions.php');
+checkLogin();
+
+$articleData = fetchRecentArticles(10);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,6 +27,20 @@ checkLogin(); // Call the checkLogin function to ensure the user is logged in
             <li><a href="account-settings.php">Account Settings</a></li>
         </ul>
     </div>
+    <div class="articles-section">
+        <?php if ($articleData['status']): ?>
+            <?php foreach ($articleData['articles'] as $article): ?>
+                <div class="article">
+                    <h3><?php echo htmlspecialchars($article['title']); ?></h3>
+                    <p><?php echo nl2br(htmlspecialchars($article['content'])); ?></p>
+                    <small>Published on: <?php echo date('F j, Y, g:i a', strtotime($article['publication_date'])); ?></small>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p><?php echo $articleData['message']; ?></p>
+        <?php endif; ?>
+    </div>
+
     <div class="logout-button">
         <a href="logout.php">Logout</a>
     </div>

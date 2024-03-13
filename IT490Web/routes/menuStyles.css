@@ -25,40 +25,40 @@ body {
     padding: 10px 0;
 }
 
-.nav-bar ul {
-    list-style-type: none;
-    display: flex;
-    justify-content: center;
-}
+    .nav-bar ul {
+        list-style-type: none;
+        display: flex;
+        justify-content: center;
+    }
 
-.nav-bar ul li {
-    margin: 0 15px;
-}
+        .nav-bar ul li {
+            margin: 0 15px;
+        }
 
-.nav-bar ul li a {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: bold;
-}
+            .nav-bar ul li a {
+                color: #ffffff;
+                text-decoration: none;
+                font-weight: bold;
+            }
 
 .logout-button {
     margin-top: 20px;
     text-align: center;
 }
 
-.logout-button a {
-    display: inline-block;
-    text-decoration: none;
-    background-color: #D7263D;
-    color: #ffffff;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-weight: bold;
-}
+    .logout-button a {
+        display: inline-block;
+        text-decoration: none;
+        background-color: #D7263D;
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
 
-.logout-button a:hover {
-    background-color: #bf1e2e;
-}
+        .logout-button a:hover {
+            background-color: #bf1e2e;
+        }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -66,66 +66,57 @@ body {
         flex-direction: column;
     }
 
-    .nav-bar ul li {
-        margin: 10px 0;
-    }
+        .nav-bar ul li {
+            margin: 10px 0;
+        }
 }
 
-.article-form {
-    max-width: 600px; /* Adjust based on your preference */
-    margin: 40px auto; /* Center the form with automatic margins */
-    padding: 20px;
-    border: 2px solid #007BFF; /* Cool blue border */
-    border-radius: 10px; /* Rounded corners */
-    background-color: #f4f4f4; /* Light background for the form area */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+.main-container {
+    display: flex;
+    justify-content: space-between;
 }
 
-    /* Form elements */
-    .article-form form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px; /* Space between form elements */
+.articles-section {
+    flex-basis: 40%;
+    margin-left: 20px;
+    padding: 10px;
+    border: 2px solid #005A9C;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.article {
+    margin-bottom: 20px;
+}
+
+    .article h3 {
+        color: #005A9C;
+        margin-bottom: 5px;
     }
 
-    .article-form label {
-        font-weight: bold;
-        margin-bottom: 5px; /* Space between label and input */
+    .article p, .article small {
+        font-size: 14px;
+        line-height: 1.5;
+        color: #333;
     }
 
-    .article-form input[type="text"],
-    .article-form textarea,
-    .article-form input[type="submit"] {
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc; /* Light border for inputs */
-        font-size: 16px; /* Larger font size for readability */
-    }
-
-    .article-form input[type="submit"] {
-        background-color: #007BFF; /* Cool blue background for submit button */
-        color: #ffffff; /* White text color */
-        cursor: pointer; /* Changes the cursor to indicate it's clickable */
-        border: none; /* Removes the border */
-    }
-
-    .article-form input[type="submit"]:hover {
-        background-color: #0056b3; /* Darker blue on hover */
+    .article small {
+        display: block;
+        margin-top: 10px;
+        color: #666;
     }
 
 .user-info {
     text-align: right;
-    margin-right: 20px;
-    margin-top: 10px;
+    margin-right: 40px;
     color: #fff;
+    font-size: 24px; /* Increased font size */
 }
 
     .user-info a {
-        color: #FFD700; /* Gold color for the logout link for contrast */
+        color: #FFD700;
         text-decoration: none;
         padding-left: 10px;
     }
 
-        .user-info a:hover {
-            text-decoration: underline;
-        }
