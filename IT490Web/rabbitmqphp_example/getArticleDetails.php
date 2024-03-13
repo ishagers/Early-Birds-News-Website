@@ -18,6 +18,16 @@ if (isset($_GET['id'])) {
         echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
         echo "<small>Published on: " . htmlspecialchars($article['article']['publication_date']) . "</small>";
 
+        // Fetch and display ratings
+        $averageRatingResponse = getAverageRatingByArticleId($articleId);
+        if ($averageRatingResponse['status']) {
+            echo "<div id='ratings'>";
+            echo "<h3>Average Rating: " . htmlspecialchars($averageRatingResponse['averageRating']) . "</h3>";
+            echo "</div>";
+        } else {
+            echo "<p>No ratings yet.</p>";
+        }
+
         // Fetch and display comments
         $comments = getCommentsByArticleId($articleId);
         if ($comments['status']) {
@@ -31,16 +41,6 @@ if (isset($_GET['id'])) {
                 echo "<p>No comments yet.</p>";
             }
             echo "</div>";
-        }
-
-        // Fetch and display ratings
-        $averageRatingResponse = getAverageRatingByArticleId($articleId);
-        if ($averageRatingResponse['status']) {
-            echo "<div id='ratings'>";
-            echo "<h3>Average Rating: " . htmlspecialchars($averageRatingResponse['averageRating']) . "</h3>";
-            echo "</div>";
-        } else {
-            echo "<p>No ratings yet.</p>";
         }
 
         // Optionally, display comments and other details here
