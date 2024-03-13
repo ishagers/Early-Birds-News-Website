@@ -10,14 +10,11 @@ checkLogin();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Initial debug message
-echo "Test successful.<br/>";
-
 if (isset($_GET['id'])) {
     $articleId = $_GET['id'];
 
     // Output the received article ID for debugging
-    echo "Received article ID: " . htmlspecialchars($articleId) . "<br/>";
+    echo "Article ID: " . htmlspecialchars($articleId) . "<br/>";
 
     // Fetch the article details
     $article = getArticleById($articleId);

@@ -146,7 +146,7 @@ function createArticle($title, $content, $author)
     return $response;
 }
 
-function fetchRecentArticles($limit = 6)
+function fetchRecentArticles($limit = 10)
 {
     $response = array('status' => false, 'articles' => array(), 'message' => '');
 

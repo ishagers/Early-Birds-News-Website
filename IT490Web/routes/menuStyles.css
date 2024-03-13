@@ -73,22 +73,55 @@ body {
 }
 
 .main-container {
-    display: flex;
-    justify-content: space-between;
+    display: flex; /* Establish flex container */
+    justify-content: space-between; /* Space between the article list and details */
+    margin: 20px; /* Add margin around the container */
 }
 
-.articles-section, #article-details {
-    flex-basis: 40%;
-    margin: 20px;
+.articles-list {
+    flex-basis: 40%; /* Adjusted width for article list */
+    margin-right: 10px; /* Adds a margin between list and details */
     padding: 10px;
     border: 2px solid #005A9C;
     border-radius: 8px;
     background-color: #f9f9f9;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    overflow-y: auto; /* Allows scrolling for the list */
+    height: fit-content; /* Adjust height based on content */
 }
 
-#article-details {
-    flex-basis: 60%; /* Adjust the flex-basis to cover the remaining space */
+.article-title {
+    cursor: pointer;
+    color: #005A9C;
+    transition: color 0.3s ease;
+}
+
+    .article-title:hover {
+        color: #003366; /* Darker shade for hover state */
+        text-decoration: underline; /* Adds underline on hover */
+    }
+
+    .article-title:active {
+        color: #FFA500; /* Color change when clicked */
+        text-decoration: none; /* Removes underline on click */
+    }
+
+.article-details {
+    flex-basis: 60%; /* Takes up the rest of the space next to the article list */
+    margin: 20px;
+    padding: 10px;
+    border-left: 2px solid #005A9C; /* Separates article details from list */
+    height: fit-content; /* Adjust height based on content */
+    overflow-y: auto; /* Enables scrolling if content overflows */
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Add this rule to clear floats if you have used them */
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
 }
 
 .article, .article-detail {
