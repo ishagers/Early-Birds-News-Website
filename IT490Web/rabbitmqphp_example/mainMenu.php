@@ -16,8 +16,10 @@ $articleData = fetchRecentArticles(3);
     <script>
         $(document).ready(function () {
             // Event listener for each article title
-            $(document).on('click', '.article-title', function () {
+            $('.article-title').on('click', function () {
                 var articleId = $(this).data('article-id');
+                console.log('Article ID clicked:', articleId); // Debug line to check the captured article ID
+
                 // AJAX request to get the article details
                 $.ajax({
                     url: 'getArticleDetails.php',
