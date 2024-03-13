@@ -78,25 +78,26 @@ body {
 
 .articles-section {
     flex-basis: 40%;
-    margin-left: 20px;
+    margin: 20px;
     padding: 10px;
     border: 2px solid #005A9C;
-    border-radius: 5px;
+    border-radius: 8px;
     background-color: #f9f9f9;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .article {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
     .article h3 {
         color: #005A9C;
-        margin-bottom: 5px;
+        margin-bottom: 4px;
+        font-size: 24px;
     }
 
     .article p, .article small {
-        font-size: 14px;
+        font-size: 18px;
         line-height: 1.5;
         color: #333;
     }

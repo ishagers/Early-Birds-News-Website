@@ -51,6 +51,7 @@ if (!empty($_POST['title']) && !empty($_POST['content'])) {
             <li><a href="article-history.php">Article History</a></li>
             <li><a href="keyword-settings.php">Keyword Settings</a></li>
             <li><a href="account-settings.php">Account Settings</a></li>
+            <li><a href="mainMenu.php">Home</a></li>
         </ul>
     </div>
 
