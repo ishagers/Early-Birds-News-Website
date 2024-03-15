@@ -9,7 +9,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 // Assuming you're using databaseFunctions.php for database operations
-require_once('../../../rabbitmqphp_example/databaseFunctions.php');
+require_once('databaseFunctions.php');
 
 
 $username = $_SESSION['username'];
