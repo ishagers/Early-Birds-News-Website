@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 require('session.php'); // Adjust the path as necessary
 require('databaseFunctions.php');
 checkLogin(); // Call the checkLogin function to ensure the user is logged in
