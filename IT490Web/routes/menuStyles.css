@@ -222,16 +222,15 @@ body {
         }
 
 .topics-selection {
-    max-width: 40%;
-    margin: 20px auto;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns */
-    grid-auto-rows: minmax(50px, auto); /* Minimum row height */
-    gap: 10px; /* Gap between grid items */
+    width: 40%; /* Takes up 40% of the container width */
+    margin: 20px 0; /* Adds margin to the top and bottom */
     padding: 15px;
     border: 2px solid #007bff; /* Blue border */
     border-radius: 8px; /* Rounded corners */
     background-color: #f0f8ff; /* Light blue background */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    gap: 10px; /* Gap between grid items */
 }
 
     /* Style checkboxes and labels */
@@ -241,14 +240,13 @@ body {
         cursor: pointer; /* Pointer cursor on hover */
     }
 
-/* Style for form buttons */
+/* Styles for the buttons below the topics */
 .form-buttons {
     display: flex;
-    justify-content: space-between; /* Space between the buttons */
-    margin-top: 20px;
+    justify-content: start; /* Aligns buttons to the start of the container */
+    gap: 10px; /* Adds a gap between the buttons */
 }
 
-    /* Style for individual form buttons */
     .form-buttons input[type="submit"] {
         padding: 10px 20px;
         border-radius: 5px;
@@ -257,22 +255,18 @@ body {
         font-weight: bold;
         background-color: #007bff; /* Blue background */
         color: white; /* White text */
-        margin-right: 10px; /* Space between buttons */
     }
 
-        /* Hover effect for buttons */
         .form-buttons input[type="submit"]:hover {
             background-color: #0056b3; /* Darker blue on hover */
         }
 
-/* Ensure the container holding topics-selection and form-buttons takes 40% width */
-.main-container {
-    display: flex;
-    justify-content: space-between;
+/* Adjust the article details to take the remaining space */
+.article-details {
+    width: 60%; /* Take the remaining space */
+    /* Other styling properties */
 }
 
-/* Content for article details, adjust this if necessary to align correctly on the page */
-.article-details {
-    max-width: 60%; /* Take the remaining space */
-    /* Other styling properties */
+.topics-selection form {
+    width: 100%; /* Make the form take up the entire width of its parent */
 }
