@@ -1,7 +1,5 @@
 <?php
 
-
-
 require('session.php');
 
 require('databaseFunctions.php');
@@ -175,5 +173,4 @@ if ($article && $article['status']) {
     } else {
         echo "<p>Article not found.</p>";
 	}
-}
-?>
+
