@@ -6,9 +6,9 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 $host = '10.147.17.178'; // RabbitMQ server IP or hostname
 $port = 5672; // Default RabbitMQ port
-$user = 'RabbitMQ490';
-$password = 'it490rabbit';
-$queue = '490Queue';
+$user = 'test';
+$password = 'test';
+$queue = 'testQueue';
 
 $mysqlHost = '10.147.17.233'; // MySQL server IP or hostname
 $mysqlDb = 'EARLYBIRD';
