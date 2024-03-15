@@ -222,38 +222,57 @@ body {
         }
 
 .topics-selection {
+    max-width: 40%;
+    margin: 20px auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    grid-auto-rows: minmax(50px, auto); /* Minimum row height */
+    gap: 10px; /* Gap between grid items */
+    padding: 15px;
     border: 2px solid #007bff; /* Blue border */
     border-radius: 8px; /* Rounded corners */
-    padding: 20px;
-    margin: 20px 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Three columns */
-    gap: 20px; /* Space between grid items */
     background-color: #f0f8ff; /* Light blue background */
 }
 
+    /* Style checkboxes and labels */
     .topics-selection label {
-        display: block; /* Make labels block level for checkbox alignment */
-        padding: 5px; /* Padding around labels */
-        cursor: pointer; /* Cursor pointer on hover over labels */
+        display: flex;
+        align-items: center; /* Align checkbox and label text */
+        cursor: pointer; /* Pointer cursor on hover */
     }
 
+/* Style for form buttons */
 .form-buttons {
     display: flex;
-    justify-content: space-between; /* Space out buttons */
+    justify-content: space-between; /* Space between the buttons */
     margin-top: 20px;
 }
 
+    /* Style for individual form buttons */
     .form-buttons input[type="submit"] {
         padding: 10px 20px;
         border-radius: 5px;
         border: none;
         cursor: pointer;
         font-weight: bold;
-        background-color: #007bff;
-        color: white;
+        background-color: #007bff; /* Blue background */
+        color: white; /* White text */
+        margin-right: 10px; /* Space between buttons */
     }
 
+        /* Hover effect for buttons */
         .form-buttons input[type="submit"]:hover {
             background-color: #0056b3; /* Darker blue on hover */
         }
+
+/* Ensure the container holding topics-selection and form-buttons takes 40% width */
+.main-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Content for article details, adjust this if necessary to align correctly on the page */
+.article-details {
+    max-width: 60%; /* Take the remaining space */
+    /* Other styling properties */
+}
