@@ -39,23 +39,26 @@ try {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Article History</title>
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../routes/menuStyles.css" />
 </head>
 <body>
+
+    <?php require('nav.php'); ?>
+
     <h1>Article History</h1>
     <div class="article-history">
         <?php if (!empty($articles)): ?>
-            <?php foreach ($articles as $article): ?>
-                <div class="article">
-                    <h2><?= htmlspecialchars($article['title']) ?></h2>
-                    <p><?= nl2br(htmlspecialchars($article['content'])) ?></p>
-                    <small>Posted on: <?= htmlspecialchars($article['publication_date']) ?></small>
-                </div>
-            <?php endforeach; ?>
+        <?php foreach ($articles as $article): ?>
+        <div class="article">
+            <h2><?= htmlspecialchars($article['title']) ?></h2>
+            <p><?= nl2br(htmlspecialchars($article['content'])) ?></p>
+            <small>Posted on: <?= htmlspecialchars($article['publication_date']) ?></small>
+        </div>
+        <?php endforeach; ?>
         <?php else: ?>
-            <p>No articles found.</p>
+        <p>No articles found.</p>
         <?php endif; ?>
     </div>
 </body>

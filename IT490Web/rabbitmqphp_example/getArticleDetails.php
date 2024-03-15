@@ -112,11 +112,13 @@ if ($article && $article['status']) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Article Details</title>
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../routes/menuStyles.css" />
 </head>
 <body>
+
+    <?php require('nav.php'); ?>
     <!-- Article details and comments HTML goes here -->
 </body>
 </html>
