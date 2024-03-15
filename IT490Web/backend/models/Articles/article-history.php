@@ -4,12 +4,13 @@ session_start();
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
     // Redirect to login page if not logged in
-    header('Location: login.php');
+    header('Location: index.php');
     exit();
 }
 
 // Assuming you're using databaseFunctions.php for database operations
-require_once('databaseFunctions.php'); // Include the database functions file
+require_once('../../../rabbitmqphp_example/databaseFunctions.php');
+
 
 $username = $_SESSION['username'];
 
