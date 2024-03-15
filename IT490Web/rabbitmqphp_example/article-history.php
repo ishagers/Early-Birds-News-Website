@@ -34,8 +34,6 @@ try {
     die("Could not connect to the database: " . $e->getMessage());
 }
 
-
-
 ?>
 
 <!DOCTYPE html>
