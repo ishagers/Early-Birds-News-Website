@@ -360,51 +360,31 @@ function saveUserPreference($username, $topicId)
 {
     $conn = getDatabaseConnection();
 
-    // First, retrieve the user's ID based on their username
-    $userSql = "SELECT id FROM users WHERE username = :username LIMIT 1";
-    $userStmt = $conn->prepare($userSql);
-    $userStmt->bindParam(':username', $username);
-    $userStmt->execute();
-    $user = $userStmt->fetch(PDO::FETCH_ASSOC);
+    // Check if the preference already exists to avoid duplicates
+    $checkSql = "SELECT * FROM user_preferences WHERE username = :username AND topic_id = :topicId LIMIT 1";
+    $checkStmt = $conn->prepare($checkSql);
+    $checkStmt->bindParam(':username', $username);
+    $checkStmt->bindParam(':topicId', $topicId);
+    $checkStmt->execute();
 
-    if ($user) {
-        $userId = $user['id'];
-
-        // Check if the preference already exists to avoid duplicates
-        $checkSql = "SELECT * FROM user_preferences WHERE user_id = :userId AND topic_id = :topicId LIMIT 1";
-        $checkStmt = $conn->prepare($checkSql);
-        $checkStmt->bindParam(':userId', $userId);
-        $checkStmt->bindParam(':topicId', $topicId);
-        $checkStmt->execute();
-
-        if ($checkStmt->rowCount() == 0) {
-            // If the preference does not exist, insert it
-            $sql = "INSERT INTO user_preferences (user_id, topic_id) VALUES (:userId, :topicId)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':userId', $userId);
-            $stmt->bindParam(':topicId', $topicId);
-            $stmt->execute();
-        }
-    } else {
-        echo "User not found.";
+    if ($checkStmt->rowCount() == 0) {
+        // If the preference does not exist, insert it
+        $sql = "INSERT INTO user_preferences (username, topic_id) VALUES (:username, :topicId)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':topicId', $topicId);
+        $stmt->execute();
     }
 }
 
 function clearUserPreferences($username)
 {
     $conn = getDatabaseConnection();
-    // Get the user's ID first
-    $userIdQuery = "SELECT id FROM users WHERE username = :username LIMIT 1";
-    $userIdStmt = $conn->prepare($userIdQuery);
-    $userIdStmt->bindParam(':username', $username);
-    $userIdStmt->execute();
-    $user = $userIdStmt->fetch(PDO::FETCH_ASSOC);
-    $userId = $user['id'];
 
-    // Delete preferences
-    $sql = "DELETE FROM user_preferences WHERE user_id = :userId";
+    // Delete preferences directly by username
+    $sql = "DELETE FROM user_preferences WHERE username = :username";
     $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':userId', $userId);
+    $stmt->bindParam(':username', $username);
     $stmt->execute();
 
     return "Your preferences have been cleared.";
