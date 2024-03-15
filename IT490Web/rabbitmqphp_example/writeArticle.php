@@ -45,20 +45,8 @@ if (!empty($_POST['title']) && !empty($_POST['content'])) {
     <link rel="stylesheet" href="../routes/menuStyles.css" />
 </head>
 <body>
-    <div class="header">
-        <h1>Early Bird Articles</h1>
-        <div class="user-info">
-            Logged in as: <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-        </div>
-    </div>
-    <div class="nav-bar">
-        <ul>
-            <li><a href="article-history.php">Article History</a></li>
-            <li><a href="keyword-settings.php">Keyword Settings</a></li>
-            <li><a href="accountPreferences.php">Profile Settings</a></li>
-            <li><a href="mainMenu.php">Home</a></li>
-        </ul>
-    </div>
+
+    <?php require('nav.php'); ?>
 
     <div class="article-form">
         <form method="post">
@@ -71,7 +59,7 @@ if (!empty($_POST['title']) && !empty($_POST['content'])) {
     </div>
 
     <div class="logout-button">
-            <a href="logout.php">Logout</a>
+        <a href="logout.php">Logout</a>
     </div>
 </body>
 </html>
