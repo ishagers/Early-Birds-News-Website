@@ -2,6 +2,8 @@
 
 require('session.php');
 require('databaseFunctions.php');
+require_once('SQLPublish.php');
+
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
