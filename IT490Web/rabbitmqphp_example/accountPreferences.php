@@ -41,19 +41,9 @@ if (isset($_POST['clearPreferences'])) {
     <link rel="stylesheet" href="../routes/menuStyles.css" />
 </head>
 <body>
-    <div class="header">
-        <h1>Early Bird Articles</h1>
-        <div class="user-info">
-            Logged in as: <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-        </div>
-    </div>
-    <div class="nav-bar">
-        <ul>
-            <li><a href="article-history.php">Article History</a></li>
-            <li><a href="writeArticle.php">Create Article</a></li>
-            <li><a href="mainMenu.php">Home</a></li>
-        </ul>
-    </div>
+
+    <?php require('nav.php'); ?>
+
     <form action="accountPreferences.php" method="post">
         <div class="topics-selection">
             <h3>Select your topics of interest:</h3>

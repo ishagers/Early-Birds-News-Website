@@ -35,19 +35,8 @@ $articleData = fetchRecentArticles(10);
     </script>
 </head>
 <body>
-    <div class="header">
-        <h1>Early Bird Articles</h1>
-        <div class="user-info">
-            Logged in as: <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-        </div>
-    </div>
-    <div class="nav-bar">
-        <ul>
-            <li><a href="writeArticle.php">Create Article</a></li>
-            <li><a href="article-history.php">Article History</a></li>
-            <li><a href="accountPreferences.php">Profile Settings</a></li>
-        </ul>
-    </div>
+
+    <?php require('nav.php'); ?>
 
     <div class="main-container">
         <!-- Article Titles -->
