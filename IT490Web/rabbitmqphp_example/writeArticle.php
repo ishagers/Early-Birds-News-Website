@@ -24,7 +24,7 @@ if (!empty($_POST['title']) && !empty($_POST['content'])) {
     //Printing Array and executing SQL Publisher function
     //print_r($queryValues);
     $result = publisher($queryValues);
-
+    var_dump($result);
     //If returned 0, it means it was pushed to the database. Otherwise, echo error
     if ($result == 0) {
         // Use JavaScript for redirect to ensure the alert is shown before redirecting

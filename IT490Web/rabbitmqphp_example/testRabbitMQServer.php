@@ -50,7 +50,7 @@ function doCreateAccount($name, $email, $username, $hashedPassword)
     $result = createUser($name, $username, $email, $hashedPassword, 'defaultRole');
     if ($result['status']) {
         // Account creation successful
-        return ["returnCode" => '0', 'message' => "Account created successfully"]; // Use generic success message or $result['message']
+        return ["returnCode" => '0', 'message' => "Account created successfully\n"]; // Use generic success message or $result['message']
     } else {
         // Account creation failed
         return ["returnCode" => '1', 'message' => $result['message']]; // Use $result['message'] directly
@@ -66,15 +66,15 @@ function requestProcessor($request)
     }
     switch ($request['type']) {
         case "login":
-            echo "You have succesfully logged in.";
+            echo "You have succesfully logged in.\n ";
             return doLogin($request['username'], $request['password']);
 
         case "create_account":
-            echo "You have succesfully created an account!";
+            echo "You have succesfully created an account! \n";
             return doCreateAccount($request['name'], $request['email'], $request['username'], $request['password']);
 
         case "create_article":
-            echo "Article Create";
+            echo "Article Created";
             return doCreateArticle($request['title'], $request['content'], $request['author']);
 
         case "create_comment":
