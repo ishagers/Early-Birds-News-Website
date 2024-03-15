@@ -15,7 +15,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
     <meta charset="UTF-8">
     <title>Early Bird Articles</title>
     <!-- Link to the external CSS file -->
-    <link rel="stylesheet" href="../routes/styles.css">
+    <link rel="stylesheet" href="../routes/menuStyles.css">
 </head>
 <body>
 
