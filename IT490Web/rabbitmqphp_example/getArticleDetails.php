@@ -66,9 +66,45 @@ if ($article && $article['status']) {
     echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
     echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
     echo "<small>Published on: " . htmlspecialchars($article['article']['publication_date']) . "</small>";
-
+	// Fetch and display ratings
     $averageRatingResponse = getAverageRatingByArticleId($articleId);
-    // Rating and comments display logic...
+         if ($averageRatingResponse['status']) {
+            echo "<div id='ratings'>";
+            echo "<h3>Average Rating: " . htmlspecialchars($averageRatingResponse['averageRating']) . "</h3>";
+            echo "</div>";
+        } else {
+            echo "<p>No ratings yet.</p>";
+        }
+        
+            // Fetch and display comments
+        $comments = getCommentsByArticleId($articleId);
+        if ($comments['status']) {
+            echo "<div id='comments'>";
+            echo "<h3>Comments</h3>";
+            if (!empty($comments['comments'])) {
+                foreach ($comments['comments'] as $comment) {
+                    echo "<p><strong>" . htmlspecialchars($comment['username']) . ":</strong> " . htmlspecialchars($comment['comment']) . "</p>";
+                }
+            } else {
+                echo "<p>No comments yet.</p>";
+            }
+            echo "</div>";
+        }
+
+        echo "<div id='submit-comment'>";
+        echo "<h3>Add a comment</h3>";
+        echo "<form action='getArticleDetails.php?id=" . htmlspecialchars($articleId) . "' method='post'>";
+        echo "<textarea name='comment' required></textarea>";
+        echo "<button type='submit' name='submitComment'>Submit Comment</button>";
+        echo "</form>";
+        echo "</div>";
+
+        // Optionally, display comments and other details here
+    } else {
+        echo "<p>Article not found.</p>";
+    }
+} else {
+    echo "<p>No article ID provided.</p>";
 }
 
 ?>
