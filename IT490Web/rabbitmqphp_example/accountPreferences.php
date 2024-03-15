@@ -18,16 +18,19 @@ if (isset($_POST['submitPreferences'])) {
         saveUserPreference($username, $topicId); // Function to save preference
     }
 
-    echo "<p>Preferences updated successfully!</p>";
-    // Or redirect to another page
+    // Redirect to the same page to refresh the content
+    header('Location: accountPreferences.php');
+    exit;
 }
 
 if (isset($_POST['clearPreferences'])) {
     // Clear user preferences
     $message = clearUserPreferences($_SESSION['username']);
-    echo "<p>{$message}</p>";
-}
 
+    // Redirect to the same page to refresh the content
+    header('Location: accountPreferences.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
