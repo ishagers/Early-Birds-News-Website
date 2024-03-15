@@ -1,10 +1,11 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+
 
 require('session.php'); // Adjust the path as necessary
-var_dump($_POST)
 checkLogin(); // Call the checkLogin function to ensure the user is logged in
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 if (!empty($_POST['title']) && !empty($_POST['content'])) {
     $title = $_POST['title'];
