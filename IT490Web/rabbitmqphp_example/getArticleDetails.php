@@ -34,12 +34,12 @@ if (isset($_POST['submitComment']) && !empty($_POST['comment']) && isset($_GET['
 
     // If returned 0 or returnCode is "0", it means it was pushed to the database. Otherwise, echo error
     if (isset($result['returnCode']) && $result['returnCode'] === "0") {
-        echo "<script>alert('Comment successfully made'); window.location.href = 'article-history.php';</script>";
-        exit();
+    echo "<script>alert('Comment successfully made'); window.location.href =   'getArticleDetails.php?id=" . $articleId . "';</script>";
+    exit();
     } else {
-        echo "<script>alert('Error submitting comment'); window.location.href='article-history.php';</script>";
-        exit();
-    }
+    echo "<script>alert('Error submitting comment'); window.location.href='getArticleDetails.php?id=" . $articleId . "';</script>";
+    exit();
+}
 }
 
 // Fetch the article details
