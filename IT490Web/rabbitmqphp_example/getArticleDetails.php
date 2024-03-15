@@ -1,36 +1,42 @@
 <?php
+<?php
 
 require('session.php');
 require('databaseFunctions.php');
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 // Ensure the user is logged in
 checkLogin();
 
-//submit comment
+// Submit comment
 if (isset($_POST['submitComment']) && !empty($_POST['comment']) && isset($_GET['id'])) {
     $commentContent = $_POST['comment'];
     $articleId = $_GET['id'];
-    $username = $_SESSION['username']; // Assuming you store user's ID in session
+    $username = $_SESSION['username']; // Assuming you store user's username in session
 
-    //Setting array and its values to send to RabbitMQ
+    // Setting array and its values to send to RabbitMQ
     $queryValues = array();
-
     $queryValues['type'] = 'create_comment';
     $queryValues['articleId'] = $articleId;
     $queryValues['content'] = $commentContent;
     $queryValues['username'] = $username;
 
-    //Printing Array and executing SQL Publisher function
-    //print_r($queryValues);
+    // Executing SQL Publisher function
     $result = publisher($queryValues);
 
-    //If returned 0, it means it was pushed to the database. Otherwise, echo error
-    if ($result == 0) {
-        // Use JavaScript for redirect to ensure the alert is shown before redirecting
-        echo "<script>alert('Comment successfully made'); window.location.href = 'mainMenu.php';</script>";
+    // Debugging: Output the result for troubleshooting
+    echo '<pre>';
+    var_dump($result);
+    echo '</pre>';
+
+    // If returned 0 or returnCode is "0", it means it was pushed to the database. Otherwise, echo error
+    if (isset($result['returnCode']) && $result['returnCode'] === "0") {
+        echo "<script>alert('Comment successfully made'); window.location.href = 'article-history.php';</script>";
         exit();
     } else {
-        echo "<script>alert('Error'); window.location.href='mainMenu.php';</script>";
+        echo "<script>alert('Error submitting comment'); window.location.href='article-history.php';</script>";
         exit();
     }
 }
