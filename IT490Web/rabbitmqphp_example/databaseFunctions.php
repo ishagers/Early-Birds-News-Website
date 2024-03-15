@@ -347,13 +347,47 @@ function submitComment($articleId, $content, $username)
     return $response;
 }
 
-function fetchTopics()
+function fetchAllTopics()
 {
     $conn = getDatabaseConnection();
-    $sql = "SELECT * FROM topics ORDER BY name";
+    $sql = "SELECT * FROM topics";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function saveUserPreference($username, $topicId)
+{
+    $conn = getDatabaseConnection();
+
+    // First, retrieve the user's ID based on their username
+    $userSql = "SELECT id FROM users WHERE username = :username LIMIT 1";
+    $userStmt = $conn->prepare($userSql);
+    $userStmt->bindParam(':username', $username);
+    $userStmt->execute();
+    $user = $userStmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        $userId = $user['id'];
+
+        // Check if the preference already exists to avoid duplicates
+        $checkSql = "SELECT * FROM user_preferences WHERE user_id = :userId AND topic_id = :topicId LIMIT 1";
+        $checkStmt = $conn->prepare($checkSql);
+        $checkStmt->bindParam(':userId', $userId);
+        $checkStmt->bindParam(':topicId', $topicId);
+        $checkStmt->execute();
+
+        if ($checkStmt->rowCount() == 0) {
+            // If the preference does not exist, insert it
+            $sql = "INSERT INTO user_preferences (user_id, topic_id) VALUES (:userId, :topicId)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':userId', $userId);
+            $stmt->bindParam(':topicId', $topicId);
+            $stmt->execute();
+        }
+    } else {
+        echo "User not found.";
+    }
 }
 
 function clearUserPreferences($username)

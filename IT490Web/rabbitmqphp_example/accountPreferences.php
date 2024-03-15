@@ -4,14 +4,11 @@ require('databaseFunctions.php');
 checkLogin(); // Call the checkLogin function to ensure the user is logged in
 
 // Fetch topics from database
-$topics = fetchTopics();
+$topics = fetchAllTopics();
 
 if (isset($_POST['submitPreferences'])) {
     $selectedTopics = $_POST['topics'] ?? [];
     $username = $_SESSION['username']; // Ensure session username is correctly set
-
-    // Clear existing preferences for a clean slate
-    clearUserPreferences($username);
 
     // Update user preferences
     foreach ($selectedTopics as $topicId) {
@@ -28,7 +25,6 @@ if (isset($_POST['clearPreferences'])) {
     echo "<p>{$message}</p>";
 }
 
-// Add functions clearUserPreferences() and saveUserPreference() as needed
 ?>
 
 <!DOCTYPE html>
@@ -52,14 +48,14 @@ if (isset($_POST['clearPreferences'])) {
             <li><a href="mainMenu.php">Home</a></li>
         </ul>
     </div>
-    <form action="profile.php" method="post">
+    <form action="accountPreferences.php" method="post">
         <div class="topics-selection">
             <h3>Select your topics of interest:</h3>
             <?php foreach ($topics as $topic): ?>
-                <label>
-                    <input type="checkbox" name="topics[]" value="<?php echo $topic['id']; ?>" />
-                    <?php echo htmlspecialchars($topic['name']); ?>
-                </label><br />
+            <label>
+                <input type="checkbox" name="topics[]" value="<?php echo $topic['id']; ?>" />
+                <?php echo htmlspecialchars($topic['name']); ?>
+            </label><br />
             <?php endforeach; ?>
         </div>
         <input type="submit" name="submitPreferences" value="Save Preferences" />
