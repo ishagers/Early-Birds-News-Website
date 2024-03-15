@@ -414,18 +414,10 @@ function fetchUserPreferences($username)
 {
     $conn = getDatabaseConnection();
 
-    // Get the user's ID
-    $userIdQuery = "SELECT id FROM users WHERE username = :username LIMIT 1";
-    $userIdStmt = $conn->prepare($userIdQuery);
-    $userIdStmt->bindParam(':username', $username);
-    $userIdStmt->execute();
-    $user = $userIdStmt->fetch(PDO::FETCH_ASSOC);
-    $userId = $user['id'];
-
-    // Fetch preferences based on the user's ID
-    $sql = "SELECT topic_id FROM user_preferences WHERE user_id = :userId";
+    // Fetch preferences based directly on the username
+    $sql = "SELECT topic_id FROM user_preferences WHERE username = :username";
     $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':userId', $userId);
+    $stmt->bindParam(':username', $username);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_COLUMN, 0); // Fetching as a simple array of topic IDs
 }
