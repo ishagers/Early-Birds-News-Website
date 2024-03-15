@@ -13,28 +13,27 @@ if (!empty($_POST['title']) && !empty($_POST['content'])) {
     $content = $_POST['content'];
     $author = $_SESSION['username'];
 
-    //Setting array and its values to send to RabbitMQ
+    // Setting array and its values to send to RabbitMQ
     $queryValues = array();
-
     $queryValues['type'] = 'create_article';
     $queryValues['title'] = $title;
     $queryValues['content'] = $content;
     $queryValues['author'] = $author;
 
-    //Printing Array and executing SQL Publisher function
-    //print_r($queryValues);
+    // Executing SQL Publisher function
     $result = publisher($queryValues);
-    var_dump($result);
-    //If returned 0, it means it was pushed to the database. Otherwise, echo error
-    if ($result == 0) {
-        // Use JavaScript for redirect to ensure the alert is shown before redirecting
-        echo "<script>alert('Article Successfully Saved');</script>";
+
+    // Check if 'returnCode' in the result is "0"
+    if (isset($result['returnCode']) && $result['returnCode'] === "0") {
+        echo "<script>alert('Article Successfully Saved'); window.location.href = 'mainMenu.php';</script>";
         exit();
     } else {
-        echo "<script>alert('Error');</script>";
+        // You might want to use $result['message'] for a more specific error alert if available
+        echo "<script>alert('Error Saving Article'); window.location.href='../index.php';</script>";
         exit();
     }
 }
+
 
 ?>
 
