@@ -171,8 +171,8 @@ if ($article && $article['status']) {
         // Optionally, display comments and other details here
     } else {
         echo "<p>Article not found.</p>";
-    }
-} else {
+	} 
+else {
     echo "<p>No article ID provided.</p>";
 }
 ?>
