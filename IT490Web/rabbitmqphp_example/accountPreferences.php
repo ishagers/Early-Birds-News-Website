@@ -5,6 +5,7 @@ checkLogin(); // Call the checkLogin function to ensure the user is logged in
 
 // Fetch topics from database
 $topics = fetchAllTopics();
+$currentPreferences = fetchUserPreferences($_SESSION['username']);
 
 if (isset($_POST['submitPreferences'])) {
     $selectedTopics = $_POST['topics'] ?? [];
@@ -48,6 +49,17 @@ if (isset($_POST['clearPreferences'])) {
             <li><a href="mainMenu.php">Home</a></li>
         </ul>
     </div>
+    <div class="topics-selection">
+        <h3>Select your topics of interest:</h3>
+        <?php foreach ($topics as $topic): ?>
+            <label>
+                <input type="checkbox" name="topics[]" value="<?php echo $topic['id']; ?>"
+                    <?php echo in_array($topic['id'], $currentPreferences) ? 'checked' : ''; ?> />
+                <?php echo htmlspecialchars($topic['name']); ?>
+        </label><br />
+        <?php endforeach; ?>
+    </div>
+
     <form action="accountPreferences.php" method="post">
         <div class="topics-selection">
             <h3>Select your topics of interest:</h3>
@@ -61,7 +73,7 @@ if (isset($_POST['clearPreferences'])) {
         <input type="submit" name="submitPreferences" value="Save Preferences" />
     </form>
 
-    <form action="profile.php" method="post">
+    <form action="accountPreferences.php" method="post">
         <input type="submit" name="clearPreferences" value="Clear Preferences" />
     </form>
 

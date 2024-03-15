@@ -393,25 +393,39 @@ function saveUserPreference($username, $topicId)
 function clearUserPreferences($username)
 {
     $conn = getDatabaseConnection();
+    // Get the user's ID first
+    $userIdQuery = "SELECT id FROM users WHERE username = :username LIMIT 1";
+    $userIdStmt = $conn->prepare($userIdQuery);
+    $userIdStmt->bindParam(':username', $username);
+    $userIdStmt->execute();
+    $user = $userIdStmt->fetch(PDO::FETCH_ASSOC);
+    $userId = $user['id'];
 
-    // First, get the user_id from the username
-    $userSql = "SELECT id FROM users WHERE username = :username LIMIT 1";
-    $userStmt = $conn->prepare($userSql);
-    $userStmt->bindParam(':username', $username);
-    $userStmt->execute();
-    $user = $userStmt->fetch(PDO::FETCH_ASSOC);
+    // Delete preferences
+    $sql = "DELETE FROM user_preferences WHERE user_id = :userId";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':userId', $userId);
+    $stmt->execute();
 
-    if ($user) {
-        $userId = $user['id'];
+    return "Your preferences have been cleared.";
+}
 
-        // Now, delete all preferences for this user
-        $sql = "DELETE FROM user_preferences WHERE user_id = :userId";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':userId', $userId);
-        $stmt->execute();
+function fetchUserPreferences($username)
+{
+    $conn = getDatabaseConnection();
 
-        return "Preferences cleared successfully.";
-    } else {
-        return "Error.";
-    }
+    // Get the user's ID
+    $userIdQuery = "SELECT id FROM users WHERE username = :username LIMIT 1";
+    $userIdStmt = $conn->prepare($userIdQuery);
+    $userIdStmt->bindParam(':username', $username);
+    $userIdStmt->execute();
+    $user = $userIdStmt->fetch(PDO::FETCH_ASSOC);
+    $userId = $user['id'];
+
+    // Fetch preferences based on the user's ID
+    $sql = "SELECT topic_id FROM user_preferences WHERE user_id = :userId";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':userId', $userId);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_COLUMN, 0); // Fetching as a simple array of topic IDs
 }
