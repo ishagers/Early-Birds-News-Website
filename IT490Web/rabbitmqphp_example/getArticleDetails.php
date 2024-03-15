@@ -4,7 +4,6 @@ require('session.php');
 require('databaseFunctions.php');
 require_once('SQLPublish.php');
 
-
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -34,14 +33,13 @@ if (isset($_POST['submitComment']) && !empty($_POST['comment']) && isset($_GET['
 
     // If returned 0 or returnCode is "0", it means it was pushed to the database. Otherwise, echo error
     if (isset($result['returnCode']) && $result['returnCode'] === "0") {
-    echo "<script>alert('Comment successfully made'); window.location.href =   'getArticleDetails.php?id=" . $articleId . "';</script>";
-    exit();
+        echo "<script>alert('Comment successfully made'); window.location.href = 'mainMenu.php';</script>";
+        exit();
     } else {
-    echo "<script>alert('Error submitting comment'); window.location.href='getArticleDetails.php?id=" . $articleId . "';</script>";
-    exit();
+        echo "<script>alert('Error submitting comment'); window.location.href='mainMenu.php';</script>";
+        exit();
+    }
 }
-}
-
 // Fetch the article details
 if (isset($_GET['id'])) {
     $articleId = $_GET['id'];
