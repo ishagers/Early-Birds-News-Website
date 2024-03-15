@@ -1,5 +1,4 @@
 <?php
-<?php
 
 require('session.php');
 require('databaseFunctions.php');
@@ -93,3 +92,5 @@ if (isset($_GET['id'])) {
 } else {
     echo "<p>No article ID provided.</p>";
 }
+
+?>
