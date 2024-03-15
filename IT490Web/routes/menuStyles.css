@@ -220,3 +220,40 @@ body {
         .article-form input[type="submit"]:hover {
             background-color: #0056b3; /* Darker blue on hover */
         }
+
+.topics-selection {
+    border: 2px solid #007bff; /* Blue border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px;
+    margin: 20px 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three columns */
+    gap: 20px; /* Space between grid items */
+    background-color: #f0f8ff; /* Light blue background */
+}
+
+    .topics-selection label {
+        display: block; /* Make labels block level for checkbox alignment */
+        padding: 5px; /* Padding around labels */
+        cursor: pointer; /* Cursor pointer on hover over labels */
+    }
+
+.form-buttons {
+    display: flex;
+    justify-content: space-between; /* Space out buttons */
+    margin-top: 20px;
+}
+
+    .form-buttons input[type="submit"] {
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        background-color: #007bff;
+        color: white;
+    }
+
+        .form-buttons input[type="submit"]:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }

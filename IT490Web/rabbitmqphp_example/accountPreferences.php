@@ -59,17 +59,15 @@ if (isset($_POST['clearPreferences'])) {
             <h3>Select your topics of interest:</h3>
             <?php foreach ($topics as $topic): ?>
                 <label>
-                    <input type="checkbox" name="topics[]" value="<?php echo $topic['id']; ?>"
-                        <?php echo in_array($topic['id'], $currentPreferences) ? 'checked' : ''; ?> />
+                    <input type="checkbox" name="topics[]" value="<?php echo $topic['id']; ?>" <?php echo in_array($topic['id'], $currentPreferences) ? 'checked' : ''; ?> />
                     <?php echo htmlspecialchars($topic['name']); ?>
-                </label><br />
+                </label>
             <?php endforeach; ?>
         </div>
-        <input type="submit" name="submitPreferences" value="Save Preferences" />
-    </form>
-
-    <form action="accountPreferences.php" method="post">
-        <input type="submit" name="clearPreferences" value="Clear Preferences" />
+        <div class="form-buttons">
+            <input type="submit" name="submitPreferences" value="Save Preferences" />
+            <input type="submit" name="clearPreferences" value="Clear Preferences" />
+        </div>
     </form>
 
     <div class="logout-button">
