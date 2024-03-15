@@ -45,7 +45,7 @@ $articleData = fetchRecentArticles(10);
         <ul>
             <li><a href="writeArticle.php">Create Article</a></li>
             <li><a href="article-history.php">Article History</a></li>
-            <li><a href="accountPreferances.php">Profile Settings</a></li>
+            <li><a href="accountPreferences.php">Profile Settings</a></li>
         </ul>
     </div>
 

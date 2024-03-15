@@ -28,10 +28,10 @@ if (!empty($_POST['title']) && !empty($_POST['content'])) {
     //If returned 0, it means it was pushed to the database. Otherwise, echo error
     if ($result == 0) {
         // Use JavaScript for redirect to ensure the alert is shown before redirecting
-        echo "<script>alert('Article Successfully Saved'); window.location.href = 'mainMenu.php';</script>";
+        echo "<script>alert('Article Successfully Saved');</script>";
         exit();
     } else {
-        echo "<script>alert('Error'); window.location.href='../index.php';</script>";
+        echo "<script>alert('Error');</script>";
         exit();
     }
 }
@@ -56,7 +56,7 @@ if (!empty($_POST['title']) && !empty($_POST['content'])) {
         <ul>
             <li><a href="article-history.php">Article History</a></li>
             <li><a href="keyword-settings.php">Keyword Settings</a></li>
-            <li><a href="account-settings.php">Account Settings</a></li>
+            <li><a href="accountPreferences.php">Profile Settings</a></li>
             <li><a href="mainMenu.php">Home</a></li>
         </ul>
     </div>
