@@ -346,3 +346,38 @@ function submitComment($articleId, $content, $username)
 
     return $response;
 }
+
+function fetchTopics()
+{
+    $conn = getDatabaseConnection();
+    $sql = "SELECT * FROM topics ORDER BY name";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function clearUserPreferences($username)
+{
+    $conn = getDatabaseConnection();
+
+    // First, get the user_id from the username
+    $userSql = "SELECT id FROM users WHERE username = :username LIMIT 1";
+    $userStmt = $conn->prepare($userSql);
+    $userStmt->bindParam(':username', $username);
+    $userStmt->execute();
+    $user = $userStmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        $userId = $user['id'];
+
+        // Now, delete all preferences for this user
+        $sql = "DELETE FROM user_preferences WHERE user_id = :userId";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':userId', $userId);
+        $stmt->execute();
+
+        return "Preferences cleared successfully.";
+    } else {
+        return "Error.";
+    }
+}

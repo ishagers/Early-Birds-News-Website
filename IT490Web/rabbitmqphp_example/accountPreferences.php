@@ -3,27 +3,39 @@ require('session.php'); // Adjust the path as necessary
 require('databaseFunctions.php');
 checkLogin(); // Call the checkLogin function to ensure the user is logged in
 
+// Fetch topics from database
+$topics = fetchTopics();
+
 if (isset($_POST['submitPreferences'])) {
     $selectedTopics = $_POST['topics'] ?? [];
     $username = $_SESSION['username']; // Ensure session username is correctly set
 
+    // Clear existing preferences for a clean slate
+    clearUserPreferences($username);
+
     // Update user preferences
     foreach ($selectedTopics as $topicId) {
-        saveUserPreference($username, $topicId); // Directly use username
+        saveUserPreference($username, $topicId); // Function to save preference
     }
 
     echo "<p>Preferences updated successfully!</p>";
     // Or redirect to another page
 }
 
+if (isset($_POST['clearPreferences'])) {
+    // Clear user preferences
+    $message = clearUserPreferences($_SESSION['username']);
+    echo "<p>{$message}</p>";
+}
 
+// Add functions clearUserPreferences() and saveUserPreference() as needed
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Early Bird Articles - Create Article</title>
+    <title>Early Bird Articles - User Preferences</title>
     <link rel="stylesheet" href="../routes/menuStyles.css" />
 </head>
 <body>
@@ -51,10 +63,14 @@ if (isset($_POST['submitPreferences'])) {
             <?php endforeach; ?>
         </div>
         <input type="submit" name="submitPreferences" value="Save Preferences" />
-    </form> 
+    </form>
+
+    <form action="profile.php" method="post">
+        <input type="submit" name="clearPreferences" value="Clear Preferences" />
+    </form>
 
     <div class="logout-button">
-            <a href="logout.php">Logout</a>
+        <a href="logout.php">Logout</a>
     </div>
 </body>
 </html>
