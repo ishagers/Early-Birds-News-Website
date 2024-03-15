@@ -125,8 +125,11 @@ if (isset($_POST['submitComment']) && !empty($_POST['comment']) && isset($articl
     }
 
 }
+
 if ($article && $article['status']) {
 
+     // Article title:
+         echo "<h1>" . htmlspecialchars($article['article']['title']) . "</h1>"; // Added this line
     // Ratings display logic...
 
     $averageRatingResponse = getAverageRatingByArticleId($articleId);
