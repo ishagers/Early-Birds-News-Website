@@ -81,7 +81,7 @@ if (isset($_GET['id'])) {
 
         echo "<div id='submit-comment'>";
         echo "<h3>Add a comment</h3>";
-        echo "<form action='mainMenu.php?id=" . htmlspecialchars($articleId) . "' method='post'>";
+        echo "<form action='getArticleDetails.php?id=" . htmlspecialchars($articleId) . "' method='post'>";
         echo "<textarea name='comment' required></textarea>";
         echo "<button type='submit' name='submitComment'>Submit Comment</button>";
         echo "</form>";
