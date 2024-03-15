@@ -32,10 +32,10 @@ CREATE TABLE topics (
 );
 
 CREATE TABLE user_preferences (
-    user_id INT,
+    username VARCHAR(255),
     topic_id INT,
-    PRIMARY KEY(user_id, topic_id),
-    FOREIGN KEY(user_id) REFERENCES users(id),
+    PRIMARY KEY(username, topic_id),
+    FOREIGN KEY(username) REFERENCES users(username), -- Ensure there's a FOREIGN KEY constraint on users(username) if usernames are unique
     FOREIGN KEY(topic_id) REFERENCES topics(id)
 );
 
