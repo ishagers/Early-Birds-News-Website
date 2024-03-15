@@ -17,15 +17,24 @@ $username = $_SESSION['username'];
 try {
     $pdo = getDatabaseConnection(); // Using the getDatabaseConnection function
 
-    // Corrected SQL query
-    $stmt = $pdo->prepare('SELECT a.id AS article_id, a.title, a.content, a.publication_date FROM articles a JOIN user_article_views uav ON a.id = uav.article_id JOIN users u ON uav.user_id = u.id WHERE u.username = :username ORDER BY a.publication_date DESC');
+    $stmt = $pdo->prepare('SELECT a.id AS article_id, a.title, a.content, a.publication_date 
+                           FROM articles AS a 
+                           JOIN user_article_views uav ON a.id = uav.article_id 
+                           JOIN users u ON uav.user_id = u.id 
+                           WHERE u.username = :username 
+                           ORDER BY a.publication_date DESC');
     $stmt->execute(['username' => $username]);
 
     $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Debugging: Output the number of articles found
+    echo "Articles found: " . count($articles);
 
 } catch (PDOException $e) {
     die("Could not connect to the database: " . $e->getMessage());
 }
+
+
 
 ?>
 
