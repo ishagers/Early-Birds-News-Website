@@ -35,8 +35,9 @@ if (isset($_POST['make_private']) || isset($_POST['make_public'])) {
 
 <?php foreach ($userArticles as $article): ?>
     <div class="article">
-        <h3><?php echo isset($article['title']) ? htmlspecialchars($article['title']) : 'No title'; ?></h3>
-        <p><?php echo isset($article['content']) ? nl2br(htmlspecialchars($article['content'])) : 'No content'; ?></p>
+        echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
+        echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
+        echo "<small>Published on: " . htmlspecialchars($article['article']['publication_date']) . "</small>";
         <?php if (isset($article['is_private']) && $article['is_private']): ?>
             <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                 <input type="hidden" name="article_id" value="<?php echo htmlspecialchars($article['id']); ?>" />
