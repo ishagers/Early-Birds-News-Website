@@ -1,5 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Articles</title>
+</head>
+<body>
+    <form action="" method="GET">
+        <input type="text" name="query" placeholder="Search for articles...">
+        <input type="submit" value="Search">
+    </form>
+
 <?php
-echo "Script started.<br>";
+
+echo "Testing the Search Article.<br>";
 
 // MySQL connection parameters
 $servername = "10.147.17.233";
@@ -37,7 +50,7 @@ if ($result === false) {
     if ($result->num_rows > 0) {
         // Output the articles
         while($row = $result->fetch_assoc()) {
-            echo "ID: " . $row["id"]. " - Title: " . $row["title"]. " - Content: " . substr($row["content"], 0, 100). "<br>";
+            echo "ID: " . $row["id"]. " - Title: <a href='articleDetails.php?id=" . $row["id"] . "'>" . $row["title"]. "</a> - Content: " . substr($row["content"], 0, 100). "..." . "<br>";
         }
     } else {
         echo "No articles found.<br>";
@@ -46,4 +59,9 @@ if ($result === false) {
 
 // Close connection
 $conn->close();
+
 ?>
+
+</body>
+</html>
+
