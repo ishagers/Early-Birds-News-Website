@@ -1,24 +1,28 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
-include 'newsFetcher.php';
+include 'newsFetcher.php'; // Ensure this file exists
 require('session.php');
 require('databaseFunctions.php');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-console.log('Start of getarticledetails');
-    function consoleLog($message) {
+
+// Define the consoleLog function at the beginning of your script
+function consoleLog($message) {
     // Sanitize the message to escape any single quotes
     $sanitizedMessage = str_replace("'", "\'", $message);
     // Generate and echo a JavaScript snippet that logs to the console
     echo "<script>console.log('$sanitizedMessage');</script>";
 }
 
+// Use the consoleLog function to log messages
+consoleLog("Start of getArticleDetails");
+
 if (isset($_GET['id'])) {
     $articleId = $_GET['id'];
     $username = $_SESSION['username']; // Assuming username is stored in session upon login
     $article = getArticleById($articleId); // Fetch the article details
-    console.log('at debug 1');
-    consoleLog("Debug information: 1");
+    consoleLog("At debug 1");
+
     // Handle comment submission
     if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {
         $commentContent = $_POST['comment'];
