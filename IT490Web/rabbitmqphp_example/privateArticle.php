@@ -49,16 +49,16 @@ $userArticles = fetchUserArticles($username, 10, 'all');
 
     <div class="articles-container">
         <?php foreach ($userArticles as $article): ?>
-        <div class="article">
-            <h3><?php echo htmlspecialchars($article['title']); ?></h3>
-            <p><?php echo nl2br(htmlspecialchars($article['content'])); ?></p>
-            <form method="post">
-                <input type="hidden" name="article_id" value="<?php echo $article['id']; ?>" />
-                <?php if ($article['is_private']): ?>
-                <button type="submit" name="make_public">Make Public</button>
-                <?php else: ?>
-                <button type="submit" name="make_private">Make Private</button>
-                <?php endif; ?>
+            <div class="article">
+                <h3><?php echo htmlspecialchars($article['title'] ?? 'No title provided'); ?></h3>
+                <p><?php echo nl2br(htmlspecialchars($article['content'] ?? 'No content provided')); ?></p>
+                <form method="post">
+                    <input type="hidden" name="article_id" value="<?php echo htmlspecialchars($article['id']); ?>" />
+                    <?php if (!empty($article['is_private']) && $article['is_private'] == 1): ?>
+                        <button type="submit" name="make_public">Make Public</button>
+                    <?php else: ?>
+                        <button type="submit" name="make_private">Make Private</button>
+                    <?php endif; ?>
             </form>
         </div>
         <?php endforeach; ?>
