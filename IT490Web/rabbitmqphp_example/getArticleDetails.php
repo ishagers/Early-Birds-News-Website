@@ -3,25 +3,26 @@ include 'newsFetcher.php';
 require('session.php');
 require('databaseFunctions.php');
 
- if (isset($_GET['id'])) {
-	if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {
-	    $commentContent = $_POST['comment'];
-	    // Assuming $userId is fetched earlier as shown
-	    $result = submitComment($articleId, $commentContent, $username);
-
-	    // Redirect to the home menu after showing an alert with the result message
-	    echo "<script>alert('".$result['message']."'); window.location.href = 'mainMenu.php';</script>";
 if (isset($_GET['id'])) {
-	}
+    $articleId = $_GET['id'];
+    $username = $_SESSION['username']; // Assuming username is stored in session upon login
+    $article = getArticleById($articleId); // Fetch the article details
 
-	if ($article && $article['status']) {
-	    // Your existing code to display the article, comments, rating form, etc.
-	}
-if ($article && $article['status']) {
-    // Article title, content, and publication date display logic...
-if ($article && $article['status']) {
-    echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
-    echo "<small>Published on: " . htmlspecialchars($article['article']['publication_date']) . "</small>";
+    // Handle comment submission
+    if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {
+        $commentContent = $_POST['comment'];
+        $result = submitComment($articleId, $commentContent, $username); // Assuming submitComment uses username
+
+        // Redirect with message after submission
+        echo "<script>alert('" . htmlspecialchars($result['message']) . "'); window.location.href = 'mainMenu.php';</script>";
+        exit();
+    }
+
+    if ($article && $article['status']) {
+        // Display the article content, related news, and rating form
+        echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
+        echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
+        echo "<small>Published on: " . htmlspecialchars($article['article']['publication_date']) . "</small>";
 
 	$apiKey = '898d8c1625884af1a9774e9662cb980d';
 	$newsUrl = 'https://newsapi.org/v2/top-headlines?country=us&apiKey=' . $apiKey;
