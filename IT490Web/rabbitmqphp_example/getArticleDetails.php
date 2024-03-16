@@ -15,7 +15,7 @@ $articleId = $userId = null;
 
 // Get article details if an ID is provided
 if (isset($_GET['id'])) {
-    $articleId = $_GET['id'];
+    $article = getArticleById($articleId);
     try {
         $pdo = getDatabaseConnection();
         $userStmt = $pdo->prepare("SELECT id FROM users WHERE username = :username");
