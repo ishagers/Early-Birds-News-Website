@@ -31,7 +31,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
         <li><a href="writeArticle.php">Create Article</a></li>
         <li><a href="article-history.php">Article History</a></li>
         <li><a href="accountPreferences.php">Profile Preferences</a></li>
-        <li><a href="RatingAndPreference.php">RatingAndPreference</a></li>
+        <li><a href="privateArticle.php">Private</a></li>
         <li><a href="SearchArticles.php">SearchArticles</a></li>
         <li><a href="mainMenu.php">Home</a></li>
     </ul>

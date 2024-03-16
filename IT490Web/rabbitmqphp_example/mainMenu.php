@@ -3,7 +3,9 @@ require('session.php');
 require('databaseFunctions.php');
 checkLogin();
 
-$articleData = fetchRecentArticles(10);
+$username = $_SESSION['username'];
+$privateOnly = false; 
+$articleData = fetchUserArticles($username, 10, $privateOnly);
 ?>
 <!DOCTYPE html>
 <html lang="en">

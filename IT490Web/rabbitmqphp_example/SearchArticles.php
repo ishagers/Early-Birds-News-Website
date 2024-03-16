@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Search Articles</title>
+    <link rel="stylesheet" href="../routes/menuStyles.css" />
 </head>
 <body>
+
+    <?php require('nav.php'); ?>
     <form action="" method="GET">
-        <input type="text" name="query" placeholder="Search for articles...">
-        <input type="submit" value="Search">
+        <input type="text" name="query" placeholder="Search for articles..." />
+        <input type="submit" value="Search" />
     </form>
 
-<?php
+    <?php
 
 echo "Testing the Search Article.<br>";
 
@@ -60,7 +63,7 @@ if ($result === false) {
 // Close connection
 $conn->close();
 
-?>
+    ?>
 
 </body>
 </html>
