@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $username = $_SESSION['username'];
 
 // Fetch all articles for the logged-in user
-$userArticles = fetchUserArticles($username);
+$userArticles = fetchUserArticles($username, 10, 'all');
 ?>
 
 <!DOCTYPE html>

@@ -146,78 +146,49 @@ function createArticle($title, $content, $author)
     return $response;
 }
 
-function fetchUserArticles($username)
+function fetchUserArticles($username, $limit = 15, $filter = 'all')
 {
-    $response = ['status' => false, 'articles' => [], 'message' => ''];
+    $conn = getDatabaseConnection();
 
-    try {
-        // Get the database connection
-        $conn = getDatabaseConnection();
+    // Start by getting the user ID from the username to query articles by author_id
+    $userSql = "SELECT id FROM users WHERE username = :username LIMIT 1";
+    $userStmt = $conn->prepare($userSql);
+    $userStmt->bindParam(':username', $username);
+    $userStmt->execute();
+    $user = $userStmt->fetch(PDO::FETCH_ASSOC);
 
-        // SQL to fetch the user's ID from their username
-        $userIdSql = "SELECT id FROM users WHERE username = :username";
-        $userIdStmt = $conn->prepare($userIdSql);
-        $userIdStmt->execute([':username' => $username]);
-        $user = $userIdStmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$user) {
-            // If no user is found, return with a message
-            $response['message'] = "User not found.";
-            return $response;
-        }
-
-        // SQL to fetch articles that belong to the user
-        $articlesSql = "SELECT id, title, content, publication_date, is_private
-                        FROM articles
-                        WHERE author_id = :author_id
-                        ORDER BY publication_date DESC";
-        $articlesStmt = $conn->prepare($articlesSql);
-        $articlesStmt->execute([':author_id' => $user['id']]);
-        $articles = $articlesStmt->fetchAll(PDO::FETCH_ASSOC);
-
-        if ($articles) {
-            // If articles are found, update the response
-            $response['status'] = true;
-            $response['articles'] = $articles;
-            $response['message'] = "User articles fetched successfully.";
-        } else {
-            // If no articles are found, return with a message
-            $response['message'] = "No articles found for user.";
-        }
-
-    } catch (PDOException $e) {
-        $response['message'] = "Error: " . $e->getMessage();
+    if (!$user) {
+        return ['status' => false, 'message' => "User not found", 'articles' => []];
     }
 
-    return $response;
-}
+    $userId = $user['id'];
 
-
-// Toggle article privacy
-function toggleArticlePrivacy($articleId, $makePrivate)
-{
-    $response = ['status' => false, 'message' => ''];
-    $newPrivacySetting = $makePrivate ? 1 : 0;
-
-    try {
-        $conn = getDatabaseConnection();
-        $sql = "UPDATE articles SET is_private = :is_private WHERE id = :article_id";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':article_id', $articleId);
-        $stmt->bindParam(':is_private', $newPrivacySetting, PDO::PARAM_INT);
-        $stmt->execute();
-
-        if ($stmt->rowCount() > 0) {
-            $response['status'] = true;
-            $response['message'] = $makePrivate ? "Article set to private successfully" : "Article set to public successfully";
-        } else {
-            $response['message'] = "No changes made or article not found";
-        }
-    } catch (PDOException $e) {
-        $response['message'] = "Error: " . $e->getMessage();
+    // Adjust the SQL query based on the filter provided for article visibility
+    $privacyClause = "";
+    if ($filter === 'private') {
+        $privacyClause = "AND is_private = 1";
+    } elseif ($filter === 'public') {
+        $privacyClause = "AND is_private = 0";
     }
+    // No clause needed for 'all', as it will fetch both private and public
 
-    return $response;
+    $sql = "SELECT id, title, content, author_id, is_private, publication_date
+FROM articles
+WHERE author_id = :userId {$privacyClause}
+ORDER BY publication_date DESC
+LIMIT :limit";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return [
+        'status' => !empty($articles),
+        'articles' => $articles,
+        'message' => !empty($articles) ? "Articles fetched successfully" : "No articles found"
+    ];
 }
 
 function getArticleById($articleId)
@@ -448,24 +419,28 @@ function fetchUserPreferences($username)
     return $stmt->fetchAll(PDO::FETCH_COLUMN, 0); // Fetching as a simple array of topic IDs
 }
 
-function toggleArticlePrivacy($articleId, $makePrivate)
+function setArticlePrivacy($articleId, $username, $makePrivate)
 {
     $response = ['status' => false, 'message' => ''];
-    $newPrivacySetting = $makePrivate ? 1 : 0;
 
     try {
         $conn = getDatabaseConnection();
-        $sql = "UPDATE articles SET is_private = :is_private WHERE id = :article_id";
+        $isPrivate = $makePrivate ? 1 : 0;
+
+        // Update the query to check for the author's username as well.
+        $sql = "UPDATE articles SET is_private = :is_private
+                WHERE id = :article_id AND author_id = (SELECT id FROM users WHERE username = :username)";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':article_id', $articleId);
-        $stmt->bindParam(':is_private', $newPrivacySetting, PDO::PARAM_INT);
+        $stmt->bindParam(':is_private', $isPrivate);
+        $stmt->bindParam(':username', $username);
         $stmt->execute();
 
         if ($stmt->rowCount() > 0) {
             $response['status'] = true;
-            $response['message'] = $makePrivate ? "Article set to private successfully" : "Article set to public successfully";
+            $response['message'] = $makePrivate ? "Article set to private successfully." : "Article set to public successfully.";
         } else {
-            $response['message'] = "No changes made or article not found";
+            $response['message'] = "No changes made or article not found for this user.";
         }
     } catch (PDOException $e) {
         $response['message'] = "Error: " . $e->getMessage();
@@ -473,3 +448,4 @@ function toggleArticlePrivacy($articleId, $makePrivate)
 
     return $response;
 }
+

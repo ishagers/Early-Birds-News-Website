@@ -4,8 +4,8 @@ require('databaseFunctions.php');
 checkLogin();
 
 $username = $_SESSION['username'];
-$privateOnly = false; 
-$articleData = fetchUserArticles($username);
+$privateOnly = false;
+$articleData = fetchUserArticles($username, 10, 'public');
 ?>
 <!DOCTYPE html>
 <html lang="en">
