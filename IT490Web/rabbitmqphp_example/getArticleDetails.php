@@ -11,21 +11,16 @@ error_reporting(E_ALL);
 checkLogin();
 $username = $_SESSION['username'];
 
-$articleId = $userId = null;
+$articleId = null;
+$article = null;
 
 // Get article details if an ID is provided
 if (isset($_GET['id'])) {
+    $articleId = $_GET['id']; // This line needs to be before you try to fetch the article
     $article = getArticleById($articleId);
-    try {
+     try {
         $pdo = getDatabaseConnection();
-        $userStmt = $pdo->prepare("SELECT id FROM users WHERE username = :username");
-        $userStmt->execute(['username' => $username]);
-        $user = $userStmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($user) {
-            $userId = $user['id'];
-            $article = getArticleById($articleId, $pdo); // Make sure this function is defined and works
-        }
+        $article = getArticleById($articleId, $pdo); // Corrected call to getArticleById
     } catch (PDOException $e) {
         die("Could not connect to the database: " . $e->getMessage());
     }
