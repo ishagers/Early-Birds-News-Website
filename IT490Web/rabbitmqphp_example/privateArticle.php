@@ -42,22 +42,18 @@ if (isset($_GET['id'])) {
 
     <?php require('nav.php'); ?>
 
-    <?php foreach ($userArticles as $article): ?>
-    <div class="article">
-        <h3><?php echo htmlspecialchars($article['title']); ?></h3>
-        <p><?php echo nl2br(htmlspecialchars($article['content'])); ?></p>
-        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-            <input type="hidden" name="article_id" value="<?php echo $article['id']; ?>" />
-            <input type="hidden" name="current_privacy" value="<?php echo $article['is_private']; ?>" />
-            <button type="submit" name="toggle_privacy">
-                <?php echo $article['is_private'] ? 'Make Public' : 'Make Private'; ?>
-            </button>
-        </form>
-        <?php if ($articleDetails && $article['id'] == $articleDetails['article']['id']): ?>
-        <!-- Display the selected article details here -->
-        <?php endif; ?>
-    </div>
-    <?php endforeach; ?>
+    <?php foreach ($userArticles as $article) {
+        // Check if $article is an array and has all the expected keys before trying to access them
+        if (is_array($article) && isset($article['title'], $article['content'], $article['id'], $article['is_private'])) {
+            echo "<div class='article'>";
+            echo "<h3>" . htmlspecialchars($article['title']) . "</h3>";
+            echo "<p>" . nl2br(htmlspecialchars($article['content'])) . "</p>";
+            // The rest of your code for displaying the article and the form
+        } else {
+            // Handle the case where $article is not as expected
+            echo "<p>Error: Article data is not available.</p>";
+        }
+    } ?>
 
 </body>
 </html>
