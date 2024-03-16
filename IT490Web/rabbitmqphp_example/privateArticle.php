@@ -1,33 +1,46 @@
 <?php
-// Start the session and include necessary files
 session_start();
-require('session.php');
-require('databaseFunctions.php');
-require_once('SQLPublish.php');
+
 // Check if the user is logged in
-checkLogin();
-
-// Handle the privacy toggle request if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $articleId = $_POST['article_id'] ?? null;
-    $makePrivate = isset($_POST['make_private']);
-
-    // Call your function to toggle the article's privacy
-    $privacyResult = toggleArticlePrivacy($articleId, $makePrivate);
-
-    // You can store a message in the session to show after redirecting
-    $_SESSION['message'] = $privacyResult['message'];
-
-    // Redirect to avoid form resubmission issues
-    header('Location: userArticles.php');
+if (!isset($_SESSION['username'])) {
+    // Redirect to login page if not logged in
+    header('Location: index.php');
     exit();
 }
 
-// Retrieve the logged-in user's username from the session
+// Assuming you're using databaseFunctions.php for database operations
+require_once('databaseFunctions.php');
+
 $username = $_SESSION['username'];
 
-// Fetch all articles for the logged-in user
-$userArticles = fetchUserArticles($username, 10, 'all');
+try {
+    $pdo = getDatabaseConnection(); // Using the getDatabaseConnection function
+
+    // Fetch all articles (both private and public) for the logged-in user
+    $stmt = $pdo->prepare('SELECT id, title, content, is_private, publication_date
+                           FROM articles
+                           WHERE author_id = (SELECT id FROM users WHERE username = :username)
+                           ORDER BY publication_date DESC');
+    $stmt->execute(['username' => $username]);
+
+    $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Toggle privacy if the request comes from a form submission
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $articleId = $_POST['article_id'] ?? null;
+        if (isset($_POST['make_private'])) {
+            setArticlePrivate($articleId); // Implement this function to set the article as private
+        } elseif (isset($_POST['make_public'])) {
+            setArticlePublic($articleId); // Implement this function to set the article as public
+        }
+        header('Location: ' . $_SERVER['PHP_SELF']); // Refresh the page to reflect changes
+        exit();
+    }
+
+} catch (PDOException $e) {
+    die("Could not connect to the database: " . $e->getMessage());
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -41,30 +54,24 @@ $userArticles = fetchUserArticles($username, 10, 'all');
 
     <?php require('nav.php'); ?>
 
-    <!-- Display a session message if set -->
-    <?php if (isset($_SESSION['message'])): ?>
-    <p><?php echo $_SESSION['message']; ?></p>
-    <?php unset($_SESSION['message']); // Clear the message after displaying ?>
-    <?php endif; ?>
-
+    <h1>Your Articles</h1>
     <div class="articles-container">
-        <?php foreach ($userArticles as $article): ?>
-            <div class="article">
-                <h3><?php echo htmlspecialchars($article['title'] ?? 'No title provided'); ?></h3>
-                <p><?php echo nl2br(htmlspecialchars($article['content'] ?? 'No content provided')); ?></p>
+        <?php foreach ($articles as $article): ?>
+                <div class="article">
+                    <h2><?= htmlspecialchars((string) $article['title']) ?></h2>
+                    <p><?= nl2br(htmlspecialchars((string)$article['content'])) ?></p>
+                <small>Published on: <?= htmlspecialchars($article['publication_date']) ?></small>
                 <form method="post">
-                    <input type="hidden" name="article_id" value="<?php echo htmlspecialchars($article['id']); ?>" />
-                    <?php if (!empty($article['is_private']) && $article['is_private'] == 1): ?>
+                    <input type="hidden" name="article_id" value="<?= $article['id'] ?>" />
+                    <?php if ($article['is_private']): ?>
                         <button type="submit" name="make_public">Make Public</button>
                     <?php else: ?>
                         <button type="submit" name="make_private">Make Private</button>
                     <?php endif; ?>
-            </form>
-        </div>
+                </form>
+            </div>
         <?php endforeach; ?>
     </div>
-
-    <!-- Add more of your HTML as needed -->
 
 </body>
 </html>

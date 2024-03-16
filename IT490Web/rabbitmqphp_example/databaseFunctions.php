@@ -419,33 +419,49 @@ function fetchUserPreferences($username)
     return $stmt->fetchAll(PDO::FETCH_COLUMN, 0); // Fetching as a simple array of topic IDs
 }
 
-function setArticlePrivacy($articleId, $username, $makePrivate)
+
+function setArticlePrivate($articleId, $username)
 {
     $response = ['status' => false, 'message' => ''];
-
     try {
         $conn = getDatabaseConnection();
-        $isPrivate = $makePrivate ? 1 : 0;
-
-        // Update the query to check for the author's username as well.
-        $sql = "UPDATE articles SET is_private = :is_private
-                WHERE id = :article_id AND author_id = (SELECT id FROM users WHERE username = :username)";
+        $sql = "UPDATE articles SET is_private = 1 WHERE id = :article_id AND author_id = (SELECT id FROM users WHERE username = :username)";
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':article_id', $articleId);
-        $stmt->bindParam(':is_private', $isPrivate);
-        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':article_id', $articleId, PDO::PARAM_INT);
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
         $stmt->execute();
 
         if ($stmt->rowCount() > 0) {
             $response['status'] = true;
-            $response['message'] = $makePrivate ? "Article set to private successfully." : "Article set to public successfully.";
+            $response['message'] = "Article set to private successfully.";
         } else {
-            $response['message'] = "No changes made or article not found for this user.";
+            $response['message'] = "Failed to update article privacy or article not found.";
         }
     } catch (PDOException $e) {
-        $response['message'] = "Error: " . $e->getMessage();
+        $response['message'] = "Database error: " . $e->getMessage();
     }
-
     return $response;
 }
 
+function setArticlePublic($articleId, $username)
+{
+    $response = ['status' => false, 'message' => ''];
+    try {
+        $conn = getDatabaseConnection();
+        $sql = "UPDATE articles SET is_private = 0 WHERE id = :article_id AND author_id = (SELECT id FROM users WHERE username = :username)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':article_id', $articleId, PDO::PARAM_INT);
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            $response['status'] = true;
+            $response['message'] = "Article set to public successfully.";
+        } else {
+            $response['message'] = "Failed to update article privacy or article not found.";
+        }
+    } catch (PDOException $e) {
+        $response['message'] = "Database error: " . $e->getMessage();
+    }
+    return $response;
+}
