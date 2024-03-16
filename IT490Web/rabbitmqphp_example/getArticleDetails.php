@@ -71,8 +71,11 @@ if (isset($_GET['id'])) {
     echo "</form>";
     echo "</div>";
 
+ } else {
+        echo "<p>Article not found.</p>";
+    }
 } else {
-    echo "<p>Article not found.</p>";
+    echo "<p>No article ID provided.</p>";
 }
 
 ?>
