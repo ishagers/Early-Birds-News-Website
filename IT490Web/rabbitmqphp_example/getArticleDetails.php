@@ -9,7 +9,7 @@ if (isset($_GET['id'])) {
     $articleId = $_GET['id'];
     $username = $_SESSION['username']; // Assuming username is stored in session upon login
     $article = getArticleById($articleId); // Fetch the article details
-
+    consoleLog("Debug information: 1");
     // Handle comment submission
     if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {
         $commentContent = $_POST['comment'];
@@ -17,21 +17,23 @@ if (isset($_GET['id'])) {
 
         // Redirect with message after submission
         echo "<script>alert('" . htmlspecialchars($result['message']) . "'); window.location.href = 'mainMenu.php';</script>";
+        consoleLog("Debug information: 2");
         exit();
     }
-
+    consoleLog("Debug information: 3");
     if ($article && $article['status']) {
         // Display the article content, related news, and rating form
         echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
         echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
         echo "<small>Published on: " . htmlspecialchars($article['article']['publication_date']) . "</small>";
-
+        consoleLog("Debug information: 4");
 	$apiKey = '898d8c1625884af1a9774e9662cb980d';
 	$newsUrl = 'https://newsapi.org/v2/top-headlines?country=us&apiKey=' . $apiKey;
 
 	// Use file_get_contents or cURL to fetch news data
 	$response = file_get_contents($newsUrl);
 	if ($response) {
+        consoleLog("Debug information: 5");
 	    $newsData = json_decode($response, true);
 	    if ($newsData['status'] == 'ok') {
 		echo "<div class='news-section'>";
@@ -44,6 +46,7 @@ if (isset($_GET['id'])) {
 		}
 		echo "</div>";
 	    }
+        consoleLog("Debug information: 6");
 	}
 	else{
         echo "<p>Error at newsdata</p>";
@@ -79,5 +82,10 @@ if (isset($_GET['id'])) {
 } else {
     echo "<p>No article ID provided.</p>";
 }
-
+    function consoleLog($message) {
+    // Sanitize the message to escape any single quotes
+    $sanitizedMessage = str_replace("'", "\'", $message);
+    // Generate and echo a JavaScript snippet that logs to the console
+    echo "<script>console.log('$sanitizedMessage');</script>";
+}
 ?>
