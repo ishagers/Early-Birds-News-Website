@@ -38,12 +38,12 @@ if (isset($_POST['make_private']) || isset($_POST['make_public'])) {
         <h3><?php echo isset($article['title']) ? htmlspecialchars($article['title']) : 'No title'; ?></h3>
         <p><?php echo isset($article['content']) ? nl2br(htmlspecialchars($article['content'])) : 'No content'; ?></p>
         <?php if (isset($article['is_private']) && $article['is_private']): ?>
-            <form method="post">
+            <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                 <input type="hidden" name="article_id" value="<?php echo htmlspecialchars($article['id']); ?>" />
                 <button type="submit" name="make_public">Make Public</button>
             </form>
         <?php else: ?>
-            <form method="post">
+            <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                 <input type="hidden" name="article_id" value="<?php echo htmlspecialchars($article['id']); ?>" />
                 <button type="submit" name="make_private">Make Private</button>
             </form>
