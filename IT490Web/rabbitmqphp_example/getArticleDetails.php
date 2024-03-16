@@ -1,7 +1,7 @@
 <?php
 include 'newsFetcher.php';
-
 require('session.php');
+require('databaseFunctions.php');
 
  if (isset($_GET['id'])) {
 	if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {
@@ -42,6 +42,9 @@ if ($article && $article['status']) {
 		echo "</div>";
 	    }
 	}
+	else{
+        echo "<p>Error at newsdata</p>";
+    }
 
 
     // Ratings display logic...
