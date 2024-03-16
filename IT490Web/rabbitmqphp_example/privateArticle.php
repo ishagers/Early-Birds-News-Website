@@ -1,9 +1,9 @@
 <?php
 // Start the session and include necessary files
 session_start();
-require('path/to/databaseFunctions.php');
-require('path/to/yourAuthenticationFile.php'); // This file should contain your checkLogin() function
-
+require('session.php');
+require('databaseFunctions.php');
+require_once('SQLPublish.php');
 // Check if the user is logged in
 checkLogin();
 
