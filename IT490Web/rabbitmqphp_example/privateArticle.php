@@ -35,16 +35,16 @@ if (isset($_POST['make_private']) || isset($_POST['make_public'])) {
 
 <?php foreach ($userArticles as $article): ?>
     <div class="article">
-        <h3><?php echo htmlspecialchars($article['title']); ?></h3>
-        <p><?php echo nl2br(htmlspecialchars($article['content'])); ?></p>
-        <?php if ($article['is_private']): ?>
+        <h3><?php echo isset($article['title']) ? htmlspecialchars($article['title']) : 'No title'; ?></h3>
+        <p><?php echo isset($article['content']) ? nl2br(htmlspecialchars($article['content'])) : 'No content'; ?></p>
+        <?php if (isset($article['is_private']) && $article['is_private']): ?>
             <form method="post">
-                <input type="hidden" name="article_id" value="<?php echo $article['id']; ?>">
+                <input type="hidden" name="article_id" value="<?php echo htmlspecialchars($article['id']); ?>" />
                 <button type="submit" name="make_public">Make Public</button>
             </form>
         <?php else: ?>
             <form method="post">
-                <input type="hidden" name="article_id" value="<?php echo $article['id']; ?>">
+                <input type="hidden" name="article_id" value="<?php echo htmlspecialchars($article['id']); ?>" />
                 <button type="submit" name="make_private">Make Private</button>
             </form>
         <?php endif; ?>
