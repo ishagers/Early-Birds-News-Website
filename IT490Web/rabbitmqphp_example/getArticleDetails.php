@@ -5,6 +5,13 @@ require('databaseFunctions.php');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+    function consoleLog($message) {
+    // Sanitize the message to escape any single quotes
+    $sanitizedMessage = str_replace("'", "\'", $message);
+    // Generate and echo a JavaScript snippet that logs to the console
+    echo "<script>console.log('$sanitizedMessage');</script>";
+}
+
 if (isset($_GET['id'])) {
     $articleId = $_GET['id'];
     $username = $_SESSION['username']; // Assuming username is stored in session upon login
@@ -82,10 +89,5 @@ if (isset($_GET['id'])) {
 } else {
     echo "<p>No article ID provided.</p>";
 }
-    function consoleLog($message) {
-    // Sanitize the message to escape any single quotes
-    $sanitizedMessage = str_replace("'", "\'", $message);
-    // Generate and echo a JavaScript snippet that logs to the console
-    echo "<script>console.log('$sanitizedMessage');</script>";
-}
+
 ?>
