@@ -6,22 +6,12 @@ require('databaseFunctions.php');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Define the consoleLog function at the beginning of your script
-function consoleLog($message) {
-    // Sanitize the message to escape any single quotes
-    $sanitizedMessage = str_replace("'", "\'", $message);
-    // Generate and echo a JavaScript snippet that logs to the console
-    echo "<script>console.log('$sanitizedMessage');</script>";
-}
-
-// Use the consoleLog function to log messages
-consoleLog("Start of getArticleDetails");
+    $username = $_SESSION['username'];
 
 if (isset($_GET['id'])) {
     $articleId = $_GET['id'];
-    $username = $_SESSION['username']; // Assuming username is stored in session upon login
     $article = getArticleById($articleId); // Fetch the article details
-    consoleLog("At debug 1");
+    echo "Debug Received ID: " . htmlspecialchars($articleId);
 
     // Handle comment submission
     if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {

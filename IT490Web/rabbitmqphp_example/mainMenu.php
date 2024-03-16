@@ -26,7 +26,8 @@ $articleData = fetchUserArticles($username, 10, 'public');
                     url: 'getArticleDetails.php',
                     type: 'GET',
                     data: { 'id': articleId },
-                    success: function (response) {
+                            success: function (response) {
+                        console.log("AJAX Response:", response);
                         $('#article-details').html(response);
                     },
                     error: function () {
