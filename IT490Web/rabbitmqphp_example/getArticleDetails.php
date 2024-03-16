@@ -1,10 +1,11 @@
 <?php
+header('Content-Type: text/html; charset=utf-8');
 include 'newsFetcher.php';
 require('session.php');
 require('databaseFunctions.php');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-
+console.log('Start of getarticledetails');
     function consoleLog($message) {
     // Sanitize the message to escape any single quotes
     $sanitizedMessage = str_replace("'", "\'", $message);
@@ -16,6 +17,7 @@ if (isset($_GET['id'])) {
     $articleId = $_GET['id'];
     $username = $_SESSION['username']; // Assuming username is stored in session upon login
     $article = getArticleById($articleId); // Fetch the article details
+    console.log('at debug 1');
     consoleLog("Debug information: 1");
     // Handle comment submission
     if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {
