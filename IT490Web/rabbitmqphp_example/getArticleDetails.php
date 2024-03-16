@@ -45,7 +45,18 @@ if (isset($_GET['id'])) {
         die("Could not connect to the database: " . $e->getMessage());
     }
 }
+	// Handle comment submission
+	if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {
+	    $commentContent = $_POST['comment'];
+	    // Assuming $userId is fetched earlier as shown
+	    $result = submitComment($articleId, $commentContent, $username); // Use submitComment instead of addComment
 
+	    echo "<script>alert('".$result['message']."'); window.location.href = 'getArticleDetails.php?id=".$articleId."';</script>";
+	}
+
+	if ($article && $article['status']) {
+	    // Your existing code to display the article, comments, rating form, etc.
+	}
 if ($article && $article['status']) {
     // Article title, content, and publication date display logic...
     echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
@@ -61,8 +72,8 @@ if ($article && $article['status']) {
     } else {
         echo "<p>No ratings yet.</p>";
     }
-
     // Fetch and display comments
+    
     $comments = getCommentsByArticleId($articleId);
     if ($comments['status']) {
         echo "<div id='comments'>";
@@ -78,7 +89,7 @@ if ($article && $article['status']) {
     }
 
     // Add a comment form
-    echo "<div id='submit-comment'>";
+    echo "<div id='-comment'>";
     echo "<h3>Add a comment</h3>";
     echo "<form action='getArticleDetails.php?id=" . htmlspecialchars($articleId) . "' method='post'>";
     echo "<textarea name='comment' required></textarea>";
