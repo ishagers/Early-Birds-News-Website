@@ -5,7 +5,7 @@ checkLogin();
 
 $username = $_SESSION['username'];
 $privateOnly = false; 
-$articleData = fetchUserArticles($username, 10, $privateOnly);
+$articleData = fetchUserArticles($username);
 ?>
 <!DOCTYPE html>
 <html lang="en">
