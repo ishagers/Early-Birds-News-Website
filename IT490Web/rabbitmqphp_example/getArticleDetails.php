@@ -11,37 +11,35 @@ error_reporting(E_ALL);
 checkLogin();
 $username = $_SESSION['username'];
 
+$username = $_SESSION['username'];
+
+// Initialize variables
 $articleId = null;
 $article = null;
 
-// Get article details if an ID is provided
+// Fetch article details if an ID is provided
 if (isset($_GET['id'])) {
-    $articleId = $_GET['id']; // This line needs to be before you try to fetch the article
+    $articleId = $_GET['id'];
+    // Fetch the article using the ID. Assuming getArticleById() does not require PDO instance as a parameter.
     $article = getArticleById($articleId);
-     try {
-        $pdo = getDatabaseConnection();
-        $article = getArticleById($articleId, $pdo); // Corrected call to getArticleById
-    } catch (PDOException $e) {
-        die("Could not connect to the database: " . $e->getMessage());
-    }
 }
 
-// Handle comment submission
-if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $userId) {
+// Handle comment submission. Consider changing to username based logic if userID isn't used.
+if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {
     $commentContent = $_POST['comment'];
-    $result = submitComment($articleId, $commentContent, $userId); // Use submitComment
+    // Assuming submitComment() is modified to work with username instead of userID.
+    $result = submitComment($articleId, $commentContent, $username);
 
-    // Redirect to the home menu after showing an alert with the result message
+    // Alert message and redirect
     echo "<script>alert('" . htmlspecialchars($result['message']) . "'); window.location.href = 'mainMenu.php';</script>";
     exit();
 }
 
 if ($article && $article['status']) {
-    // Article title, content, and publication date display logic...
+    // Display article details
     echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
     echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
     echo "<small>Published on: " . htmlspecialchars($article['article']['publication_date']) . "</small>";
-
     // News fetching logic...
     // Ensure that newsFetcher.php defines how to fetch news and that $apiKey is valid
     // Make sure file_get_contents is allowed to fetch external content on your server
