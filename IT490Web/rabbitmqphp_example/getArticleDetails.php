@@ -51,7 +51,9 @@ if (isset($_GET['id'])) {
 	    // Assuming $userId is fetched earlier as shown
 	    $result = submitComment($articleId, $commentContent, $username); // Use submitComment instead of addComment
 
-	    echo "<script>alert('".$result['message']."'); window.location.href = 'getArticleDetails.php?id=".$articleId."';</script>";
+	    // Redirect to the home menu after showing an alert with the result message
+	    echo "<script>alert('".$result['message']."'); window.location.href = 'mainMenu.php';</script>";
+	    exit();
 	}
 
 	if ($article && $article['status']) {
