@@ -11,7 +11,7 @@ checkLogin();
 $username = $_SESSION['username'];
 
 // Retrieve the user's articles including both private and public
-$userArticles = fetchUserArticles($username, true); // Assuming this function fetches articles based on username and privacy flag
+$userArticles = fetchUserArticles($username,10, true); // Assuming this function fetches articles based on username and privacy flag
 
 // Toggle the privacy of the article if requested
 if (isset($_POST['toggle_privacy'])) {
