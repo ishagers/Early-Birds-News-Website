@@ -29,9 +29,9 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $articleId = $_POST['article_id'] ?? null;
         if (isset($_POST['make_private'])) {
-            setArticlePrivate($articleId); // Implement this function to set the article as private
+            setArticlePrivate($articleId, $username); // Implement this function to set the article as private
         } elseif (isset($_POST['make_public'])) {
-            setArticlePublic($articleId); // Implement this function to set the article as public
+            setArticlePublic($articleId, $username); // Implement this function to set the article as public
         }
         header('Location: ' . $_SERVER['PHP_SELF']); // Refresh the page to reflect changes
         exit();
