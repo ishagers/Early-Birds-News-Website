@@ -2,6 +2,8 @@
 include 'newsFetcher.php';
 require('session.php');
 require('databaseFunctions.php');
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 if (isset($_GET['id'])) {
     $articleId = $_GET['id'];

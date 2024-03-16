@@ -2,9 +2,10 @@
 require('session.php');
 require('databaseFunctions.php');
 checkLogin();
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 $username = $_SESSION['username'];
-$privateOnly = false;
 $articleData = fetchUserArticles($username, 10, 'public');
 ?>
 <!DOCTYPE html>

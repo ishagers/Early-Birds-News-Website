@@ -1,5 +1,6 @@
 <?php
-
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 // Database connection details as constants
 define('DB_SERVER', '10.147.17.233');
 define('DB_USERNAME', 'IT490DB');
