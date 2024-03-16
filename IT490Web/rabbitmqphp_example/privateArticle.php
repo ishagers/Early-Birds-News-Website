@@ -1,53 +1,63 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 require('session.php');
 require('databaseFunctions.php');
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// Ensure the user is logged in
 checkLogin();
 
 $username = $_SESSION['username'];
 
-// Adjusted to fetch articles for the logged-in user based on username
-$userArticles = fetchUserArticles($username, 10, false); // False to include both private and public articles
+// Retrieve the user's articles including both private and public
+$userArticles = fetchUserArticles($username, true); // Assuming this function fetches articles based on username and privacy flag
 
-// Assuming you have these functions correctly set up to handle the privacy toggle based on article ID and username.
-if (isset($_POST['make_private']) || isset($_POST['make_public'])) {
+// Toggle the privacy of the article if requested
+if (isset($_POST['toggle_privacy'])) {
     $articleId = $_POST['article_id'];
-    $makePrivate = isset($_POST['make_private']);
-    setArticlePrivacy($articleId, $username, $makePrivate);
+    $currentPrivacy = $_POST['current_privacy'];
+    setArticlePrivacy($articleId, $username, !$currentPrivacy); // Toggle the privacy state
     header('Location: ' . $_SERVER['PHP_SELF']); // Refresh the page to reflect changes
     exit();
 }
+
+// Display article details if an ID is provided
+$articleDetails = null;
+if (isset($_GET['id'])) {
+    $articleId = $_GET['id'];
+    $articleDetails = getArticleById($articleId); // Use getArticleById from databaseFunctions.php
+}
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Early Bird Articles - Create Article</title>
+    <title>Early Bird Articles - Private Articles</title>
     <link rel="stylesheet" href="../routes/menuStyles.css" />
 </head>
 <body>
 
     <?php require('nav.php'); ?>
-</body>
-</html>
 
-<?php foreach ($userArticles as $article): ?>
+    <?php foreach ($userArticles as $article): ?>
     <div class="article">
-        echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
-        echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
-        echo "<small>Published on: " . htmlspecialchars($article['article']['publication_date']) . "</small>";
-        <?php if (isset($article['is_private']) && $article['is_private']): ?>
-            <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                <input type="hidden" name="article_id" value="<?php echo htmlspecialchars($article['id']); ?>" />
-                <button type="submit" name="make_public">Make Public</button>
-            </form>
-        <?php else: ?>
-            <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                <input type="hidden" name="article_id" value="<?php echo htmlspecialchars($article['id']); ?>" />
-                <button type="submit" name="make_private">Make Private</button>
-            </form>
+        <h3><?php echo htmlspecialchars($article['title']); ?></h3>
+        <p><?php echo nl2br(htmlspecialchars($article['content'])); ?></p>
+        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+            <input type="hidden" name="article_id" value="<?php echo $article['id']; ?>" />
+            <input type="hidden" name="current_privacy" value="<?php echo $article['is_private']; ?>" />
+            <button type="submit" name="toggle_privacy">
+                <?php echo $article['is_private'] ? 'Make Public' : 'Make Private'; ?>
+            </button>
+        </form>
+        <?php if ($articleDetails && $article['id'] == $articleDetails['article']['id']): ?>
+        <!-- Display the selected article details here -->
         <?php endif; ?>
     </div>
-<?php endforeach; ?>
+    <?php endforeach; ?>
+
+</body>
+</html>
