@@ -42,7 +42,7 @@ if (isset($_GET['id'])) {
     }
 }
 
-if ($article && $article['status']) {
+if ($article['status']) {
     // Display the article's title, content, and publication date
     echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
     echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
