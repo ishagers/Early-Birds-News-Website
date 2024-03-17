@@ -40,21 +40,10 @@ $responseData = json_decode($response, true);
 // Display and insert the news articles
 if ($responseData['status'] == 'ok' && !empty($responseData['articles'])) {
     foreach ($responseData['articles'] as $article) {
-        // Display the article
-        echo "<div class='news-article'>";
-        echo "<h2><a href='" . htmlspecialchars($article['url']) . "' target='_blank'>" . htmlspecialchars($article['title']) . "</a></h2>";
-        if (!empty($article['urlToImage'])) {
-            echo "<img src='" . htmlspecialchars($article['urlToImage']) . "' alt='' class='news-image'>";
-        }
-        echo "<p>" . htmlspecialchars($article['description']) . "</p>";
-        echo "</div>";
-
         // Prepare SQL statement to insert the article into the database
-        // Adjusted to match the schema with source_type and url
-        $stmt = $conn->prepare("INSERT INTO articles (title, content, source_type, url, publication_date) VALUES (?, ?, 'api', ?, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE title = VALUES(title), content = VALUES(content), source_type = VALUES(source_type), url = VALUES(url)");
-
+        $stmt = $conn->prepare("INSERT INTO articles (title, content, author_id, is_private, publication_date, source_type, url) VALUES (?, ?, NULL, 0, NOW(), 'api', ?) ON DUPLICATE KEY UPDATE title = VALUES(title), content = VALUES(content), source_type = VALUES(source_type), url = VALUES(url)");
         $stmt->bind_param("sss", $article['title'], $article['description'], $article['url']);
-
+        
         // Execute the insert
         $stmt->execute();
     }
