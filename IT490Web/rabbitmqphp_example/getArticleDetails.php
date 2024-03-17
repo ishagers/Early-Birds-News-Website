@@ -36,7 +36,7 @@ if (isset($_GET['id'])) {
 
     try {
 
-        $pdo = getDatabaseConnection(); 
+        $pdo = getDatabaseConnection();
 
         $userStmt = $pdo->prepare("SELECT id FROM users WHERE username = :username");
 
@@ -47,25 +47,26 @@ if (isset($_GET['id'])) {
 
 
         if ($user) {
-
             $userId = $user['id'];
 
+            // Check if the view already exists in the database
+            $checkViewStmt = $pdo->prepare("SELECT 1 FROM user_article_views WHERE user_id = :userId AND article_id = :articleId");
+            $checkViewStmt->execute(['userId' => $userId, 'articleId' => $articleId]);
+            $viewExists = $checkViewStmt->fetchColumn();
 
-
-            if (!isset($_SESSION['viewed_articles']) || !in_array($articleId, $_SESSION['viewed_articles'])) {
-
+            if (!$viewExists) {
+                // The view does not exist, insert it
                 $viewStmt = $pdo->prepare("INSERT INTO user_article_views (user_id, article_id) VALUES (:userId, :articleId)");
-
                 $viewStmt->execute(['userId' => $userId, 'articleId' => $articleId]);
-
-                $_SESSION['viewed_articles'][] = $articleId;
-
             }
 
+            // Add to the session to avoid re-checking during the same session
+            if (!isset($_SESSION['viewed_articles'])) {
+                $_SESSION['viewed_articles'] = [];
+            }
+            $_SESSION['viewed_articles'][$articleId] = true; // Use article ID as key
 
-
-            $article = getArticleById($articleId, $pdo);
-
+            $article = getArticleById($articleId);
         }
 
     } catch (PDOException $e) {
@@ -137,4 +138,3 @@ if ($article && $article['status']) {
     echo "<p>Article not found.</p>";
 }
 
-?>
