@@ -1,3 +1,4 @@
+<?php
 require('session.php');
 require('databaseFunctions.php');
 require_once('SQLPublish.php');
