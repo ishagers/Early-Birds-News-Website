@@ -6,6 +6,20 @@ define('DB_SERVER', '10.147.17.233');
 define('DB_USERNAME', 'IT490DB');
 define('DB_PASSWORD', 'IT490DB');
 define('DB_DATABASE', 'EARLYBIRD');
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'PHPMailer-master/src/Excepetion.php';
+require 'PHPMailer-master/src/PHPMailer.php';
+require 'PHPMailer-master/src/SMTP.php';
+$mail->isSMTP();
+$mail->Host='smtp.gmail.com';
+$mail->SMTPAuth = true;
+$mail->USername = 'earlybird6900@gmail.com'
+$mail->Password = 'mtxekiuhxgpllxqu';
+$mail->SMTPSecure = 'ssl';
+$mail->Port = 456;
+$mail->setFrom('earlybird6900@gmail.com');
+$mail->isHTML(true);
 
 function getDatabaseConnection()
 {
@@ -346,8 +360,7 @@ function sanitizeInput($data) {
     return $data;
 }
 
-function submitComment($articleId, $content, $commenterUsername)
-{
+function submitComment($articleId, $content, $commenterUsername) {
     $response = ['status' => false, 'message' => ''];
 
     try {
@@ -368,7 +381,7 @@ function submitComment($articleId, $content, $commenterUsername)
             $response['status'] = true;
             $response['message'] = "Comment added successfully.";
 
-            // Fetch the article author's email address and article title for email notification
+            // Fetch the article author's email address and article title
             $emailSql = "SELECT users.email, articles.title
                          FROM articles
                          JOIN users ON articles.author_id = users.id
@@ -378,18 +391,26 @@ function submitComment($articleId, $content, $commenterUsername)
             $emailStmt->execute();
             $authorInfo = $emailStmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($authorInfo && $authorInfo['email']) {
+            if ($authorInfo) {
                 // Prepare and send the email notification
-                $to = $authorInfo['email'];
-                $subject = "New comment on your article: " . $authorInfo['title'];
-                $message = "Hi, a new comment has been posted on your article titled '" . $authorInfo['title'] . "':\n\n" . $content;
-                $headers = "From: earlybird6900@gmail.com";
+                $mail = new PHPMailer\PHPMailer\PHPMailer();
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'earlybird6900@gmail.com';
+                $mail->Password = 'mtxekiuhxgpllxqu'; // Consider using environment variables or another secure method to store credentials
+                $mail->SMTPSecure = 'ssl';
+                $mail->Port = 465; // Corrected port number
+                $mail->setFrom('earlybird6900@gmail.com', 'EarlyBird Platform'); // Optional: Add a second parameter as the name
+                $mail->addAddress($authorInfo['email']); // Add recipient
+                $mail->isHTML(true); // Set email format to HTML
+                $mail->Subject = "New comment on your article: " . $authorInfo['title'];
+                $mail->Body = "Hi, a new comment has been posted on your article titled '" . $authorInfo['title'] . "':<br><br>" . nl2br(htmlspecialchars($content));
 
-                if (!mail($to, $subject, $message, $headers)) {
-                    // Log email sending failure
-                    error_log("Failed to send comment notification email to: " . $to);
+                if (!$mail->send()) {
+                    $response['emailStatus'] = "Mailer Error: " . $mail->ErrorInfo;
                 } else {
-                    $response['emailStatus'] = "Email notification sent.";
+                    $response['emailStatus'] = "Email sent successfully to the author.";
                 }
             }
         } else {
@@ -397,6 +418,8 @@ function submitComment($articleId, $content, $commenterUsername)
         }
     } catch (PDOException $e) {
         $response['message'] = "Database error: " . $e->getMessage();
+    } catch (Exception $e) {
+        $response['message'] = "Mailer error: " . $mail->ErrorInfo;
     }
 
     return $response;
