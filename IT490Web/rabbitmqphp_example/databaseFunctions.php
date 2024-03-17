@@ -169,21 +169,9 @@ function createArticle($title, $content, $author, $source = 'user', $url = null)
 }
 
 
-function fetchUserArticles($username, $limit = 15, $filter = 'all', $sourceFilter = 'all') {
+function fetchArticles($limit = 15, $filter = 'public', $sourceFilter = 'user')
+{
     $conn = getDatabaseConnection();
-
-    // Start by getting the user ID from the username to query articles by author_id
-    $userSql = "SELECT id FROM users WHERE username = :username LIMIT 1";
-    $userStmt = $conn->prepare($userSql);
-    $userStmt->bindParam(':username', $username);
-    $userStmt->execute();
-    $user = $userStmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$user) {
-        return ['status' => false, 'message' => "User not found", 'articles' => []];
-    }
-
-    $userId = $user['id'];
 
     // Adjust the SQL query based on the filter provided for article visibility and source
     $privacyClause = "";
@@ -202,12 +190,12 @@ function fetchUserArticles($username, $limit = 15, $filter = 'all', $sourceFilte
 
     $sql = "SELECT id, title, content, author_id, is_private, publication_date, source
             FROM articles
-            WHERE author_id = :userId {$privacyClause} {$sourceClause}
+            WHERE 1=1 {$privacyClause} {$sourceClause}
             ORDER BY publication_date DESC
             LIMIT :limit";
 
     $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+    // Removed the user ID binding
     $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
     $stmt->execute();
     $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
