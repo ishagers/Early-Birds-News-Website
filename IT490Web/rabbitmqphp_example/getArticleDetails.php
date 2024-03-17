@@ -29,7 +29,7 @@ if (isset($_GET['id'])) {
 
         if ($user) {
             $userId = $user['id'];
-
+	    $article = getArticleById($articleId);
             // Process comment submission
             if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {
                 // Assume submitComment() is a function that processes the comment submission
@@ -42,7 +42,6 @@ if (isset($_GET['id'])) {
     }
 
 }
-
 if ($article && $article['status']) {
     // Article title, content, and publication date display logic...
     echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
