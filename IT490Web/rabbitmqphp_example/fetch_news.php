@@ -35,6 +35,10 @@ $response = curl_exec($curl);
 
 // Close the cURL session
 curl_close($curl);
+// Print raw response for debugging
+echo "<pre>Raw response:\n";
+print_r($response);
+echo "</pre>";
 
 // Decode the JSON response
 $responseData = json_decode($response, true);
