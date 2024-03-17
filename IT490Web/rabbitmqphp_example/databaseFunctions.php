@@ -6,6 +6,8 @@ define('DB_SERVER', '10.147.17.233');
 define('DB_USERNAME', 'IT490DB');
 define('DB_PASSWORD', 'IT490DB');
 define('DB_DATABASE', 'EARLYBIRD');
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 function getDatabaseConnection()
 {
