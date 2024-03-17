@@ -11,6 +11,24 @@ checkLogin();
 $username = $_SESSION['username'];
 $articleId = $userId = null;
 
+// Handle the POST request for comment submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitComment'], $_POST['comment'], $_POST['articleId'])) {
+    $articleId = $_POST['articleId'];
+    $commentContent = $_POST['comment'];
+    // Here you can add some debugging to see if the values are correct:
+    error_log("Comment Content: " . $commentContent);
+    $commentResponse = submitComment($articleId, $commentContent, $username);
+
+    // Check the response from your submitComment function
+    if ($commentResponse['status']) {
+        // Comment was successful
+        error_log("Comment was submitted successfully.");
+    } else {
+        // Comment failed
+        error_log("Comment submission failed: " . $commentResponse['message']);
+    }
+}
+
 if (isset($_GET['id'])) {
     $articleId = $_GET['id'];
 
@@ -52,7 +70,6 @@ if ($articleResponse['status']) {
     echo "<small>Published on: " . htmlspecialchars($article['publication_date']) . "</small>";
 
     // Ratings display logic...
-    $averageRatingResponse = getAverageRatingByArticleId($articleId);
     if ($averageRatingResponse['status']) {
         echo "<div id='ratings'>";
         echo "<h3>Average Rating: " . htmlspecialchars($averageRatingResponse['averageRating']) . "</h3>";
@@ -76,10 +93,10 @@ if ($articleResponse['status']) {
         echo "</div>";
     }
 
-    // Add a comment form
     echo "<div id='submit-comment'>";
     echo "<h3>Add a comment</h3>";
-    echo "<form method='POST'>";
+    echo "<form action='' method='POST'>";
+    echo "<input type='hidden' name='articleId' value='" . htmlspecialchars($articleId) . "'>";
     echo "<textarea name='comment' required></textarea>";
     echo "<button type='submit' name='submitComment'>Submit Comment</button>";
     echo "</form>";
@@ -88,7 +105,7 @@ if ($articleResponse['status']) {
     // Add rating submission form here
     echo "<div id='article-rating'>";
     echo "<h3>Rate this Article</h3>";
-    echo "<form action='RatingAndPreference.php' method='POST'>";
+    echo "<form action='' method='POST'>"; // Assuming the rating is handled in the same script. Adjust the action as needed.
     echo "<input type='hidden' name='article_id' value='" . htmlspecialchars($articleId) . "'>";
     echo "<label for='rating'>Rating:</label>";
     echo "<select name='rating' id='rating' required>";
@@ -105,5 +122,4 @@ if ($articleResponse['status']) {
     // If the article is not found or there's another issue, display the message
     echo "<p>" . htmlspecialchars($articleResponse['message']) . "</p>";
 }
-
-
+?>
