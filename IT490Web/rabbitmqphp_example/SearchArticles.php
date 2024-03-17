@@ -28,7 +28,6 @@
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
-    echo "Connected to database successfully.<br>";
 
     // Handle search queries or fetch all articles if no query is specified
     $searchQuery = isset($_GET['query']) ? $_GET['query'] : '';
