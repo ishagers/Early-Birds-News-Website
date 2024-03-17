@@ -53,5 +53,17 @@ if ($responseData['status'] == 'ok' && !empty($responseData['articles'])) {
         // Adjusted to match the schema with source_type and url
         $stmt = $conn->prepare("INSERT INTO articles (title, content, source_type, url, publication_date) VALUES (?, ?, 'api', ?, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE title = VALUES(title), content = VALUES(content), source_type = VALUES(source_type), url = VALUES(url)");
 
-        $stmt->bind_param("sss
+        $stmt->bind_param("sss", $article['title'], $article['description'], $article['url']);
+
+        // Execute the insert
+        $stmt->execute();
+    }
+} else {
+    echo "<p>Failed to fetch news.</p>";
+}
+
+// Close the database connection
+$conn->close();
+
+?>
 
