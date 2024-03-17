@@ -11,6 +11,16 @@ checkLogin();
 $username = $_SESSION['username'];
 $articleId = $userId = null;
 
+// Handle the POST request for comment submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitComment'], $_POST['comment'])) {
+    $commentContent = $_POST['comment'];
+    // Call your function to submit the comment
+    $commentResponse = submitComment($articleId, $commentContent, $username);
+
+    // Optionally, you could do something with the $commentResponse here,
+    // like displaying a message to the user
+}
+
 if (isset($_GET['id'])) {
     $articleId = $_GET['id'];
 
@@ -79,7 +89,9 @@ if ($articleResponse['status']) {
     // Add a comment form
     echo "<div id='submit-comment'>";
     echo "<h3>Add a comment</h3>";
-    echo "<form method='POST'>";
+    // Inside the HTML part where you have the comment form
+    echo "<form action='' method='POST'>"; // action is set to the current script
+    echo "<input type='hidden' name='articleId' value='" . htmlspecialchars($articleId) . "'>";
     echo "<textarea name='comment' required></textarea>";
     echo "<button type='submit' name='submitComment'>Submit Comment</button>";
     echo "</form>";
