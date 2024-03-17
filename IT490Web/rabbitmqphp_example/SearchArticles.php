@@ -36,7 +36,7 @@ echo "Connected to database successfully.<br>";
 $searchQuery = isset($_GET['query']) ? $_GET['query'] : '';
 
 // Define API keys and URLs for news fetching
-$apiKey = 'UvENR8ucJtM7ZSpXxUokK3tttamiRut7HDaaXc6Q'; // Decide which api key we will use, same thing for the newsURL. 
+$apiKey = '898d8c1625884af1a9774e9662cb980d'; // Decide which api key we will use, same thing for the newsURL. 
 
 
 // Might need to have several urls so that the users preferences decide which url they will prioritize 
