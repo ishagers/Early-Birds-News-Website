@@ -103,6 +103,6 @@ $averageRatingResponse = getAverageRatingByArticleId($articleId);
     echo "</form>";
     echo "</div>";
 
-} else {
+    else {
     echo "<p>Article not found.</p>";
-}
+    }
