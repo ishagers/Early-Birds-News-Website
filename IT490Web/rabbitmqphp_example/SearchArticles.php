@@ -64,6 +64,9 @@ if (!empty($searchQuery)) {
     $result = $conn->query("SELECT * FROM articles");
 }
 
+// Fetch all articles from your database if no search query is provided
+$result = $conn->query("SELECT * FROM articles");
+
 if ($result === false) {
     echo "Error executing query: " . $conn->error . "<br>";
 } else {
@@ -77,9 +80,19 @@ if ($result === false) {
     }
 }
 
-// Output the articles from the API
-foreach ($articlesFromApi as $article) {
-    echo "Title: <a href='" . $article["url"] . "'>" . $article["title"]. "</a> - Description: " . $article["description"] . "<br>";
+// Fetch and display news from the API based on the search query
+if (!empty($searchQuery)) {
+    // Your existing cURL code to fetch from the news API
+    // Ensure $newsJson contains the correct response
+    
+    if ($newsArray && !empty($newsArray['articles'])) {
+        // Output the articles from the API
+        foreach ($newsArray['articles'] as $article) {
+            echo "Title: <a href='" . htmlspecialchars($article["url"]) . "'>" . htmlspecialchars($article["title"]). "</a> - Description: " . htmlspecialchars($article["description"]) . "<br>";
+        }
+    } else {
+        echo "No articles found from the API.<br>";
+    }
 }
 
 // Close connection
