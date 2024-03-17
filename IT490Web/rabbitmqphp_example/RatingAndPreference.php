@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 // Database connection parameters
 $servername = "10.147.17.233";
 $username = "IT490DB";
@@ -54,10 +56,15 @@ if (isset($_POST['submitRating'])) {
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {
-            echo "Rating successfully submitted.";
+            $_SESSION['message'] = "Rating successfully submitted."; // Optional: Store a success message in session to display on the article page.
         } else {
-            echo "Failed to submit rating.";
+            $_SESSION['message'] = "Failed to submit rating."; // Optional: Store an error message in session to display on the article page.
         }
+
+        // Redirect back to the article detail page
+        header('Location: getArticleDetails.php?id=' . urlencode($articleId));
+        exit();
+
     } else {
         echo "Invalid request";
     }
@@ -65,5 +72,6 @@ if (isset($_POST['submitRating'])) {
 
 // Close database connection
 $conn->close();
+
 ?>
 
