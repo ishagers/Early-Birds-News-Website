@@ -45,6 +45,9 @@
 
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 $apiKey = '898d8c1625884af1a9774e9662cb980d';
 $newsUrl = "https://newsapi.org/v2/top-headlines?country=us&apiKey={$apiKey}";
 
