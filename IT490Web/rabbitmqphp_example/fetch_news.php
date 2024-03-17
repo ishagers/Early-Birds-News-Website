@@ -40,11 +40,14 @@ $responseData = json_decode($response, true);
 // Display and insert the news articles
 if ($responseData['status'] == 'ok' && !empty($responseData['articles'])) {
     foreach ($responseData['articles'] as $article) {
-        // Prepare SQL statement to insert the article into the database
+        // Check if description is present; if not, use a placeholder or empty string
+        $content = isset($article['description']) ? $article['description'] : 'No content available.';
+
+        // Prepare SQL statement to insert the article into the database, using the corrected column name 'source'
         $stmt = $conn->prepare("INSERT INTO articles (title, content, author_id, is_private, publication_date, source, url) VALUES (?, ?, NULL, 0, NOW(), 'api', ?) ON DUPLICATE KEY UPDATE title = VALUES(title), content = VALUES(content), source = VALUES(source), url = VALUES(url)");
 
         // Bind parameters
-        $stmt->bind_param("sss", $article['title'], $article['description'], $article['url']);
+        $stmt->bind_param("sss", $article['title'], $content, $article['url']);
 
         // Execute the insert
         $stmt->execute();
