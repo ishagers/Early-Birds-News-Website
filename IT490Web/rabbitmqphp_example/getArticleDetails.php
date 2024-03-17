@@ -42,10 +42,14 @@ if (isset($_GET['id'])) {
     }
 }
 
+$articleResponse = getArticleById($articleId);
+
+if ($articleResponse['status']) {
+    $article = $articleResponse['article'];
     // Display the article's title, content, and publication date
-    echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
-    echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
-    echo "<small>Published on: " . htmlspecialchars($article['article']['publication_date']) . "</small>";
+    echo "<h2>" . htmlspecialchars($article['title']) . "</h2>";
+    echo "<p>" . nl2br(htmlspecialchars($article['content'])) . "</p>";
+    echo "<small>Published on: " . htmlspecialchars($article['publication_date']) . "</small>";
 
     // Ratings display logic...
     $averageRatingResponse = getAverageRatingByArticleId($articleId);
@@ -97,6 +101,9 @@ if (isset($_GET['id'])) {
     echo "<input type='submit' name='submitRating' value='Submit Rating'>";
     echo "</form>";
     echo "</div>";
-
+} else {
+    // If the article is not found or there's another issue, display the message
+    echo "<p>" . htmlspecialchars($articleResponse['message']) . "</p>";
+}
 
 

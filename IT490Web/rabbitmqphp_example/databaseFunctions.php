@@ -228,7 +228,7 @@ function getArticleById($articleId) {
         // Adjusted SQL statement to also select the 'source' column
         $sql = "SELECT a.id, a.title, a.content, a.publication_date, u.username AS author, a.source
                 FROM articles a
-                LEFT JOIN users u ON a.author_id = u.id  // Use LEFT JOIN to handle articles without an associated user
+                LEFT JOIN users u ON a.author_id = u.id  -- Use LEFT JOIN to handle articles without an associated user
                 WHERE a.id = :articleId";
 
         // Prepare and bind parameters
