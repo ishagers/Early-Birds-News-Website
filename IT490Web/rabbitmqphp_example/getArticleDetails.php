@@ -42,7 +42,6 @@ if (isset($_GET['id'])) {
     }
 }
 
-if ($article['status']) {
     // Display the article's title, content, and publication date
     echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
     echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
@@ -99,7 +98,5 @@ if ($article['status']) {
     echo "</form>";
     echo "</div>";
 
-} else {
-    echo "<p>Article not found.</p>";
-}
+
 
