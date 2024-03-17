@@ -6,20 +6,6 @@ define('DB_SERVER', '10.147.17.233');
 define('DB_USERNAME', 'IT490DB');
 define('DB_PASSWORD', 'IT490DB');
 define('DB_DATABASE', 'EARLYBIRD');
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-require 'PHPMailer-master/src/Excepetion.php';
-require 'PHPMailer-master/src/PHPMailer.php';
-require 'PHPMailer-master/src/SMTP.php';
-$mail->isSMTP();
-$mail->Host='smtp.gmail.com';
-$mail->SMTPAuth = true;
-$mail->USername = 'earlybird6900@gmail.com'
-$mail->Password = 'mtxekiuhxgpllxqu';
-$mail->SMTPSecure = 'ssl';
-$mail->Port = 456;
-$mail->setFrom('earlybird6900@gmail.com');
-$mail->isHTML(true);
 
 function getDatabaseConnection()
 {
