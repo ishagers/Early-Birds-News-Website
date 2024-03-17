@@ -339,6 +339,12 @@ function getAverageRatingByArticleId($articleId)
 
     return $response;
 }
+function sanitizeInput($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
 
 function submitComment($articleId, $content, $commenterUsername)
 {
