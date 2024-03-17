@@ -50,8 +50,11 @@ if ($responseData['status'] == 'ok' && !empty($responseData['articles'])) {
         echo "</div>";
 
         // Prepare SQL statement to insert the article into the database
-        $stmt = $conn->prepare("INSERT INTO news_articles (title, description, url, urlToImage) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE title = VALUES(title), description = VALUES(description), url = VALUES(url), urlToImage = VALUES(urlToImage)");
-        $stmt->bind_param("ssss", $article['title'], $article['description'], $article['url'], $article['urlToImage']);
+        // Note: Change to your adjusted schema and fields accordingly
+        $stmt = $conn->prepare("INSERT INTO articles (title, content, is_api_article, api_source, api_url, api_image_url) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE title = VALUES(title), content = VALUES(content), api_source = VALUES(api_source), api_url = VALUES(api_url), api_image_url = VALUES(api_image_url)");
+        $apiSource = 'NewsAPI'; // Example source name
+        $isApiArticle = 1; // Flag indicating the article is from an API
+        $stmt->bind_param("ssisss", $article['title'], $article['description'], $isApiArticle, $apiSource, $article['url'], $article['urlToImage']);
         
         // Execute the insert
         $stmt->execute();

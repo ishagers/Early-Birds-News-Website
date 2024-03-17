@@ -98,14 +98,36 @@ function login($username, $password)
     return $response;
 }
 
-function createArticle($title, $content, $author)
-{
+function insertNewsArticle($title, $content, $source, $url = null) {
     $response = array('status' => false, 'message' => '');
-
     try {
         $conn = getDatabaseConnection(); // Reuse the database connection function
+        $sql = "INSERT INTO articles (title, content, source, url) VALUES (:title, :content, :source, :url)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':title', $title);
+        $stmt->bindParam(':content', $content);
+        $stmt->bindParam(':source', $source);
+        $stmt->bindParam(':url', $url);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            $response['status'] = true;
+            $response['message'] = "News article inserted successfully";
+        } else {
+            $response['message'] = "Failed to insert news article";
+        }
+    } catch (PDOException $e) {
+        $response['message'] = "Error: " . $e->getMessage();
+    }
+    return $response;
+}
 
-        // First, get the author_id from the users table using the username
+function createArticle($title, $content, $author, $source = 'user', $url = null) {
+    $response = ['status' => false, 'message' => ''];
+
+    try {
+        $conn = getDatabaseConnection(); // Use the database connection function
+
+        // Get the author_id from the users table using the username
         $userSql = "SELECT id FROM users WHERE username = :username LIMIT 1";
         $userStmt = $conn->prepare($userSql);
         $userStmt->bindParam(':username', $author);
@@ -113,16 +135,18 @@ function createArticle($title, $content, $author)
         $user = $userStmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user) {
-            $author_id = $user['id']; // Use the fetched author ID
+            $author_id = $user['id']; // Fetched author ID
 
-            // SQL statement to insert a new article
-            $sql = "INSERT INTO articles (title, content, author_id) VALUES (:title, :content, :author_id)";
+            // SQL statement to insert a new article with 'source' and optional 'url'
+            $sql = "INSERT INTO articles (title, content, author_id, source, url) VALUES (:title, :content, :author_id, :source, :url)";
 
             // Prepare and bind parameters
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':title', $title);
             $stmt->bindParam(':content', $content);
             $stmt->bindParam(':author_id', $author_id);
+            $stmt->bindParam(':source', $source);
+            $stmt->bindParam(':url', $url);
 
             // Execute the statement
             $stmt->execute();
@@ -132,23 +156,20 @@ function createArticle($title, $content, $author)
                 $response['status'] = true;
                 $response['message'] = "Article created successfully";
             } else {
-                // No rows affected
                 $response['message'] = "Failed to create article";
             }
         } else {
             $response['message'] = "Author username not found";
         }
     } catch (PDOException $e) {
-        // Update response message on error
         $response['message'] = "Error: " . $e->getMessage();
     }
 
-    // Return the response array
     return $response;
 }
 
-function fetchUserArticles($username, $limit = 15, $filter = 'all')
-{
+
+function fetchUserArticles($username, $limit = 15, $filter = 'all', $sourceFilter = 'all') {
     $conn = getDatabaseConnection();
 
     // Start by getting the user ID from the username to query articles by author_id
@@ -164,20 +185,26 @@ function fetchUserArticles($username, $limit = 15, $filter = 'all')
 
     $userId = $user['id'];
 
-    // Adjust the SQL query based on the filter provided for article visibility
+    // Adjust the SQL query based on the filter provided for article visibility and source
     $privacyClause = "";
     if ($filter === 'private') {
         $privacyClause = "AND is_private = 1";
     } elseif ($filter === 'public') {
         $privacyClause = "AND is_private = 0";
     }
-    // No clause needed for 'all', as it will fetch both private and public
 
-    $sql = "SELECT id, title, content, author_id, is_private, publication_date
-FROM articles
-WHERE author_id = :userId {$privacyClause}
-ORDER BY publication_date DESC
-LIMIT :limit";
+    $sourceClause = "";
+    if ($sourceFilter === 'user') {
+        $sourceClause = "AND source = 'user'";
+    } elseif ($sourceFilter === 'api') {
+        $sourceClause = "AND source = 'api'";
+    }
+
+    $sql = "SELECT id, title, content, author_id, is_private, publication_date, source
+            FROM articles
+            WHERE author_id = :userId {$privacyClause} {$sourceClause}
+            ORDER BY publication_date DESC
+            LIMIT :limit";
 
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
@@ -192,17 +219,16 @@ LIMIT :limit";
     ];
 }
 
-function getArticleById($articleId)
-{
+function getArticleById($articleId) {
     $response = array('status' => false, 'message' => '', 'article' => null);
 
     try {
         $conn = getDatabaseConnection(); // Reuse the database connection function
 
-        // SQL statement to select an article by ID
-        $sql = "SELECT a.id, a.title, a.content, a.publication_date, u.username AS author
+        // Adjusted SQL statement to also select the 'source' column
+        $sql = "SELECT a.id, a.title, a.content, a.publication_date, u.username AS author, a.source
                 FROM articles a
-                JOIN users u ON a.author_id = u.id
+                LEFT JOIN users u ON a.author_id = u.id  // Use LEFT JOIN to handle articles without an associated user
                 WHERE a.id = :articleId";
 
         // Prepare and bind parameters
@@ -229,17 +255,19 @@ function getArticleById($articleId)
     return $response;
 }
 
-function getCommentsByArticleId($articleId)
-{
+
+function getCommentsByArticleId($articleId) {
     $response = array('status' => false, 'message' => '', 'comments' => array());
 
     try {
         $conn = getDatabaseConnection();
+        // Adjusted SQL to also check the source of the article
         $sql = "SELECT c.id, c.comment, u.username
-            FROM comments c
-            JOIN users u ON c.user_id = u.id
-            WHERE c.article_id = :articleId
-            ORDER BY c.id DESC";
+                FROM comments c
+                JOIN users u ON c.user_id = u.id
+                JOIN articles a ON c.article_id = a.id
+                WHERE c.article_id = :articleId AND a.source = 'user'
+                ORDER BY c.id DESC";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
         $stmt->execute();
@@ -259,6 +287,7 @@ function getCommentsByArticleId($articleId)
 
     return $response;
 }
+
 
 function getRatingsByArticleId($articleId)
 {
@@ -342,33 +371,31 @@ function submitComment($articleId, $content, $commenterUsername)
         $commentStmt->execute();
 
         if ($commentStmt->rowCount() > 0) {
-            // Fetch the article author's email address and article title
-            $emailSql = "SELECT users.email, articles.title
-                         FROM articles
-                         JOIN users ON articles.author_id = users.id
-                         WHERE articles.id = :article_id";
-            $emailStmt = $conn->prepare($emailSql);
-            $emailStmt->bindParam(':article_id', $articleId, PDO::PARAM_INT);
-            $emailStmt->execute();
-            $authorInfo = $emailStmt->fetch(PDO::FETCH_ASSOC);
+            $response['status'] = true;
+            $response['message'] = "Comment added successfully.";
 
-            if ($authorInfo) {
-                // Prepare and send the email notification
-                $to = $authorInfo['email'];
-                $subject = "New message from '" . $commenterUsername . "' on your article titled '" . $authorInfo['title'] . "'";
-                $message = "Hi, a new comment has been posted on your article titled '" . $authorInfo['title'] . "'. \n\nComment: " . $content;
-                // Here, use a valid "From" email address
+            // Fetch the article's details including whether it's user-authored or from API
+            $articleInfoSql = "SELECT users.email, articles.title, articles.is_api_article
+                               FROM articles
+                               LEFT JOIN users ON articles.author_id = users.id
+                               WHERE articles.id = :article_id";
+            $articleInfoStmt = $conn->prepare($articleInfoSql);
+            $articleInfoStmt->bindParam(':article_id', $articleId, PDO::PARAM_INT);
+            $articleInfoStmt->execute();
+            $articleInfo = $articleInfoStmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($articleInfo && !$articleInfo['is_api_article']) {
+                // Proceed with sending an email to the article's author if it's not from the API
+                $to = $articleInfo['email'];
+                $subject = "New comment from '" . $commenterUsername . "' on your article: " . $articleInfo['title'];
+                $message = "Hi, a new comment has been posted on your article titled '" . $articleInfo['title'] . "'.\n\nComment: " . $content;
                 $headers = "From: noreply@example.com";
-
                 if (mail($to, $subject, $message, $headers)) {
                     $response['emailStatus'] = "Email sent successfully to the author.";
                 } else {
                     $response['emailStatus'] = "Failed to send email to the author.";
                 }
             }
-
-            $response['status'] = true;
-            $response['message'] = "Comment added successfully.";
         } else {
             $response['message'] = "Failed to add the comment.";
         }
@@ -378,6 +405,7 @@ function submitComment($articleId, $content, $commenterUsername)
 
     return $response;
 }
+
 
 function fetchAllTopics()
 {

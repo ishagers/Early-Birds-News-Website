@@ -1,84 +1,48 @@
-<?php
-
-
-
 require('session.php');
-
 require('databaseFunctions.php');
-
 require_once('SQLPublish.php');
 
-
-
 ini_set('display_errors', 1);
-
 error_reporting(E_ALL);
-
-
-
-// Ensure the user is logged in
 
 checkLogin();
 
-
-
 $username = $_SESSION['username'];
-
 $articleId = $userId = null;
 
-
-
 if (isset($_GET['id'])) {
-
     $articleId = $_GET['id'];
 
-
-
     try {
-
         $pdo = getDatabaseConnection();
-
         $userStmt = $pdo->prepare("SELECT id FROM users WHERE username = :username");
-
         $userStmt->execute(['username' => $username]);
-
         $user = $userStmt->fetch(PDO::FETCH_ASSOC);
-
-
 
         if ($user) {
             $userId = $user['id'];
 
-            // Check if the view already exists in the database
+            // Check and insert article view
             $checkViewStmt = $pdo->prepare("SELECT 1 FROM user_article_views WHERE user_id = :userId AND article_id = :articleId");
             $checkViewStmt->execute(['userId' => $userId, 'articleId' => $articleId]);
             $viewExists = $checkViewStmt->fetchColumn();
 
             if (!$viewExists) {
-                // The view does not exist, insert it
                 $viewStmt = $pdo->prepare("INSERT INTO user_article_views (user_id, article_id) VALUES (:userId, :articleId)");
                 $viewStmt->execute(['userId' => $userId, 'articleId' => $articleId]);
             }
 
-            // Add to the session to avoid re-checking during the same session
-            if (!isset($_SESSION['viewed_articles'])) {
-                $_SESSION['viewed_articles'] = [];
-            }
-            $_SESSION['viewed_articles'][$articleId] = true; // Use article ID as key
+            $_SESSION['viewed_articles'][$articleId] = true; // Avoid re-checking in the same session
 
             $article = getArticleById($articleId);
         }
-
     } catch (PDOException $e) {
-
         die("Could not connect to the database: " . $e->getMessage());
-
     }
-
 }
 
 if ($article && $article['status']) {
-    // Article title, content, and publication date display logic...
+    // Display the article's title, content, and publication date
     echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
     echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
     echo "<small>Published on: " . htmlspecialchars($article['article']['publication_date']) . "</small>";
