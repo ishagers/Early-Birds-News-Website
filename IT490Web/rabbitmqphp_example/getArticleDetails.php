@@ -1,78 +1,46 @@
 <?php
 
-
-
 require('session.php');
-
 require('databaseFunctions.php');
-
 require_once('SQLPublish.php');
 
-
-
 ini_set('display_errors', 1);
-
 error_reporting(E_ALL);
-
-
-
-// Ensure the user is logged in
 
 checkLogin();
 
-
-
 $username = $_SESSION['username'];
-
 $articleId = $userId = null;
 
-
+// Display rating submission feedback
+if (isset($_SESSION['message'])) {
+    echo "<p>" . $_SESSION['message'] . "</p>";
+    unset($_SESSION['message']); // Clear the message after displaying
+}
 
 if (isset($_GET['id'])) {
-
     $articleId = $_GET['id'];
 
-
-
     try {
-
         $pdo = getDatabaseConnection();
-
         $userStmt = $pdo->prepare("SELECT id FROM users WHERE username = :username");
-
         $userStmt->execute(['username' => $username]);
-
         $user = $userStmt->fetch(PDO::FETCH_ASSOC);
-
-
 
         if ($user) {
             $userId = $user['id'];
 
-            // Check if the view already exists in the database
-            $checkViewStmt = $pdo->prepare("SELECT 1 FROM user_article_views WHERE user_id = :userId AND article_id = :articleId");
-            $checkViewStmt->execute(['userId' => $userId, 'articleId' => $articleId]);
-            $viewExists = $checkViewStmt->fetchColumn();
-
-            if (!$viewExists) {
-                // The view does not exist, insert it
-                $viewStmt = $pdo->prepare("INSERT INTO user_article_views (user_id, article_id) VALUES (:userId, :articleId)");
-                $viewStmt->execute(['userId' => $userId, 'articleId' => $articleId]);
+            // Process comment submission
+            if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {
+                // Assume submitComment() is a function that processes the comment submission
+                $commentResponse = submitComment($articleId, sanitizeInput($_POST['comment']), $username);
+                echo "<p>" . $commentResponse['message'] . "</p>"; // Display feedback from comment submission
             }
 
-            // Add to the session to avoid re-checking during the same session
-            if (!isset($_SESSION['viewed_articles'])) {
-                $_SESSION['viewed_articles'] = [];
-            }
-            $_SESSION['viewed_articles'][$articleId] = true; // Use article ID as key
-
-            $article = getArticleById($articleId);
+            include 'view_and_rate_article.php'; // Include the rest of the code that displays the article, comments, etc.
         }
-
     } catch (PDOException $e) {
-
         die("Could not connect to the database: " . $e->getMessage());
-
     }
 
 }
