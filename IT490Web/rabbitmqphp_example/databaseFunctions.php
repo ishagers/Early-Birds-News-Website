@@ -340,38 +340,52 @@ function getAverageRatingByArticleId($articleId)
     return $response;
 }
 
-function submitComment($articleId, $content, $username)
+function submitComment($articleId, $content, $commenterUsername)
 {
     $response = ['status' => false, 'message' => ''];
 
     try {
         $conn = getDatabaseConnection();
 
-        // Fetch user ID based on username
-        $userSql = "SELECT id FROM users WHERE username = :username LIMIT 1";
-        $userStmt = $conn->prepare($userSql);
-        $userStmt->bindParam(':username', $username, PDO::PARAM_STR);
-        $userStmt->execute();
-        $userResult = $userStmt->fetch(PDO::FETCH_ASSOC);
+        // Insert the comment into the comments table
+        $commentSql = "INSERT INTO comments (article_id, user_id, comment)
+                       SELECT :article_id, users.id, :comment
+                       FROM users
+                       WHERE users.username = :commenterUsername";
+        $commentStmt = $conn->prepare($commentSql);
+        $commentStmt->bindParam(':article_id', $articleId, PDO::PARAM_INT);
+        $commentStmt->bindParam(':comment', $content, PDO::PARAM_STR);
+        $commentStmt->bindParam(':commenterUsername', $commenterUsername, PDO::PARAM_STR);
+        $commentStmt->execute();
 
-        if (!$userResult) {
-            $response['message'] = "User not found.";
-            return $response;
-        }
-
-        $userId = $userResult['id'];
-
-        // Now insert the comment into the comments table using the user ID
-        $sql = "INSERT INTO comments (article_id, user_id, comment) VALUES (:article_id, :user_id, :comment)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':article_id', $articleId, PDO::PARAM_INT);
-        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
-        $stmt->bindParam(':comment', $content, PDO::PARAM_STR);
-        $stmt->execute();
-
-        if ($stmt->rowCount() > 0) {
+        if ($commentStmt->rowCount() > 0) {
             $response['status'] = true;
             $response['message'] = "Comment added successfully.";
+
+            // Fetch the article author's email address and article title for email notification
+            $emailSql = "SELECT users.email, articles.title
+                         FROM articles
+                         JOIN users ON articles.author_id = users.id
+                         WHERE articles.id = :article_id";
+            $emailStmt = $conn->prepare($emailSql);
+            $emailStmt->bindParam(':article_id', $articleId, PDO::PARAM_INT);
+            $emailStmt->execute();
+            $authorInfo = $emailStmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($authorInfo && $authorInfo['email']) {
+                // Prepare and send the email notification
+                $to = $authorInfo['email'];
+                $subject = "New comment on your article: " . $authorInfo['title'];
+                $message = "Hi, a new comment has been posted on your article titled '" . $authorInfo['title'] . "':\n\n" . $content;
+                $headers = "From: earlybird6900@gmail.com";
+
+                if (!mail($to, $subject, $message, $headers)) {
+                    // Log email sending failure
+                    error_log("Failed to send comment notification email to: " . $to);
+                } else {
+                    $response['emailStatus'] = "Email notification sent.";
+                }
+            }
         } else {
             $response['message'] = "Failed to add the comment.";
         }
