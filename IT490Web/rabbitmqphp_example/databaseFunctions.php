@@ -344,7 +344,7 @@ function submitComment($articleId, $content, $username)
 
         $userId = $userResult['id'];
 
-        // Now insert the comment into the comments table using the user ID
+        // We insert the comment into the comments table using the user ID
         $sql = "INSERT INTO comments (article_id, user_id, comment) VALUES (:article_id, :user_id, :comment)";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':article_id', $articleId, PDO::PARAM_INT);
