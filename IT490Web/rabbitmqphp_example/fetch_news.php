@@ -40,14 +40,14 @@ $responseData = json_decode($response, true);
 // Display and insert the news articles
 if ($responseData['status'] == 'ok' && !empty($responseData['articles'])) {
     foreach ($responseData['articles'] as $article) {
-	// Prepare SQL statement to insert the article into the database, using the corrected column name 'source'
-	$stmt = $conn->prepare("INSERT INTO articles (title, content, author_id, is_private, publication_date, source, url) VALUES (?, ?, NULL, 0, NOW(), 'api', ?) ON DUPLICATE KEY UPDATE title = VALUES(title), content = VALUES(content), source = VALUES(source), url = VALUES(url)");
+        // Prepare SQL statement to insert the article into the database
+        $stmt = $conn->prepare("INSERT INTO articles (title, content, author_id, is_private, publication_date, source, url) VALUES (?, ?, NULL, 0, NOW(), 'api', ?) ON DUPLICATE KEY UPDATE title = VALUES(title), content = VALUES(content), source = VALUES(source), url = VALUES(url)");
 
-	// Bind parameters. Since 'content' field expects the article's content, and 'description' might be shorter, consider if you need to adjust this to match your database schema
-	$stmt->bind_param("sss", $article['title'], $article['description'], $article['url']);
+        // Bind parameters
+        $stmt->bind_param("sss", $article['title'], $article['description'], $article['url']);
 
-	// Execute the insert
-	$stmt->execute();
+        // Execute the insert
+        $stmt->execute();
     }
 } else {
     echo "<p>Failed to fetch news.</p>";
@@ -55,6 +55,5 @@ if ($responseData['status'] == 'ok' && !empty($responseData['articles'])) {
 
 // Close the database connection
 $conn->close();
-
 ?>
 
