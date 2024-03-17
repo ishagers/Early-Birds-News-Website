@@ -34,6 +34,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
         <li><a href="privateArticle.php">Private</a></li>
         <li><a href="SearchArticles.php">SearchArticles</a></li>
         <li><a href="mainMenu.php">Home</a></li>
+        <li><a href="NewsAPIData.php">Latest News</a></li>
     </ul>
 </div>
 
