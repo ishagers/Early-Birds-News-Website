@@ -15,8 +15,6 @@
 
     <?php
 
-    echo "Testing the Search Article.<br>";
-
     // MySQL connection parameters
     $servername = "10.147.17.233";
     $username = "IT490DB";
@@ -54,7 +52,6 @@
     } else {
         // Log error or handle it as appropriate
         $articlesFromApi = [];
-        echo "No articles found from the API or an error occurred.<br>";
     }
 
     if (!empty($searchQuery)) {
@@ -74,7 +71,7 @@
         if ($result->num_rows > 0) {
             // Output the articles from the database
             while($row = $result->fetch_assoc()) {
-                echo "ID: " . $row["id"]. " - Title: <a href='articleDetails.php?id=" . $row["id"] . "'>" . $row["title"]. "</a> - Content: " . substr($row["content"], 0, 100). "..." . "<br>";
+                echo "ID: " . $row["id"]. " - Title: <a href='getArticleDetails.php?id=" . $row["id"] . "'>" . $row["title"]. "</a> - Content: " . substr($row["content"], 0, 100). "..." . "<br>";
             }
         } else {
             echo "No articles found.<br>";
