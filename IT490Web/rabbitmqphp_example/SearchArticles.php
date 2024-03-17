@@ -15,6 +15,8 @@
 
     <?php
 
+    echo "Testing the Search Article.<br>";
+
     // MySQL connection parameters
     $servername = "10.147.17.233";
     $username = "IT490DB";
@@ -28,13 +30,14 @@
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
+    echo "Connected to database successfully.<br>";
 
     // Handle search queries or fetch all articles if no query is specified
     $searchQuery = isset($_GET['query']) ? $_GET['query'] : '';
 
     // Define API key and URL for news fetching
     $apiKey = '898d8c1625884af1a9774e9662cb980d';
-    $newsUrl = "https://newsapi.org/v2/everything?q=".urlencode($searchQuery)."&apiKey={$apiKey}";
+    $newsUrl = "https://newsapi.org/v2/everything?q=" . urlencode($searchQuery) . "&apiKey={$apiKey}";
 
     // Initialize cURL session for news API
     $ch = curl_init();
@@ -51,17 +54,18 @@
     } else {
         // Log error or handle it as appropriate
         $articlesFromApi = [];
+        echo "No articles found from the API or an error occurred.<br>";
     }
 
     if (!empty($searchQuery)) {
-        // Use prepared statements to prevent SQL injection
-        $stmt = $conn->prepare("SELECT * FROM articles WHERE title LIKE CONCAT('%', ?, '%') OR content LIKE CONCAT('%', ?, '%')");
+        // Use prepared statements to prevent SQL injection and only select public articles
+        $stmt = $conn->prepare("SELECT * FROM articles WHERE (title LIKE CONCAT('%', ?, '%') OR content LIKE CONCAT('%', ?, '%')) AND is_private = 0");
         $stmt->bind_param("ss", $searchQuery, $searchQuery);
         $stmt->execute();
         $result = $stmt->get_result();
     } else {
-        // Fetch all articles if no search query is provided
-        $result = $conn->query("SELECT * FROM articles");
+        // Fetch all public articles if no search query is provided
+        $result = $conn->query("SELECT * FROM articles WHERE is_private = 0");
     }
 
     if ($result === false) {
@@ -69,8 +73,8 @@
     } else {
         if ($result->num_rows > 0) {
             // Output the articles from the database
-            while($row = $result->fetch_assoc()) {
-                echo "ID: " . $row["id"]. " - Title: <a href='getArticleDetails.php?id=" . $row["id"] . "'>" . $row["title"]. "</a> - Content: " . substr($row["content"], 0, 100). "..." . "<br>";
+            while ($row = $result->fetch_assoc()) {
+                echo "ID: " . $row["id"] . " - Title: <a href='articleDetails.php?id=" . $row["id"] . "'>" . $row["title"] . "</a> - Content: " . substr($row["content"], 0, 100) . "..." . "<br>";
             }
         } else {
             echo "No articles found.<br>";
@@ -79,7 +83,7 @@
 
     // Output the articles from the API
     foreach ($articlesFromApi as $article) {
-        echo "Title: <a href='" . htmlspecialchars($article["url"]) . "'>" . htmlspecialchars($article["title"]). "</a> - Description: " . htmlspecialchars($article["description"]) . "<br>";
+        echo "Title: <a href='" . htmlspecialchars($article["url"]) . "'>" . htmlspecialchars($article["title"]) . "</a> - Description: " . htmlspecialchars($article["description"]) . "<br>";
     }
 
     // Close connection
