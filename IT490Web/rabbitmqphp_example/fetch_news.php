@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Your GNews API key
+//Angel's GNews API key
 $apikey = '96143db15e40e92b47eadab6d54b6255';
 $query = 'example'; // Adjust your search query as needed
 $url = "https://gnews.io/api/v4/search?q={$query}&lang=en&country=us&max=10&token={$apikey}";
