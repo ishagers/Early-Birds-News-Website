@@ -70,7 +70,6 @@ if ($articleResponse['status']) {
     echo "<small>Published on: " . htmlspecialchars($article['publication_date']) . "</small>";
 
     // Ratings display logic...
-    $averageRatingResponse = getAverageRatingByArticleId($articleId);
     if ($averageRatingResponse['status']) {
         echo "<div id='ratings'>";
         echo "<h3>Average Rating: " . htmlspecialchars($averageRatingResponse['averageRating']) . "</h3>";
@@ -94,21 +93,19 @@ if ($articleResponse['status']) {
         echo "</div>";
     }
 
-    // Add a comment form
     echo "<div id='submit-comment'>";
     echo "<h3>Add a comment</h3>";
-    // Inside the HTML part where you have the comment form
-    <form action="" method="POST">
-    <input type="hidden" name="articleId" value="<?php echo htmlspecialchars($articleId); ?>">
-    <textarea name="comment" required></textarea>
-    <button type="submit" name="submitComment">Submit Comment</button>
-    </form>
+    echo "<form action='' method='POST'>";
+    echo "<input type='hidden' name='articleId' value='" . htmlspecialchars($articleId) . "'>";
+    echo "<textarea name='comment' required></textarea>";
+    echo "<button type='submit' name='submitComment'>Submit Comment</button>";
+    echo "</form>";
     echo "</div>";
 
     // Add rating submission form here
     echo "<div id='article-rating'>";
     echo "<h3>Rate this Article</h3>";
-    echo "<form action='RatingAndPreference.php' method='POST'>";
+    echo "<form action='' method='POST'>"; // Assuming the rating is handled in the same script. Adjust the action as needed.
     echo "<input type='hidden' name='article_id' value='" . htmlspecialchars($articleId) . "'>";
     echo "<label for='rating'>Rating:</label>";
     echo "<select name='rating' id='rating' required>";
@@ -125,5 +122,4 @@ if ($articleResponse['status']) {
     // If the article is not found or there's another issue, display the message
     echo "<p>" . htmlspecialchars($articleResponse['message']) . "</p>";
 }
-
-
+?>
