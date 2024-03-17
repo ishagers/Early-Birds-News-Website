@@ -12,13 +12,21 @@ $username = $_SESSION['username'];
 $articleId = $userId = null;
 
 // Handle the POST request for comment submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitComment'], $_POST['comment'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitComment'], $_POST['comment'], $_POST['articleId'])) {
+    $articleId = $_POST['articleId'];
     $commentContent = $_POST['comment'];
-    // Call your function to submit the comment
+    // Here you can add some debugging to see if the values are correct:
+    error_log("Comment Content: " . $commentContent);
     $commentResponse = submitComment($articleId, $commentContent, $username);
 
-    // Optionally, you could do something with the $commentResponse here,
-    // like displaying a message to the user
+    // Check the response from your submitComment function
+    if ($commentResponse['status']) {
+        // Comment was successful
+        error_log("Comment was submitted successfully.");
+    } else {
+        // Comment failed
+        error_log("Comment submission failed: " . $commentResponse['message']);
+    }
 }
 
 if (isset($_GET['id'])) {
@@ -90,11 +98,11 @@ if ($articleResponse['status']) {
     echo "<div id='submit-comment'>";
     echo "<h3>Add a comment</h3>";
     // Inside the HTML part where you have the comment form
-    echo "<form action='' method='POST'>"; // action is set to the current script
-    echo "<input type='hidden' name='articleId' value='" . htmlspecialchars($articleId) . "'>";
-    echo "<textarea name='comment' required></textarea>";
-    echo "<button type='submit' name='submitComment'>Submit Comment</button>";
-    echo "</form>";
+    <form action="" method="POST">
+    <input type="hidden" name="articleId" value="<?php echo htmlspecialchars($articleId); ?>">
+    <textarea name="comment" required></textarea>
+    <button type="submit" name="submitComment">Submit Comment</button>
+    </form>
     echo "</div>";
 
     // Add rating submission form here
