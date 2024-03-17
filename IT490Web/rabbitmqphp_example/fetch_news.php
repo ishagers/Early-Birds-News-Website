@@ -3,9 +3,9 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Your GNews API key
+// the GNews API key
 $apikey = '96143db15e40e92b47eadab6d54b6255';
-$query = 'example'; // This is your search query, adjust as needed
+$query = 'example'; // Adjust your search query as needed
 $url = "https://gnews.io/api/v4/search?q={$query}&lang=en&country=us&max=10&token={$apikey}";
 
 $ch = curl_init();
@@ -29,9 +29,12 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+echo "<ul>"; // Start an unordered list for better web display
+
 foreach ($articles as $article) {
     // Check if content is present; if not, use 'No content available.'
     $content = isset($article['content']) ? $article['content'] : 'No content available.';
+    
     // Prepare SQL statement to insert the article into the database
     $stmt = $conn->prepare("INSERT INTO articles (title, content, author_id, is_private, publication_date, source, url) VALUES (?, ?, NULL, 0, NOW(), 'api', ?) ON DUPLICATE KEY UPDATE title = VALUES(title), content = VALUES(content), source = VALUES(source), url = VALUES(url)");
     
@@ -41,10 +44,14 @@ foreach ($articles as $article) {
     // Execute the insert
     $stmt->execute();
     
-    echo "Inserted: " . $article['title'] . "\n"; // For debugging
+    // For a better web display, wrap the inserted article title in a list item
+    echo "<li>Inserted: " . htmlspecialchars($article['title']) . "</li>"; // Use htmlspecialchars to prevent XSS
 }
+
+echo "</ul>"; // Close the unordered list
 
 // Close the database connection
 $conn->close();
+
 ?>
 
