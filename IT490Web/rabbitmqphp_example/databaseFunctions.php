@@ -1,4 +1,13 @@
 <?php
+require 'vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'path/to/PHPMailer-master/src/Exception.php';
+require 'path/to/PHPMailer-master/src/PHPMailer.php';
+require 'path/to/PHPMailer-master/src/SMTP.php';
+
+$mail = new PHPMailer(true); // Passing `true` enables exceptions
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 // Database connection details as constants
@@ -6,8 +15,7 @@ define('DB_SERVER', '10.147.17.233');
 define('DB_USERNAME', 'IT490DB');
 define('DB_PASSWORD', 'IT490DB');
 define('DB_DATABASE', 'EARLYBIRD');
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+
 
 function getDatabaseConnection()
 {
