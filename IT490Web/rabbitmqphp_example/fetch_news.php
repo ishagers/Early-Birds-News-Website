@@ -16,7 +16,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// The API endpoint with your API key
+// The API endpoint with API key
 $apiKey = 'UvENR8ucJtM7ZSpXxUokK3tttamiRut7HDaaXc6Q';
 $newsUrl = "https://api.thenewsapi.com/v1/news/headlines?apiKey={$apiKey}&country=us&language=en";
 
@@ -39,13 +39,13 @@ curl_close($curl);
 // Decode the JSON response
 $responseData = json_decode($response, true);
 
-// Display and insert the news articles
-if ($responseData['status'] == 'ok' && !empty($responseData['articles'])) {
-    foreach ($responseData['articles'] as $article) {
+// Check the response and proceed with your logic
+if (isset($responseData['data']) && !empty($responseData['data']['articles'])) {
+    foreach ($responseData['data']['articles'] as $article) {
         // Check if description is present; if not, use a placeholder or empty string
         $content = isset($article['description']) ? $article['description'] : 'No content available.';
 
-        // Prepare SQL statement to insert the article into the database, using the corrected column name 'source'
+        // Prepare SQL statement to insert the article into the database
         $stmt = $conn->prepare("INSERT INTO articles (title, content, author_id, is_private, publication_date, source, url) VALUES (?, ?, NULL, 0, NOW(), 'api', ?) ON DUPLICATE KEY UPDATE title = VALUES(title), content = VALUES(content), source = VALUES(source), url = VALUES(url)");
 
         // Bind parameters
