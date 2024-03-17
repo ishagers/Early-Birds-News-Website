@@ -36,8 +36,6 @@ if (isset($_GET['id'])) {
                 $commentResponse = submitComment($articleId, sanitizeInput($_POST['comment']), $username);
                 echo "<p>" . $commentResponse['message'] . "</p>"; // Display feedback from comment submission
             }
-
-            include 'view_and_rate_article.php'; // Include the rest of the code that displays the article, comments, etc.
         }
     } catch (PDOException $e) {
         die("Could not connect to the database: " . $e->getMessage());
