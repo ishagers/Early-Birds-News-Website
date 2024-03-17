@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// the GNews API key
+// Your GNews API key
 $apikey = '96143db15e40e92b47eadab6d54b6255';
 $query = 'example'; // Adjust your search query as needed
 $url = "https://gnews.io/api/v4/search?q={$query}&lang=en&country=us&max=10&token={$apikey}";
@@ -44,8 +44,11 @@ foreach ($articles as $article) {
     // Execute the insert
     $stmt->execute();
     
-    // For a better web display, wrap the inserted article title in a list item
-    echo "<li>Inserted: " . htmlspecialchars($article['title']) . "</li>"; // Use htmlspecialchars to prevent XSS
+    // For a better web display, include hyperlinks and images
+    echo "<li>";
+    echo "<img src='" . htmlspecialchars($article['image']) . "' alt='' style='width:100px; height:auto;'>"; // Display the image
+    echo "<a href='" . htmlspecialchars($article['url']) . "' target='_blank'>" . htmlspecialchars($article['title']) . "</a>"; // Make the title a clickable link
+    echo "</li>"; // Use htmlspecialchars to prevent XSS
 }
 
 echo "</ul>"; // Close the unordered list
