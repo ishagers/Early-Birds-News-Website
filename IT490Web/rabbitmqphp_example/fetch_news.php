@@ -17,8 +17,8 @@ if ($conn->connect_error) {
 }
 
 // The API endpoint with your API key
-$apiKey = '898d8c1625884af1a9774e9662cb980d';
-$newsUrl = "https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey={$apiKey}";
+$apiKey = 'UvENR8ucJtM7ZSpXxUokK3tttamiRut7HDaaXc6Q';
+$newsUrl = "https://api.thenewsapi.com/v1/news/headlines?apiKey={$apiKey}&country=us&language=en";
 
 // Initialize cURL session
 $curl = curl_init($newsUrl);
