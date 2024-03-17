@@ -10,6 +10,7 @@ $curl = curl_init($url);
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($curl, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
+    'User-Agent: EarlyBirds/Beta' // Updated User-Agent header
 ]);
 
 // Execute the cURL session and get the response
