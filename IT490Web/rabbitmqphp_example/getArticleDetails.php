@@ -79,7 +79,7 @@ if ($articleResponse['status']) {
     // Add a comment form
     echo "<div id='submit-comment'>";
     echo "<h3>Add a comment</h3>";
-    echo "<form action='getArticleDetails.php?id=" . htmlspecialchars($articleId) . "' method='post'>";
+    echo "<form method='POST'>";
     echo "<textarea name='comment' required></textarea>";
     echo "<button type='submit' name='submitComment'>Submit Comment</button>";
     echo "</form>";

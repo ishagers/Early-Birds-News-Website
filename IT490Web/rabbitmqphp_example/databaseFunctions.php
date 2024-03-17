@@ -208,7 +208,7 @@ function fetchUserArticles($username, $limit = 15, $filter = 'all', $sourceFilte
 
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
     $stmt->execute();
     $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

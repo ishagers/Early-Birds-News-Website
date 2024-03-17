@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 $username = $_SESSION['username'];
-$articleData = fetchUserArticles($username, 10, 'public');
+$articleData = fetchUserArticles($username, 15, 'public');
 ?>
 <!DOCTYPE html>
 <html lang="en">
