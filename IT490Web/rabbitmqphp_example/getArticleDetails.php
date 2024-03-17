@@ -1,60 +1,38 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
-include 'newsFetcher.php'; // Ensure this file exists
 require('session.php');
 require('databaseFunctions.php');
+//require 'newsFetcher.php'; // Ensure this file exists
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-    $username = $_SESSION['username'];
+checkLogin();
+
+$username = $_SESSION['username'];
+$articleId = null;
 
 if (isset($_GET['id'])) {
     $articleId = $_GET['id'];
-    $article = getArticleById($articleId); // Fetch the article details
-    echo "Debug Received ID: " . htmlspecialchars($articleId);
+    $article = getArticleById($articleId); // Ensure this function correctly fetches article data
 
     // Handle comment submission
     if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {
         $commentContent = $_POST['comment'];
-        $result = submitComment($articleId, $commentContent, $username); // Assuming submitComment uses username
+        // Assuming the submitComment function correctly handles the comment submission
+        $result = submitComment($articleId, $commentContent, $username); 
 
-        // Redirect with message after submission
         echo "<script>alert('" . htmlspecialchars($result['message']) . "'); window.location.href = 'mainMenu.php';</script>";
-        consoleLog("Debug information: 2");
         exit();
     }
-    consoleLog("Debug information: 3");
+
     if ($article && $article['status']) {
-        // Display the article content, related news, and rating form
+        // Display the article content
         echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
         echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
         echo "<small>Published on: " . htmlspecialchars($article['article']['publication_date']) . "</small>";
-        consoleLog("Debug information: 4");
-	$apiKey = '898d8c1625884af1a9774e9662cb980d';
-	$newsUrl = 'https://newsapi.org/v2/top-headlines?country=us&apiKey=' . $apiKey;
 
-	// Use file_get_contents or cURL to fetch news data
-	$response = file_get_contents($newsUrl);
-	if ($response) {
-        consoleLog("Debug information: 5");
-	    $newsData = json_decode($response, true);
-	    if ($newsData['status'] == 'ok') {
-		echo "<div class='news-section'>";
-		echo "<h3>Related News</h3>";
-		foreach ($newsData['articles'] as $article) {
-		    echo "<div class='news-article'>";
-		    echo "<h4><a href='" . htmlspecialchars($article['url']) . "'>" . htmlspecialchars($article['title']) . "</a></h4>";
-		    echo "<p>" . htmlspecialchars($article['description']) . "</p>";
-		    echo "</div>";
-		}
-		echo "</div>";
-	    }
-        consoleLog("Debug information: 6");
-	}
-	else{
-        echo "<p>Error at newsdata</p>";
-    }
-
+        // Include the news fetcher script to display related news
+        include 'newsFetcher.php'; // 
 
     // Ratings display logic...
     $averageRatingResponse = getAverageRatingByArticleId($articleId);
