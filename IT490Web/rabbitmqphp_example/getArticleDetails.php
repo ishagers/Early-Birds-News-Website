@@ -61,6 +61,7 @@ if (isset($_GET['id'])) {
 }
 
 $articleResponse = getArticleById($articleId);
+$averageRatingResponse = getAverageRatingByArticleId($articleId);
 
 if ($articleResponse['status']) {
     $article = $articleResponse['article'];
