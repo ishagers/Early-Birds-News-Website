@@ -10,23 +10,16 @@ checkLogin();
 
 $username = $_SESSION['username'];
 $articleId = $userId = null;
+$article = getArticleById($articleId);
 
 // Handle the POST request for comment submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitComment'], $_POST['comment'], $_POST['articleId'])) {
-    $articleId = $_POST['articleId'];
+if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $userId) {
     $commentContent = $_POST['comment'];
-    // Here you can add some debugging to see if the values are correct:
-    error_log("Comment Content: " . $commentContent);
-    $commentResponse = submitComment($articleId, $commentContent, $username);
+    $result = submitComment($articleId, $commentContent, $userId); // Use submitComment
 
-    // Check the response from your submitComment function
-    if ($commentResponse['status']) {
-        // Comment was successful
-        error_log("Comment was submitted successfully.");
-    } else {
-        // Comment failed
-        error_log("Comment submission failed: " . $commentResponse['message']);
-    }
+    // Redirect to the home menu after showing an alert with the result message
+    echo "<script>alert('" . htmlspecialchars($result['message']) . "'); window.location.href = 'mainMenu.php';</script>";
+    exit();
 }
 
 if (isset($_GET['id'])) {
@@ -59,18 +52,7 @@ if (isset($_GET['id'])) {
         die("Could not connect to the database: " . $e->getMessage());
     }
 }
-
-$articleResponse = getArticleById($articleId);
 $averageRatingResponse = getAverageRatingByArticleId($articleId);
-
-if ($articleResponse['status']) {
-    $article = $articleResponse['article'];
-    // Display the article's title, content, and publication date
-    echo "<h2>" . htmlspecialchars($article['title']) . "</h2>";
-    echo "<p>" . nl2br(htmlspecialchars($article['content'])) . "</p>";
-    echo "<small>Published on: " . htmlspecialchars($article['publication_date']) . "</small>";
-
-    // Ratings display logic...
     if ($averageRatingResponse['status']) {
         echo "<div id='ratings'>";
         echo "<h3>Average Rating: " . htmlspecialchars($averageRatingResponse['averageRating']) . "</h3>";
@@ -94,19 +76,20 @@ if ($articleResponse['status']) {
         echo "</div>";
     }
 
+    // Comment submission form
     echo "<div id='submit-comment'>";
     echo "<h3>Add a comment</h3>";
-    echo "<form action='' method='POST'>";
-    echo "<input type='hidden' name='articleId' value='" . htmlspecialchars($articleId) . "'>";
+    echo "<form action='getArticleDetails.php?id=" . htmlspecialchars($articleId) . "' method='post'>";
     echo "<textarea name='comment' required></textarea>";
     echo "<button type='submit' name='submitComment'>Submit Comment</button>";
     echo "</form>";
     echo "</div>";
 
-    // Add rating submission form here
+    // Rating submission form
+    // Make sure the RatingAndPreference.php file exists and can handle the POST request for submitting ratings
     echo "<div id='article-rating'>";
     echo "<h3>Rate this Article</h3>";
-    echo "<form action='' method='POST'>"; // Assuming the rating is handled in the same script. Adjust the action as needed.
+    echo "<form action='RatingAndPreference.php' method='POST'>";
     echo "<input type='hidden' name='article_id' value='" . htmlspecialchars($articleId) . "'>";
     echo "<label for='rating'>Rating:</label>";
     echo "<select name='rating' id='rating' required>";
@@ -119,8 +102,7 @@ if ($articleResponse['status']) {
     echo "<input type='submit' name='submitRating' value='Submit Rating'>";
     echo "</form>";
     echo "</div>";
+
 } else {
-    // If the article is not found or there's another issue, display the message
-    echo "<p>" . htmlspecialchars($articleResponse['message']) . "</p>";
+    echo "<p>Article not found.</p>";
 }
-?>
