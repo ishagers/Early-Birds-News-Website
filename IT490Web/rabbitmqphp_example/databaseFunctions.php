@@ -3,13 +3,9 @@ require 'vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'PHPMailer-master/src/Exception.php';
-require 'PHPMailer-master/src/PHPMailer.php';
-require 'PHPMailer-master/src/SMTP.php';
-
-$mail = new PHPMailer(true); // Passing `true` enables exceptions
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
+
 // Database connection details as constants
 define('DB_SERVER', '10.147.17.233');
 define('DB_USERNAME', 'IT490DB');
@@ -388,18 +384,19 @@ function submitComment($articleId, $content, $commenterUsername) {
             $authorInfo = $emailStmt->fetch(PDO::FETCH_ASSOC);
 
             if ($authorInfo) {
-                // Prepare and send the email notification
-                $mail = new PHPMailer\PHPMailer\PHPMailer();
+                $mail = new PHPMailer(true); // Passing `true` enables exceptions
+
+                // Configure PHPMailer settings
                 $mail->isSMTP();
                 $mail->Host = 'smtp.gmail.com';
                 $mail->SMTPAuth = true;
                 $mail->Username = 'earlybird6900@gmail.com';
-                $mail->Password = 'mtxekiuhxgpllxqu'; // Consider using environment variables or another secure method to store credentials
+                $mail->Password = 'mtxekiuhxgpllxqu';
                 $mail->SMTPSecure = 'ssl';
-                $mail->Port = 465; // Corrected port number
-                $mail->setFrom('earlybird6900@gmail.com', 'EarlyBird Platform'); // Optional: Add a second parameter as the name
-                $mail->addAddress($authorInfo['email']); // Add recipient
-                $mail->isHTML(true); // Set email format to HTML
+                $mail->Port = 465;
+                $mail->setFrom('earlybird6900@gmail.com', 'EarlyBird Platform');
+                $mail->addAddress($authorInfo['email']);
+                $mail->isHTML(true);
                 $mail->Subject = "New comment on your article: " . $authorInfo['title'];
                 $mail->Body = "Hi, a new comment has been posted on your article titled '" . $authorInfo['title'] . "':<br><br>" . nl2br(htmlspecialchars($content));
 
