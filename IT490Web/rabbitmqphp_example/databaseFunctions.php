@@ -3,9 +3,9 @@ require 'vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'path/to/PHPMailer-master/src/Exception.php';
-require 'path/to/PHPMailer-master/src/PHPMailer.php';
-require 'path/to/PHPMailer-master/src/SMTP.php';
+require 'PHPMailer-master/src/Exception.php';
+require 'PHPMailer-master/src/PHPMailer.php';
+require 'PHPMailer-master/src/SMTP.php';
 
 $mail = new PHPMailer(true); // Passing `true` enables exceptions
 ini_set('display_errors', 1);
