@@ -263,7 +263,7 @@ function getCommentsByArticleId($articleId) {
                 FROM comments c
                 JOIN users u ON c.user_id = u.id
                 JOIN articles a ON c.article_id = a.id
-                WHERE c.article_id = :articleId AND a.source = 'user'
+                WHERE c.article_id = :articleId
                 ORDER BY c.id DESC";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
