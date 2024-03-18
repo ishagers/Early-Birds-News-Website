@@ -32,23 +32,31 @@ if ($conn->connect_error) {
 echo "<ul>"; // Start an unordered list for better web display
 
 foreach ($articles as $article) {
-    // Check if content is present; if not, use 'No content available.'
-    $content = isset($article['content']) ? $article['content'] : 'No content available.';
-    
-    // Prepare SQL statement to insert the article into the database
-    $stmt = $conn->prepare("INSERT INTO articles (title, content, author_id, is_private, publication_date, source, url) VALUES (?, ?, NULL, 0, NOW(), 'api', ?) ON DUPLICATE KEY UPDATE title = VALUES(title), content = VALUES(content), source = VALUES(source), url = VALUES(url)");
-    
-    // Bind parameters
-    $stmt->bind_param("sss", $article['title'], $content, $article['url']);
-    
-    // Execute the insert
+    $title = $article['title'] ?? 'No title available.';
+    $content = $article['content'] ?? 'No content available.';
+    $articleUrl = $article['url'] ?? '#';
+
+    // Check if an article with the same title already exists
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM articles WHERE title = ?");
+    $stmt->bind_param("s", $title);
     $stmt->execute();
-    
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+
+    // If the article does not exist, insert it
+    if ($count == 0) {
+        $insertStmt = $conn->prepare("INSERT INTO articles (title, content, author_id, is_private, publication_date, source, url) VALUES (?, ?, NULL, 0, NOW(), 'api', ?)");
+        $insertStmt->bind_param("sss", $title, $content, $articleUrl);
+        $insertStmt->execute();
+        $insertStmt->close();
+    }
+
     // For a better web display, include hyperlinks and images
     echo "<li>";
-    echo "<img src='" . htmlspecialchars($article['image']) . "' alt='' style='width:100px; height:auto;'>"; // Display the image
-    echo "<a href='" . htmlspecialchars($article['url']) . "' target='_blank'>" . htmlspecialchars($article['title']) . "</a>"; // Make the title a clickable link
-    echo "</li>"; // Use htmlspecialchars to prevent XSS
+    echo "<img src='" . htmlspecialchars($article['image']) . "' alt='' style='width:100px; height:auto;'>";
+    echo "<a href='" . htmlspecialchars($articleUrl) . "' target='_blank'>" . htmlspecialchars($title) . "</a>";
+    echo "</li>";
 }
 
 echo "</ul>"; // Close the unordered list
@@ -56,5 +64,4 @@ echo "</ul>"; // Close the unordered list
 // Close the database connection
 $conn->close();
 
-?>
 
