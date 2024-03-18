@@ -1,7 +1,10 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
 require 'vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+
+$mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
