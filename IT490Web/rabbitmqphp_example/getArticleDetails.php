@@ -11,9 +11,16 @@ checkLogin();
 
 $username = $_SESSION['username'];
 $articleId = $userId = null;
+$article = null;
 
-if (isset($_POST['submitShare']) && !empty($_POST['shareEmail'])) {
-    // Assuming $article contains article details including title and content
+// Check if an article ID is provided and fetch the article
+if (isset($_GET['id'])) {
+    $articleId = $_GET['id'];
+    $article = getArticleById($articleId); // Assume this function returns the article array with a 'status' key
+}
+
+// Now that you have the article details, you can handle the share request
+if (isset($_POST['submitShare']) && !empty($_POST['shareEmail']) && $article && $article['status']) {
     $recipientEmail = sanitizeInput($_POST['shareEmail']); // Sanitize the email input
     $articleTitle = htmlspecialchars($article['article']['title']);
     $articleContent = nl2br(htmlspecialchars($article['article']['content']));
