@@ -523,3 +523,48 @@ function setArticlePublic($articleId, $username)
     }
     return $response;
 }
+
+function SendArticle($recipientEmail, $articleTitle, $articleContent, $articleUrl = null)
+{
+    $response = ['status' => false, 'message' => ''];
+
+    try {
+        $mail = new PHPMailer(true); // Create instance with exceptions enabled
+
+        // Your existing PHPMailer settings
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'earlybird6900@gmail.com'; // Your SMTP username
+        $mail->Password = 'mtxekiuhxgpllxqu'; // Your SMTP password
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port = 465;
+        $mail->setFrom('earlybird6900@gmail.com', 'EarlyBird Platform');
+
+        // Add recipient
+        $mail->addAddress($recipientEmail);
+
+        // Set email format to HTML
+        $mail->isHTML(true);
+
+        // Email subject
+        $mail->Subject = 'Interesting Article for You!';
+
+        // Email body content
+        $bodyContent = '<h1>' . htmlspecialchars($articleTitle) . '</h1>';
+        $bodyContent .= '<p>' . nl2br(htmlspecialchars($articleContent)) . '</p>';
+        if ($articleUrl) {
+            $bodyContent .= 'Read more at: <a href="' . htmlspecialchars($articleUrl) . '">' . htmlspecialchars($articleUrl) . '</a>';
+        }
+        $mail->Body = $bodyContent;
+
+        // Attempt to send the email
+        $mail->send();
+        $response['status'] = true;
+        $response['message'] = 'Article has been sent successfully.';
+    } catch (Exception $e) {
+        $response['message'] = 'Failed to send the article. Mailer Error: ' . $mail->ErrorInfo;
+    }
+
+    return $response;
+}

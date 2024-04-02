@@ -12,6 +12,20 @@ checkLogin();
 $username = $_SESSION['username'];
 $articleId = $userId = null;
 
+if (isset($_POST['submitShare']) && !empty($_POST['shareEmail'])) {
+    // Assuming $article contains article details including title and content
+    $recipientEmail = sanitizeInput($_POST['shareEmail']); // Sanitize the email input
+    $articleTitle = $article['article']['title'];
+    $articleContent = $article['article']['content'];
+    $articleUrl = ""; // If you have an article URL, include it here
+
+    // Call the SendArticle function
+    $emailResponse = SendArticle($recipientEmail, $articleTitle, $articleContent, $articleUrl);
+
+    // Feedback message from attempting to send the article
+    echo "<p>" . $emailResponse['message'] . "</p>"; // Display feedback message
+}
+
 // Display rating submission feedback
 if (isset($_SESSION['message'])) {
     echo "<p>" . $_SESSION['message'] . "</p>";
@@ -96,6 +110,14 @@ if ($article && $article['status']) {
     echo "<option value='5'>5</option>";
     echo "</select>";
     echo "<input type='submit' name='submitRating' value='Submit Rating'>";
+    echo "</form>";
+    echo "</div>";
+
+    echo "<div id='share-article'>";
+    echo "<h3>Share this Article</h3>";
+    echo "<form action='getArticleDetails.php?id=" . htmlspecialchars($articleId) . "' method='post'>";
+    echo "<input type='email' name='shareEmail' placeholder='Enter email to share' required>";
+    echo "<button type='submit' name='submitShare'>Share Article</button>";
     echo "</form>";
     echo "</div>";
 
