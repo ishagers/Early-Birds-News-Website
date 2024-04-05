@@ -11,20 +11,20 @@ database='Deployment'
 # Prompt user for input
 echo "Please enter the dev machine (FE, BE, DMZ): "
 read machine
-echo "Please Enter the config File Name: "
+echo "Please Enter the config File Name(FE,BE,DMZ,DB,CSS .config): "
 read configFile
 
 # Set configuration based on machine type
 case $machine in
     "FE")
-        path="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
+        path="/var/www/html/IT490-Project/IT490Web/Deployment"
         devMachineName="juanguti"
         devIP="10.147.17.233"
         devPass="YogiMaster123@"
         echo "Read FE machine details"
         ;;
     "BE")
-        path="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
+        path="/var/www/html/IT490-Project/IT490Web/Deployment"
         devMachineName="ANGELTI490DEVUSERMACHINE"
         devIP="10.147.17.90"
         devPass="ANGELIT490DEVPASSWORD"
@@ -61,7 +61,9 @@ echo "SCP command completed."
     services=${lines[7]}
     length=${#lines[@]}
 
-    # Copy files outlined in config
+    path="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
+
+    # Now the loop that copies the PHP files will use the correct path
     for ((i=9; i<${length}; i++)); do
         echo "Copying ${lines[i]} from dev..."
         sshpass -v -p "$devPass" scp "$devMachineName@$devIP:$path/${lines[i]}" "./${lines[i]}"
