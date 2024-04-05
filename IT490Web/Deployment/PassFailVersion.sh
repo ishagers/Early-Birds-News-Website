@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # MySQL login and db stuff
 user='IT490DB'
 password='IT490DB'
@@ -8,7 +7,7 @@ database='Deployment'
 echo "Please enter the version number: "
 read version
 
-echo "Did it pass (p) or fail (f)?: "
+echo "(pass) OR (fail)"
 read passFail
 
 # Function to execute commands on the production machine

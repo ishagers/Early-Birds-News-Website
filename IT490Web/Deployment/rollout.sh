@@ -94,4 +94,3 @@ for service in "${servicesArray[@]}"; do
 done
 
     let "version=version+1"
-fi
