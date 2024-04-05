@@ -43,40 +43,51 @@ case $machine in
         ;;
 esac
 
-# Ensure version directory doesn't already exist
-if [ ! -d "v$version" ]; then
-    mkdir "v$version" && cd "v$version" || exit
-            echo "Passed first if statement (version check)"
-    # Securely copy config file into folder
+# Function to increment version number and find a non-existing directory
+increment_version() {
+    while [ -d "v$version" ]; do
+        let "version=version+1"
+    done
+}
+
+# Call the increment_version function to find the correct version directory to create
+increment_version
+
+# Now that we have the correct version, create the directory and move into it
+mkdir "v$version" && cd "v$version" || exit
+echo "Creating and moving into directory v$version..."
+
+# Securely copy config file into folder
 sshpass -v -p "$devPass" scp -o StrictHostKeyChecking=no "$devMachineName@$devIP:$path/$configFile" "./$configFile"
 echo "SCP command completed."
 
-    # Read config file into array
-    IFS=$'\n' read -d '' -r -a lines < "$configFile"
-    
-    # Extract package info from config
-    pkgName=${lines[2]}
-    installLoc=${lines[5]}
-    qaMachine=${lines[4]}
-    services=${lines[7]}
-    length=${#lines[@]}
+# Read config file into array
+IFS=$'\n' read -d '' -r -a lines < "$configFile"
 
-    path="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
+# Extract package info from config
+pkgName=${lines[2]}
+installLoc=${lines[5]}
+qaMachine=${lines[4]}
+services=${lines[7]}
+length=${#lines[@]}
 
-    # Now the loop that copies the PHP files will use the correct path
-    for ((i=9; i<${length}; i++)); do
-        echo "Copying ${lines[i]} from dev..."
-        sshpass -v -p "$devPass" scp "$devMachineName@$devIP:$path/${lines[i]}" "./${lines[i]}"
-    done
+# Assume the actual files to be copied are located at the install location specified in the config file
+path=$installLoc
 
-    # Zip files excluding the config
-    zip -r -j "$pkgName.zip" ./* -x "*.config"
+# Copy files outlined in config
+for ((i=9; i<${length}; i++)); do
+    echo "Copying ${lines[i]} from dev..."
+    sshpass -v -p "$devPass" scp "$devMachineName@$devIP:$path/${lines[i]}" "./${lines[i]}"
+done
 
-    echo "Package $pkgName.zip created."
+# Zip files excluding the config
+zip -r -j "$pkgName.zip" ./* -x "*.config"
 
-    # Insert version info into database 
-    mysql --user="$user" --password="$password" --database="$database" -e "INSERT INTO versionHistory (version, pkgName, passed) VALUES ('$version', '$pkgName', NULL);"
-    echo "Version: $version pushed with package name: $pkgName"
+echo "Package $pkgName.zip created."
+
+# Insert version info into database
+mysql --user="$user" --password="$password" --database="$database" -e "INSERT INTO versionHistory (version, pkgName, passed) VALUES ('$version', '$pkgName', NULL);"
+echo "Version: $version pushed with package name: $pkgName"
 
 # Restart services based on the config
 IFS=',' read -r -a servicesArray <<< "$services"
@@ -85,7 +96,3 @@ for service in "${servicesArray[@]}"; do
     # Use SSH to execute service restart on the target machine
     ssh -t "$devMachineName@$devIP" "echo $devPass | sudo -S systemctl restart $service"
 done
-
-else
-    let "version=version+1"
-fi
