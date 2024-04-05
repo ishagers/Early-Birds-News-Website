@@ -1,214 +1,85 @@
 #!/bin/bash/
 
-#set a version variable
+# Initialize version variable
 version=1
 
-#mysql login and db stuff
-user=bash
-password=1234
-database=deployment
+# MySQL login and DB configurations
+user='IT490DB'
+password='IT490DB'
+database='Deployment'
 
-#get basic info file
-echo "Please enter the dev machine(FE, BE, DMZ): "
+# Prompt user for input
+echo "Please enter the dev machine (FE, BE, DMZ): "
 read machine
-#echo "Where did it install?(FE, BE, DMZ)?: $location"
 echo "Please Enter the config File Name: "
 read configFile
-#="frontEndFiles.config"
-#set the path for where everyone keeps their files
 
-if [ "$machine" == "FE" ]; then
-    path="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
-    devMachineName="gds"
-    devIP="172.27.35.201"
-    devPass="R0seli197$"
+# Set configuration based on machine type
+case $machine in
+    "FE")
+        path="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
+        devMachineName="juanguti"
+        devIP="10.147.17.233"
+        devPass="YogiMaster123@"
+        ;;
+    "BE")
+        path="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
+        devMachineName="ANGELTI490DEVUSERMACHINE"
+        devIP="10.147.17.90"
+        devPass="ANGELIT490DEVPASSWORD"
+        ;;
+    "DMZ")
+        path="/var/www/html/IT490-Project/IT490Web/DMZ"
+        devMachineName="AngelDMZ490"
+        devIP="10.147.17.227"
+        devPass="dmz490"
+        ;;
+    *)
+        echo "Error: Invalid machine type specified. Please enter 'FE', 'BE', or 'DMZ'."
+        exit 1
+        ;;
+esac
 
-elif [ "$machine" == "BE" ]; then
-    path="/var/www/html"
-    devMachineName="dran"
-    devIP="172.27.63.249"
-    devPass="pharmacy"
-
-elif [ "$machine" == "DMZ" ]; then
-    path="/var/www/html"
-    devMachineName="bsingh"
-    devIP="172.28.125.110"
-    devPass="05072000"
-else
-    echo "Error: Invalid machine type specified. Please enter 'FE', 'BE', or 'DMZ'."
-    exit 1
-fi
-
-
-while :
-do
-    if [ ! -d "v$version" ]; then
-    mkdir "v$version"
-    cd v$version
+# Ensure version directory doesn't already exist
+if [ ! -d "v$version" ]; then
+    mkdir "v$version" && cd "v$version" || exit
     
-    #copy config file into folder
-    sshpass -v -p $devPass scp $devMachineName@$devIP:$path/$configFile ~/deployment/v$version/$configFile 
-    #read file into array
-    IFS=$'\n' read -d '' -r -a lines < $configFile
-    #get each file outlined in config
+    # Securely copy config file into folder
+    sshpass -v -p "$devPass" scp "$devMachineName@$devIP:$path/$configFile" "./$configFile"
+    
+    # Read config file into array
+    IFS=$'\n' read -d '' -r -a lines < "$configFile"
+    
+    # Extract package info from config
     pkgName=${lines[2]}
     installLoc=${lines[5]}
     qaMachine=${lines[4]}
     services=${lines[7]}
     length=${#lines[@]}
-    for ((i=9; i<${length}; i++));
-        do
-            echo copying ${lines[i]} from dev...
-            sshpass -v -p $devPass scp $devMachineName@$devIP:$path//${lines[i]} ~/deployment/v$version/${lines[i]} 
-        done
 
+    # Copy files outlined in config
+    for ((i=9; i<${length}; i++)); do
+        echo "Copying ${lines[i]} from dev..."
+        sshpass -v -p "$devPass" scp "$devMachineName@$devIP:$path/${lines[i]}" "./${lines[i]}"
+    done
 
-    #zip files
-    zip -r -j $pkgName ~/deployment/v$version/* -x "*.config"
+    # Zip files excluding the config
+    zip -r -j "$pkgName.zip" ./* -x "*.config"
 
-    #set QA Machine paths and IP
-    if [ $qaMachine == "FE" ]; then
-        QAMachineName="gds25"
-        QAIP="172.27.249.118"
-        QAPass='R0seli197$'
+    echo "Package $pkgName.zip created."
 
-        #remove files from qa
-        for ((i=9; i<${length}; i++));
-            do
-                echo deleting ${lines[i]} from QA...
-                ssh gds25@172.27.35.201 "rm -r $installLoc/${lines[i]}"
-            done
-        
-        #send to QA(testqa)
-        echo sending $pkgName to QA...
-        sshpass -v -p 'R0seli197$' scp ~/deployment/v$version/$pkgName.zip gds25@172.27.249.118:$installLoc
-        ssh gds25@172.27.249.118 "unzip $installLoc/$pkgName.zip -d $installLoc"
-        ssh gds25@172.27.249.118 "rm -r $installLoc/$pkgName.zip"
-        echo Pushed Version: $version 
-        #mysql update table
+    # Insert version info into database 
+    mysql --user="$user" --password="$password" --database="$database" -e "INSERT INTO versionHistory (version, pkgName, passed) VALUES ('$version', '$pkgName', NULL);"
+    echo "Version: $version pushed with package name: $pkgName"
 
-        mysql --user="$user" --password="$password" --database="$database" --execute="INSERT INTO versionHistory (version, pkgName, passed) VALUES ($version, \"$pkgName\", NULL);"
-        
-        #restart any services based on config 
-
-        if [ $services == "apache" ]; then
-            #FE: apache 
-            echo 'R0seli197$' | ssh -t -t gds25@172.27.249.118 "sudo systemctl restart apache2"
-            echo apache restarted
-        elif [ $services == "databaseServer" ]; then
-            #BE: DBServer.php
-            echo 'R0seli197$' | ssh -t -t gds25@172.27.249.118 "sudo systemctl restart DatabaseService.service"
-            echo "Database Server restarted :)"
-            echo Database Server restarted
-        elif [ $services == "databaseServer" ]; then
-            #BE: Mysql
-            echo 'pharmacy' | ssh -t -t gds25@172.27.249.118 "sudo systemctl restart mysql"
-            echo mysql restarted
-        elif [ $services == "DMZServer" ]; then
-            DMZ: DMZServer.php
-            echo 'R0seli197$' | ssh -t -t gds25@172.27.249.118 "sudo systemctl restart DMZService.service"
-            echo "DMZ Server restarted :)"
-        fi
-
-else
-    if [ $qaMachine == "BE" ]; then
-        QAMachineName="dran"
-        QAIP="172.27.34.208"
-        QAPass='pharmacy'
-
-        #remove files from qa
-        for ((i=9; i<${length}; i++));
-            do
-                echo deleting ${lines[i]} from QA...
-                ssh dran@172.28.231.181 "rm -r $installLoc/${lines[i]}"
-            done
-        
-        #send to QA(testqa)
-        echo sending $pkgName to QA...
-        sshpass -v -p 'pharmacy' scp ~/deployment/v$version/$pkgName.zip testqa@172.27.34.208:$installLoc
-        ssh dran@172.27.34.208 "unzip $installLoc/$pkgName.zip -d $installLoc"
-        ssh dran@172.27.34.208 "rm -r $installLoc/$pkgName.zip"
-        echo Pushed Version: $version 
-        #mysql update table
-
-        mysql --user="$user" --password="$password" --database="$database" --execute="INSERT INTO versionHistory (version, pkgName, passed) VALUES ($version, \"$pkgName\", NULL);"
-        
-        #restart any services based on config 
-
-        if [ $services == "apache" ]; then
-            #FE: apache 
-            echo 'pharmacy' | ssh -t -t dran@172.27.34.208 "sudo systemctl restart apache2"
-            echo apache restarted
-        elif [ $services == "databaseServer" ]; then
-            #BE: DBServer.php
-            echo 'pharmacy' | ssh -t -t dran@172.27.34.208 "sudo systemctl restart DatabaseService.service"
-            echo "Database Server restarted :)"
-            echo Database Server restarted
-        elif [ $services == "databaseServer" ]; then
-            #BE: Mysql
-            echo 'pharmacy' | ssh -t -t dran@172.27.34.208 "sudo systemctl restart mysql"
-            echo mysql restarted
-        elif [ $services == "DMZServer" ]; then
-            DMZ: DMZServer.php
-            echo 'pharmacy' | ssh -t -t dran@172.27.34.208 "sudo systemctl restart DMZService.service"
-            echo "DMZ Server restarted :)"
-        fi
-    else
-        #is DMZ
-        QAMachineName="bsingh"
-        QAIP="172.27.118.99"
-        QAPass='05072000'
-
-        #remove files from qa
-        for ((i=9; i<${length}; i++));
-            do
-                echo deleting ${lines[i]} from QA...
-                ssh bsingh@172.27.118.99 "rm -r $installLoc/${lines[i]}"
-            done
-        
-        #send to QA(testqa)
-        echo sending $pkgName to QA...
-        sshpass -v -p '05072000' scp ~/deployment/v$version/$pkgName.zip bsingh@172.27.118.99:$installLoc
-        ssh bsingh@172.27.118.99 "unzip $installLoc/$pkgName.zip -d $installLoc"
-        ssh bsingh@172.27.118.99 "rm -r $installLoc/$pkgName.zip"
-        echo Pushed Version: $version 
-        #mysql update table
-
-        mysql --user="$user" --password="$password" --database="$database" --execute="INSERT INTO versionHistory (version, pkgName, passed) VALUES ($version, \"$pkgName\", NULL);"
-        
-        #restart any services based on config 
-
-        if [ $services == "apache" ]; then
-            #FE: apache 
-            echo '05072000' | ssh -t -t bsingh@172.27.118.99 "sudo systemctl restart apache2"
-            echo apache restarted
-        elif [ $services == "databaseServer" ]; then
-            #BE: DBServer.php
-            echo '05072000' | ssh -t -t bsingh@172.27.118.99 "sudo systemctl restart DatabaseService.service"
-            echo "Database Server restarted :)"
-            echo Database Server restarted
-        elif [ $services == "databaseServer" ]; then
-            #BE: Mysql
-            echo '05072000' | ssh -t -t bsingh@172.27.118.99 "sudo systemctl restart mysql"
-            echo mysql restarted
-        elif [ $services == "DMZServer" ]; then
-            DMZ: DMZServer.php
-            echo '05072000' | ssh -t -t bsingh@172.27.118.99 "sudo systemctl restart DMZService.service"
-            echo "DMZ Server restarted :)"
-        fi
-    fi
-fi
-    
-    
-        
-        
-    break 
-    else
-        let "version=version+1"
-    fi
-
-    
+# Restart services based on the config
+IFS=',' read -r -a servicesArray <<< "$services"
+for service in "${servicesArray[@]}"; do
+    echo "Attempting to restart $service..."
+    # Use SSH to execute service restart on the target machine
+    ssh -t "$devMachineName@$devIP" "echo $devPass | sudo -S systemctl restart $service"
 done
 
-
-
+else
+    let "version=version+1"
+fi

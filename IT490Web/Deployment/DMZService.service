@@ -1,0 +1,11 @@
+[Unit]
+Description=DMZServer PHP Service
+
+[Service]
+PIDFile=/var/run/DMZServer.pid
+ExecStart=/usr/bin/php  /home/testqa/DeploymentTestFolder/DMZServer.php
+Type=simple
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

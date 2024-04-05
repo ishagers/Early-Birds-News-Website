@@ -1,0 +1,11 @@
+[Unit]
+Description=DatabaseServer PHP Service
+
+[Service]
+PIDFile=/var/run/DatabaseServer.pid
+ExecStart=/usr/bin/php  /home/testqa/DeploymentTestFolder/DatabaseServer.php
+Type=simple
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
