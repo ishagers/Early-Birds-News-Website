@@ -1,4 +1,4 @@
-#!/bin/bash/
+#!/bin/bash
 
 # Initialize version variable
 version=1
