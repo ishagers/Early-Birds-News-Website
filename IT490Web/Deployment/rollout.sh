@@ -90,9 +90,8 @@ IFS=',' read -r -a servicesArray <<< "$services"
 for service in "${servicesArray[@]}"; do
     echo "Attempting to restart $service..."
     # Use SSH to execute service restart on the target machine
-    ssh -t "$devMachineName@$devIP" "echo $devPass | sudo -S systemctl restart $service"
+    sshpass -p "$devPass" ssh -o StrictHostKeyChecking=no "$devMachineName@$devIP" "sudo systemctl restart $service"
 done
 
-else
     let "version=version+1"
 fi
