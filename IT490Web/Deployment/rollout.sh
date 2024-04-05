@@ -17,14 +17,14 @@ read configFile
 # Set configuration based on machine type
 case $machine in
     "FE")
-        path="/var/www/html/IT490-Project/IT490Web/Deployment"
+        path="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
         devMachineName="juanguti"
         devIP="10.147.17.233"
         devPass="YogiMaster123@"
         echo "Read FE machine details"
         ;;
     "BE")
-        path="/var/www/html/IT490-Project/IT490Web/Deployment"
+        path="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
         devMachineName="ANGELTI490DEVUSERMACHINE"
         devIP="10.147.17.90"
         devPass="ANGELIT490DEVPASSWORD"
