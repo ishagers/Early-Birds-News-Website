@@ -21,18 +21,21 @@ case $machine in
         devMachineName="juanguti"
         devIP="10.147.17.233"
         devPass="YogiMaster123@"
+        echo "Read FE machine details"
         ;;
     "BE")
         path="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
         devMachineName="ANGELTI490DEVUSERMACHINE"
         devIP="10.147.17.90"
         devPass="ANGELIT490DEVPASSWORD"
+        echo "Read BE machine details"
         ;;
     "DMZ")
         path="/var/www/html/IT490-Project/IT490Web/DMZ"
         devMachineName="AngelDMZ490"
         devIP="10.147.17.227"
         devPass="dmz490"
+        echo "Read DMZ machine details"
         ;;
     *)
         echo "Error: Invalid machine type specified. Please enter 'FE', 'BE', or 'DMZ'."
@@ -43,7 +46,7 @@ esac
 # Ensure version directory doesn't already exist
 if [ ! -d "v$version" ]; then
     mkdir "v$version" && cd "v$version" || exit
-    
+            echo "Passed first if statement (version check)"
     # Securely copy config file into folder
     sshpass -v -p "$devPass" scp "$devMachineName@$devIP:$path/$configFile" "./$configFile"
     
