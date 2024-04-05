@@ -48,8 +48,9 @@ if [ ! -d "v$version" ]; then
     mkdir "v$version" && cd "v$version" || exit
             echo "Passed first if statement (version check)"
     # Securely copy config file into folder
-    sshpass -v -p "$devPass" scp "$devMachineName@$devIP:$path/$configFile" "./$configFile"
-    
+sshpass -v -p "$devPass" scp "$devMachineName@$devIP:$path/$configFile" "./$configFile"
+echo "SCP command completed."
+
     # Read config file into array
     IFS=$'\n' read -d '' -r -a lines < "$configFile"
     
