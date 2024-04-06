@@ -21,9 +21,9 @@ for cmd in "${commands[@]}"; do
 done
 
 # Prompt user for input
-echo "Please enter the QA (layer 2) machine (FE, BE, DMZ): "
+echo "Please enter the machine (FE, BE, DMZ): "
 read -r machine
-echo "Please Enter the bundle type (FE,BE,DMZ,DB,CSS): "
+echo "Please Enter the bundle type to rollback(FE,BE,DMZ,DB,CSS): "
 read -r bundleType
 
 # Ensure script is run with sudo if needed
@@ -55,7 +55,7 @@ echo "Read $machine machine Location details"
 # Function to determine the latest version bundle
 get_latest_bundle() {
     local passedVersion
-    passedVersion=$(mysql --host="$DeployIP" --user="$user" --password="$password" --database="$database" -sse "SELECT pkgName FROM versionHistory WHERE pkgName LIKE '${bundleType}v%' AND passed IS NULL ORDER BY version DESC LIMIT 1")
+    passedVersion=$(mysql --host="$DeployIP" --user="$user" --password="$password" --database="$database" -sse "SELECT pkgName FROM versionHistory WHERE pkgName LIKE '${bundleType}v%' AND passed=1 ORDER BY version DESC LIMIT 1")
     echo "$passedVersion"
 }
 
