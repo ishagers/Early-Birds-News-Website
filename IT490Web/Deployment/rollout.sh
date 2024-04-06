@@ -9,7 +9,7 @@ password='IT490DB'
 database='Deployment'
 
 # Prompt user for input
-echo "Please enter the dev machine (FE, BE, DMZ): "
+echo "Please enter the dev(layer 1) machine (FE, BE, DMZ): "
 read machine
 echo "Please Enter the config File Name(FE,BE,DMZ,DB,CSS .config): "
 read configFile
@@ -21,6 +21,7 @@ case $machine in
         devMachineName="juanguti"
         devIP="10.147.17.233"
         devPass="YogiMaster123@"
+        qaIP="10.147.17.67"
         echo "Read FE machine details"
         ;;
     "BE")
@@ -28,6 +29,7 @@ case $machine in
         devMachineName="ANGELTI490DEVUSERMACHINE"
         devIP="10.147.17.90"
         devPass="ANGELIT490DEVPASSWORD"
+        qaIP="****DEVLAYERIPHERE****"
         echo "Read BE machine details"
         ;;
     "DMZ")
@@ -35,6 +37,7 @@ case $machine in
         devMachineName="AngelDMZ490"
         devIP="10.147.17.227"
         devPass="dmz490"
+        qaIP="****DEVLAYERIPHERE****"
         echo "Read DMZ machine details"
         ;;
     *)
@@ -85,12 +88,19 @@ echo "SCP command completed."
     mysql --user="$user" --password="$password" --database="$database" -e "INSERT INTO versionHistory (version, pkgName, passed) VALUES ('$version', '$pkgName', NULL);"
     echo "Version: $version pushed with package name: $pkgName"
 
-# Restart services based on the config
+# Deploy package to QA machine and restart services
+sshpass -p "$devPass" scp -o StrictHostKeyChecking=no "$pkgName.zip" "$devMachineName@$qaIP:$installLoc"
+
+# Remove old package files first
+sshpass -p "$devPass" ssh -o StrictHostKeyChecking=no "$devMachineName@$qaIP" "rm -rf $installLoc/*"
+
+# Unzip new package
+sshpass -p "$devPass" ssh -o StrictHostKeyChecking=no "$devMachineName@$qaIP" "unzip $installLoc/$pkgName.zip -d $installLoc && rm $installLoc/$pkgName.zip"
+
 IFS=',' read -r -a servicesArray <<< "$services"
 for service in "${servicesArray[@]}"; do
-    echo "Attempting to restart $service..."
-    # Use SSH to execute service restart on the target machine
-    sshpass -p "$devPass" ssh -o StrictHostKeyChecking=no "$devMachineName@$devIP" "sudo systemctl restart $service"
+    echo "Attempting to restart $service on QA machine..."
+    sshpass -p "$devPass" ssh -o StrictHostKeyChecking=no "$devMachineName@$qaIP" "sudo systemctl restart $service"
 done
 
     let "version=version+1"
