@@ -88,19 +88,15 @@ echo "SCP command completed."
     mysql --user="$user" --password="$password" --database="$database" -e "INSERT INTO versionHistory (version, pkgName, passed) VALUES ('$version', '$pkgName', NULL);"
     echo "Version: $version pushed with package name: $pkgName"
 
-# Deploy package to QA machine and restart services
-sshpass -p "$devPass" scp -o StrictHostKeyChecking=no "$pkgName.zip" "$devMachineName@$qaIP:$installLoc"
+# Copy the zipped package to the QA machine.
+scp -o StrictHostKeyChecking=no "$pkgName.zip" "$qaMachineName@$qaIP:$qaPath/$pkgName.zip"
 
-# Remove old package files first
-sshpass -p "$devPass" ssh -o StrictHostKeyChecking=no "$devMachineName@$qaIP" "rm -rf $installLoc/*"
+# Remove the previous version of the package on the QA machine, then unzip the new one.
+ssh "$qaMachineName@$qaIP" "rm -rf $qaPath/previousPackageName && unzip -o $qaPath/$pkgName.zip -d $qaPath && rm $qaPath/$pkgName.zip"
 
-# Unzip new package
-sshpass -p "$devPass" ssh -o StrictHostKeyChecking=no "$devMachineName@$qaIP" "unzip $installLoc/$pkgName.zip -d $installLoc && rm $installLoc/$pkgName.zip"
-
-IFS=',' read -r -a servicesArray <<< "$services"
+# Restart services on the QA machine.
 for service in "${servicesArray[@]}"; do
-    echo "Attempting to restart $service on QA machine..."
-    sshpass -p "$devPass" ssh -o StrictHostKeyChecking=no "$devMachineName@$qaIP" "sudo systemctl restart $service"
+    ssh "$qaMachineName@$qaIP" "sudo systemctl restart $service"
 done
 
     let "version=version+1"
