@@ -6,7 +6,7 @@ user='IT490DB'
 password='IT490DB'
 database='Deployment'
 DeployIP="10.147.17.54" # Deployment machine IP
-Pass = "YogiMaster123@"
+Pass="YogiMaster123@"
 # Prompt user for input
 echo "Please enter the QA (layer 2) machine (FE, BE, DMZ): "
 read machine
@@ -45,6 +45,9 @@ latestBundle=$(get_latest_bundle)
 if [[ -n "$latestBundle" ]]; then
     echo "Latest bundle found: $latestBundle"
     echo "Copying $latestBundle to QA machine..."
+    echo "Listing contents of $path:"
+    ls -la "$path"
+    echo "Full path to the zip file: $path/$latestBundle/$bundleType.zip"
     sshpass -v -p "$Pass" scp -o StrictHostKeyChecking=no "$path/$latestBundle/$bundleType.zip" "juanguti@$DeployIP:$installpath"
     
     echo "Unzipping $latestBundle on QA machine..."
