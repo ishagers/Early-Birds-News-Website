@@ -63,36 +63,33 @@ create_version_directory() {
 latest_version=$(get_latest_version)
 version_dir=$(create_version_directory $latest_version)
 
-    # Securely copy config file into folder
+   # Securely copy config file into folder
 sshpass -v -p "$devPass" scp -o StrictHostKeyChecking=no "$devMachineName@$devIP:$path/$configFile" "./$configFile"
 echo "SCP command completed."
 
-    # Read config file into array
-    IFS=$'\n' read -d '' -r -a lines < "$configFile"
+# Read config file into array
+IFS=$'\n' read -d '' -r -a lines < "$configFile"
     
-    # Extract package info from config
-    pkgName=${lines[2]}
-    installLoc=${lines[5]}
-    qaMachine=${lines[4]}
-    services=${lines[7]}
-    length=${#lines[@]}
+# Extract package info from config
+pkgName=${lines[2]}
+installLoc=${lines[5]}
+services=${lines[7]}
+length=${#lines[@]}
 
-    path="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
+# Copy the PHP files using the correct path
+for ((i=9; i<length; i++)); do
+    echo "Copying ${lines[i]} from dev..."
+    sshpass -v -p "$devPass" scp "$devMachineName@$devIP:$path/${lines[i]}" "./${lines[i]}"
+done
 
-    # Now the loop that copies the PHP files will use the correct path
-    for ((i=9; i<${length}; i++)); do
-        echo "Copying ${lines[i]} from dev..."
-        sshpass -v -p "$devPass" scp "$devMachineName@$devIP:$path/${lines[i]}" "./${lines[i]}"
-    done
+# Zip files excluding the config
+zip -r -j "$pkgName.zip" ./* -x "*.config"
+echo "Package $pkgName.zip created."
 
-    # Zip files excluding the config
-    zip -r -j "$pkgName.zip" ./* -x "*.config"
-    echo "Package $pkgName.zip created."
-
-    # Clean up the unzipped files
-    echo "Cleaning up unzipped files..."
-    find . -type f ! -name "$pkgName.zip" -delete
-    echo "Cleanup complete."
+# Clean up the unzipped files
+echo "Cleaning up unzipped files..."
+find . -type f ! -name "$pkgName.zip" -delete
+echo "Cleanup complete."
 
     # Insert version info into database
     version_number="${version_dir: -1}" # Get the last character, which is the version number
