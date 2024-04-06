@@ -1,55 +1,83 @@
 #!/bin/bash
 
-# Configuration for Deployment machine
-DEPLOYMENT_USER="deploymentUser"
-DEPLOYMENT_IP="deployment.machine.ip"
-DEPLOYMENT_BASE_PATH="/var/www/html/IT490-Project/IT490Web/Deployment"
-SSH_PASS="deploymentMachinePassword"
+# Initialize version variable
+version=1
 
-# Configuration for this machine (QA/Production)
-INSTALL_PATH_FE="/var/www/html/FE" # Change this to the FE install path on this machine
-INSTALL_PATH_BE="/var/www/html/BE" # Change this to the BE install path on this machine
-INSTALL_PATH_DMZ="/var/www/html/DMZ" # Change this to the DMZ install path on this machine
+# MySQL login and DB configurations
+user='IT490DB'
+password='IT490DB'
+database='Deployment'
 
-# Determine the type of machine for deployment and set corresponding installation path
-echo "Enter the type of machine for deployment (FE, BE, DMZ):"
-read MACHINE_TYPE
+# Prompt user for input
+echo "Please enter the Production (layer 3) machine (FE, BE, DMZ): "
+read machine
+echo "Please Enter the config File Name(FE,BE,DMZ,DB,CSS .config): "
+read configFile
 
-case $MACHINE_TYPE in
-    FE)
-        INSTALL_PATH="$INSTALL_PATH_FE"
+# Set configuration based on machine type
+case $machine in
+    "FE")
+        path="/var/www/html/IT490-Project/IT490Web/Deployment" #config files
+        #Change path here depending on files location on QA machine (FE,DMZ,BE)
+        installpath="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
+
+        prodMachineName="juanguti"
+        PRODIP="10.147.17.206"
+        prodPass="YogiMaster123@"
+        echo "Read FE machine details"
         ;;
-    BE)
-        INSTALL_PATH="$INSTALL_PATH_BE"
+    "BE")
+        path="/var/www/html/IT490-Project/IT490Web/Deployment"
+                #Change path here depending on files location on QA machine (FE,DMZ,BE)
+        installpath="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
+        prodMachineName="ANGELTI490DEVUSERMACHINE"
+        PRODIP="10.147.17.90"
+        prodPass="ANGELIT490DEVPASSWORD"
+        PRODIP="****DEVLAYERIPHERE****"
+        echo "Read BE machine details"
         ;;
-    DMZ)
-        INSTALL_PATH="$INSTALL_PATH_DMZ"
+    "DMZ")
+        path="/var/www/html/IT490-Project/IT490Web/DMZ"
+                #Change path here depending on files location on QA machine (FE,DMZ,BE)
+                #Change path here depending on files location on QA machine (FE,DMZ,BE)
+        installpath="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
+        prodMachineName="AngelDMZ490"
+        PRODIP="CHANGE HERE"
+        prodPass="dmz490"
+        echo "Read DMZ machine details"
         ;;
     *)
-        echo "Invalid machine type specified."
+        echo "Error: Invalid machine type specified. Please enter 'FE', 'BE', or 'DMZ'."
         exit 1
         ;;
 esac
 
-# Find the most recent or most recent passed version for the specific machine type
-BUNDLE_PATH="$(sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no "$DEPLOYMENT_USER@$DEPLOYMENT_IP" "find $DEPLOYMENT_BASE_PATH -name '${MACHINE_TYPE}v*.zip' -print0 | xargs -r -0 ls -t | head -n1")"
+# Function to determine the latest version bundle of the chosen type that has passed or is null
+get_latest_bundle() {
+    local passedVersion=$(mysql --user="$user" --password="$password" --database="$database" -sse "SELECT pkgName FROM versionHistory WHERE pkgName LIKE '${bundleType}v%' AND passed =1 ORDER BY version DESC LIMIT 1")
+    echo "$passedVersion"
+}
 
-# If no bundle found, exit
-if [ -z "$BUNDLE_PATH" ]; then
-    echo "No bundle found for $MACHINE_TYPE."
+# Securely copy the latest bundle to the QA machine
+latestBundle=$(get_latest_bundle)
+if [[ -n "$latestBundle" ]]; then
+    echo "Latest bundle found: $latestBundle"
+    echo "Copying $latestBundle to Production machine..."
+    scp -o StrictHostKeyChecking=no "/var/www/html/IT490-Project/IT490Web/Deployment/$latestBundle.zip" "$prodMachineName@$PRODIP:$installpath"
+    
+    echo "Unzipping $latestBundle on Production machine..."
+    ssh "$prodMachineName@$PRODIP" "unzip -o $installpath/$latestBundle.zip -d $installpath && rm $installpath/$latestBundle.zip"
+    
+    # Assuming you have a way to identify the services to restart from the bundle name
+    # Replace 'yourServiceName' with actual service name or extraction logic
+
+    yourServiceName="apache2" # Modify this with actual logic or service name
+    echo "Restarting services on Production machine..."
+    ssh "$prodMachineName@$PRODIP" "sudo systemctl restart $yourServiceName"
+    
+    echo "Production installation and service restart completed."
+else
+    echo "No suitable bundle found for $bundleType. Exiting."
     exit 1
 fi
 
-# Extract the bundle name
-BUNDLE_NAME=$(basename "$BUNDLE_PATH")
-
-# Securely copy the bundle to the local machine
-sshpass -p "$SSH_PASS" scp -o StrictHostKeyChecking=no "$DEPLOYMENT_USER@$DEPLOYMENT_IP:$BUNDLE_PATH" "$INSTALL_PATH/$BUNDLE_NAME"
-
-# Unzip the bundle to the install path
-unzip -o "$INSTALL_PATH/$BUNDLE_NAME" -d "$INSTALL_PATH" && rm "$INSTALL_PATH/$BUNDLE_NAME"
-
-# Restart services if necessary (not included in pseudocode)
-
-# Remove this script's own version if the installation is successful
-# rm -- "$0"
