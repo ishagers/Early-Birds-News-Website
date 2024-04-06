@@ -7,25 +7,42 @@ password='IT490DB'
 database='Deployment'
 DeployIP="10.147.17.54" # Deployment machine IP
 Pass="YogiMaster123@"
+machine=""
+bundleType=""
+yourServiceName="apache2"
+
+# Validate necessary commands
+commands=("sshpass" "scp" "unzip" "mysql" "systemctl")
+for cmd in "${commands[@]}"; do
+    if ! command -v "$cmd" &> /dev/null; then
+        echo "Error: Command $cmd is not available. Please install it."
+        exit 1
+    fi
+done
+
 # Prompt user for input
 echo "Please enter the QA (layer 2) machine (FE, BE, DMZ): "
-read machine
+read -r machine
 echo "Please Enter the bundle type (FE,BE,DMZ,DB,CSS): "
-read bundleType
+read -r bundleType
+
+# Ensure script is run with sudo if needed
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root or with sudo" 
+   exit 1
+fi
 
 # Set configuration based on machine type
 case $machine in
-    "FE")
+    "FE"|"BE")
         path="/var/www/html/IT490-Project/IT490Web/Deployment" #config files
         installpath="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example" #Install Path
-        ;;
-    "BE")
-        path="/var/www/html/IT490-Project/IT490Web/Deployment" #config files
-        installpath="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example" #Install Path
+        yourServiceName="apache2" # Example service, adjust as necessary
         ;;
     "DMZ")
         path="/var/www/html/IT490-Project/IT490Web/Deployment" #config files
         installpath="/var/www/html/IT490-Project/IT490Web/DMZ" #Install Path
+        yourServiceName="nginx" # Example service, adjust as necessary
         ;;
     *)
         echo "Error: Invalid machine type specified. Please enter 'FE', 'BE', or 'DMZ'."
@@ -35,9 +52,10 @@ esac
 
 echo "Read $machine machine Location details"
 
-# Function to determine the latest version bundle that has passed or is null
+# Function to determine the latest version bundle
 get_latest_bundle() {
-    local passedVersion=$(mysql --host="$DeployIP" --user="$user" --password="$password" --database="$database" -sse "SELECT pkgName FROM versionHistory WHERE pkgName LIKE '${bundleType}v%' AND passed IS NULL ORDER BY version DESC LIMIT 1")
+    local passedVersion
+    passedVersion=$(mysql --host="$DeployIP" --user="$user" --password="$password" --database="$database" -sse "SELECT pkgName FROM versionHistory WHERE pkgName LIKE '${bundleType}v%' AND passed IS NULL ORDER BY version DESC LIMIT 1")
     echo "$passedVersion"
 }
 
@@ -45,15 +63,28 @@ latestBundle=$(get_latest_bundle)
 if [[ -n "$latestBundle" ]]; then
     echo "Latest bundle found: $latestBundle"
     echo "Copying $latestBundle to QA machine..."
-    sshpass -v -p "$Pass" scp -o StrictHostKeyChecking=no "juanguti@$DeployIP:$path/$latestBundle.zip" "$installpath/"
-    
-    echo "Unzipping $latestBundle on QA machine..."
-    unzip -o "$installpath/$latestBundle.zip" -d "$installpath" && rm "$installpath/$latestBundle.zip"
-    
-    echo "Restarting services on QA machine..."
-    sudo systemctl restart "$yourServiceName"
-    
-    echo "QA installation and service restart completed."
+    if sshpass -v -p "$Pass" scp -o StrictHostKeyChecking=no "juanguti@$DeployIP:$path/$latestBundle.zip" "$installpath/"; then
+        echo "Successfully copied $latestBundle."
+        
+        echo "Unzipping $latestBundle on QA machine..."
+        if unzip -o "$installpath/$latestBundle.zip" -d "$installpath" && rm "$installpath/$latestBundle.zip"; then
+            echo "Successfully unzipped $latestBundle."
+            
+            echo "Restarting $yourServiceName service on QA machine..."
+            if sudo systemctl restart "$yourServiceName"; then
+                echo "QA installation and service restart completed successfully."
+            else
+                echo "Error restarting service $yourServiceName."
+                exit 1
+            fi
+        else
+            echo "Error unzipping $latestBundle. Check the integrity of the zip file."
+            exit 1
+        fi
+    else
+        echo "Error copying $latestBundle. Check if the file exists and is accessible."
+        exit 1
+    fi
 else
     echo "No suitable bundle found for $bundleType. Exiting."
     exit 1
