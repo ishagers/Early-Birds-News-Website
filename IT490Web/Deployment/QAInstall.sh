@@ -63,7 +63,7 @@ latestBundle=$(get_latest_bundle)
 if [[ -n "$latestBundle" ]]; then
     echo "Latest bundle found: $latestBundle"
     echo "Copying $latestBundle to QA machine..."
-    if sshpass -v -p "$Pass" scp -o StrictHostKeyChecking=no "juanguti@$DeployIP:$path/$latestBundle.zip" "$installpath/"; then
+    if sshpass -v -p "$Pass" scp -o StrictHostKeyChecking=no "juanguti@$DeployIP:$path/$latestBundle/$bundleType.zip" "$installpath/"; then
         echo "Successfully copied $latestBundle."
         
         echo "Unzipping $latestBundle on QA machine..."
