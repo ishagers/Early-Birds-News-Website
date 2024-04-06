@@ -37,7 +37,7 @@ echo "Read $machine machine Location details"
 
 # Function to determine the latest version bundle that has passed or is null
 get_latest_bundle() {
-    local passedVersion=$(mysql --host="$DeployIP" --user="$user" --password="$password" --database="$database" -sse "SELECT pkgName FROM versionHistory WHERE pkgName LIKE '${bundleType}v%' AND (passed IS NULL OR passed=1) ORDER BY version DESC LIMIT 1")
+    local passedVersion=$(mysql --host="$DeployIP" --user="$user" --password="$password" --database="$database" -sse "SELECT pkgName FROM versionHistory WHERE pkgName LIKE '${bundleType}v%' AND passed IS NULL ORDER BY version DESC LIMIT 1")
     echo "$passedVersion"
 }
 
@@ -45,18 +45,13 @@ latestBundle=$(get_latest_bundle)
 if [[ -n "$latestBundle" ]]; then
     echo "Latest bundle found: $latestBundle"
     echo "Copying $latestBundle to QA machine..."
-    echo "Listing contents of $path:"
-    ls -la "$path"
-    echo "Full path to the zip file: $path/$latestBundle/$bundleType.zip"
-    sshpass -v -p "$Pass" scp -o StrictHostKeyChecking=no "$path/$latestBundle/$bundleType.zip" "juanguti@$DeployIP:$installpath"
+    sshpass -v -p "$Pass" scp -o StrictHostKeyChecking=no "juanguti@$DeployIP:$path/$latestBundle.zip" "$installpath/"
     
     echo "Unzipping $latestBundle on QA machine..."
-    sshpass -p "$Pass" ssh "juanguti@$DeployIP" "unzip -o $installpath/$bundleType.zip -d $installpath && rm $installpath/$bundleType.zip"
+    unzip -o "$installpath/$latestBundle.zip" -d "$installpath" && rm "$installpath/$latestBundle.zip"
     
-    # Modify this with actual logic or service name
-    yourServiceName="apache2" # Modify based on actual service needed
     echo "Restarting services on QA machine..."
-    sshpass -p "$Pass" ssh "juanguti@$DeployIP" "sudo systemctl restart $yourServiceName"
+    sudo systemctl restart "$yourServiceName"
     
     echo "QA installation and service restart completed."
 else
