@@ -67,7 +67,7 @@ if [[ -n "$latestBundle" ]]; then
         echo "Successfully copied $latestBundle."
         
         echo "Unzipping $latestBundle on QA machine..."
-        if unzip -o "$installpath/$latestBundle.zip" -d "$installpath" && rm "$installpath/$latestBundle.zip"; then
+        if unzip -o "$installpath/$bundleType" -d "$installpath" && rm "$installpath/$bundleType"; then
             echo "Successfully unzipped $latestBundle."
             
             echo "Restarting $yourServiceName service on QA machine..."
