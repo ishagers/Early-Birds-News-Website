@@ -91,8 +91,10 @@ echo "SCP command completed."
 # Copy the zipped package to the QA machine.
 scp -o StrictHostKeyChecking=no "$pkgName.zip" "$qaMachineName@$qaIP:$qaPath/$pkgName.zip"
 
-# Remove the previous version of the package on the QA machine, then unzip the new one.
-ssh "$qaMachineName@$qaIP" "rm -rf $qaPath/previousPackageName && unzip -o $qaPath/$pkgName.zip -d $qaPath && rm $qaPath/$pkgName.zip"
+previousPackageName=$(mysql --user="$user" --password="$password" --database="$database" -sse "SELECT pkgName FROM versionHistory WHERE passed = True ORDER BY version DESC LIMIT 1")
+
+# Now you can use the variable `previousPackageName` to remove the old files
+ssh "$qaMachineName@$qaIP" "rm -rf $qaPath/$previousPackageName && unzip -o $qaPath/$pkgName.zip -d $qaPath && rm $qaPath/$pkgName.zip"
 
 # Restart services on the QA machine.
 for service in "${servicesArray[@]}"; do
