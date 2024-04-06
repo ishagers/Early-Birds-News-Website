@@ -37,7 +37,7 @@ echo "Read $machine machine Location details"
 
 # Function to determine the latest version bundle that has passed or is null
 get_latest_bundle() {
-    local passedVersion=$(mysql --user="$user" --password="$password" --database="$database" -sse "SELECT pkgName FROM versionHistory WHERE pkgName LIKE '${bundleType}v%' AND passed IS NULL ORDER BY version DESC LIMIT 1")
+    local passedVersion=$(mysql --host="$DeployIP" --user="$user" --password="$password" --database="$database" -sse "SELECT pkgName FROM versionHistory WHERE pkgName LIKE '${bundleType}v%' AND (passed IS NULL OR passed=1) ORDER BY version DESC LIMIT 1")
     echo "$passedVersion"
 }
 
