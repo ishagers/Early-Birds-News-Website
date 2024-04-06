@@ -46,15 +46,16 @@ case $machine in
         ;;
 esac
 
+type=${configFile%.config}
 # Function to determine the latest version for a specific machine type
 get_latest_version() {
-    echo $(mysql --user="$user" --password="$password" --database="$database" -sse "SELECT MAX(version) FROM versionHistory WHERE pkgName LIKE '$machine%'")
+    echo $(mysql --user="$user" --password="$password" --database="$database" -sse "SELECT MAX(version) FROM versionHistory WHERE pkgName LIKE '$type%'")
 }
 
 # Function to create a new version directory
 create_version_directory() {
     new_version=$(($1 + 1))
-    new_dir_name="${machine}v${new_version}"
+    new_dir_name="${type}v${new_version}"
     mkdir "$new_dir_name" && cd "$new_dir_name"
     echo "$new_dir_name"
 }
@@ -77,7 +78,8 @@ pkgName=${lines[2]}
 installLoc=${lines[5]}
 services=${lines[7]}
 length=${#lines[@]}
-
+#Change path here depending on files location on dev machine 
+path="/var/www/html/IT490-Project/IT490Web/rabbitmqphp_example"
 # Copy the PHP files using the correct path
 for ((i=9; i<length; i++)); do
     echo "Copying ${lines[i]} from dev..."
