@@ -45,10 +45,10 @@ latestBundle=$(get_latest_bundle)
 if [[ -n "$latestBundle" ]]; then
     echo "Latest bundle found: $latestBundle"
     echo "Copying $latestBundle to QA machine..."
-    scp -o StrictHostKeyChecking=no "$path/$latestBundle.zip" "juanguti@$DeployIP:$installpath"
+    scp -o StrictHostKeyChecking=no "$path/$latestBundle/$bundleType.zip" "juanguti@$DeployIP:$installpath"
     
     echo "Unzipping $latestBundle on QA machine..."
-    ssh "juanguti@$DeployIP" "unzip -o $installpath/$latestBundle.zip -d $installpath && rm $installpath/$latestBundle.zip"
+    ssh "juanguti@$DeployIP" "unzip -o $installpath/$bundleType.zip -d $installpath && rm $installpath/$bundleType.zip"
     
     # Modify this with actual logic or service name
     yourServiceName="apache2" # Modify based on actual service needed
