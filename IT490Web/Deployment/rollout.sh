@@ -46,16 +46,22 @@ case $machine in
         ;;
 esac
 
-# Function to increment version number and find a non-existing directory
-increment_version() {
-    while [ -d "v$version" ]; do
-        let "version=version+1"
-    done
-    mkdir "v$version" && cd "v$version"
+# Function to determine the latest version for a specific machine type
+get_latest_version() {
+    echo $(mysql --user="$user" --password="$password" --database="$database" -sse "SELECT MAX(version) FROM versionHistory WHERE pkgName LIKE '$machine%'")
 }
 
-# Call the increment_version function to find the correct version directory to create
-increment_version
+# Function to create a new version directory
+create_version_directory() {
+    new_version=$(($1 + 1))
+    new_dir_name="${machine}v${new_version}"
+    mkdir "$new_dir_name" && cd "$new_dir_name"
+    echo "$new_dir_name"
+}
+
+# Determine the latest version and create a new version directory
+latest_version=$(get_latest_version)
+version_dir=$(create_version_directory $latest_version)
 
     # Securely copy config file into folder
 sshpass -v -p "$devPass" scp -o StrictHostKeyChecking=no "$devMachineName@$devIP:$path/$configFile" "./$configFile"
@@ -81,24 +87,14 @@ echo "SCP command completed."
 
     # Zip files excluding the config
     zip -r -j "$pkgName.zip" ./* -x "*.config"
-
     echo "Package $pkgName.zip created."
 
-    # Insert version info into database 
-    mysql --user="$user" --password="$password" --database="$database" -e "INSERT INTO versionHistory (version, pkgName, passed) VALUES ('$version', '$pkgName', NULL);"
-    echo "Version: $version pushed with package name: $pkgName"
+    # Clean up the unzipped files
+    echo "Cleaning up unzipped files..."
+    find . -type f ! -name "$pkgName.zip" -delete
+    echo "Cleanup complete."
 
-# Copy the zipped package to the QA machine.
-scp -o StrictHostKeyChecking=no "$pkgName.zip" "$qaMachineName@$qaIP:$qaPath/$pkgName.zip"
-
-previousPackageName=$(mysql --user="$user" --password="$password" --database="$database" -sse "SELECT pkgName FROM versionHistory WHERE passed = True ORDER BY version DESC LIMIT 1")
-
-# Now you can use the variable `previousPackageName` to remove the old files
-ssh "$qaMachineName@$qaIP" "rm -rf $qaPath/$previousPackageName && unzip -o $qaPath/$pkgName.zip -d $qaPath && rm $qaPath/$pkgName.zip"
-
-# Restart services on the QA machine.
-for service in "${servicesArray[@]}"; do
-    ssh "$qaMachineName@$qaIP" "sudo systemctl restart $service"
-done
-
-    let "version=version+1"
+    # Insert version info into database
+    version_number="${version_dir: -1}" # Get the last character, which is the version number
+    mysql --user="$user" --password="$password" --database="$database" -e "INSERT INTO versionHistory (version, pkgName, passed) VALUES ('$version_number', '$version_dir', NULL);"
+    echo "Version: $version_number pushed with package name: $pkgName"
