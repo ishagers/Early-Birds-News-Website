@@ -68,7 +68,7 @@ if (!empty($_POST['new_username']) && !empty($_POST['new_password']) && !empty($
             </p>
 
             <p>
-                <label for="new_username">Username <Bold>This version is Bad, rollback<Bold></label>
+                <label for="new_username">Username <Bold>This version is good, rollback<Bold></label>
                 <input type="text" id="new_username" name="new_username" required />
             </p>
 
