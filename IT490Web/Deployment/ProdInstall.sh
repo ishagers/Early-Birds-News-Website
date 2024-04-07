@@ -21,7 +21,7 @@ for cmd in "${commands[@]}"; do
 done
 
 # Prompt user for input
-echo "Please enter the QA (layer 2) machine (FE, BE, DMZ): "
+echo "Please enter the Prod (layer 3) machine (FE, BE, DMZ): "
 read -r machine
 echo "Please Enter the bundle type (FE,BE,DMZ,DB,CSS): "
 read -r bundleType
@@ -62,17 +62,17 @@ get_latest_bundle() {
 latestBundle=$(get_latest_bundle)
 if [[ -n "$latestBundle" ]]; then
     echo "Latest bundle found: $latestBundle"
-    echo "Copying $latestBundle to QA machine..."
+    echo "Copying $latestBundle to Prod machine..."
     if sshpass -v -p "$Pass" scp -o StrictHostKeyChecking=no "juanguti@$DeployIP:$path/$latestBundle/$bundleType.zip" "$installpath/"; then
         echo "Successfully copied $latestBundle."
         
-        echo "Unzipping $latestBundle on QA machine..."
+        echo "Unzipping $latestBundle on Prod machine..."
         if unzip -o "$installpath/$bundleType.zip" -d "$installpath" && rm "$installpath/$bundleType.zip"; then
             echo "Successfully unzipped $latestBundle."
             
-            echo "Restarting $yourServiceName service on QA machine..."
+            echo "Restarting $yourServiceName service on Prod machine..."
             if sudo systemctl restart "$yourServiceName"; then
-                echo "QA installation and service restart completed successfully."
+                echo "Prod installation and service restart completed successfully."
             else
                 echo "Error restarting service $yourServiceName."
                 exit 1
