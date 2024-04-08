@@ -1,0 +1,27 @@
+#!/usr/bin/expect -f
+
+# Set variables based on passed arguments
+set QA_MACHINE_USER [lindex $argv 0]
+set QA_MACHINE_IP [lindex $argv 1]
+set QA_INSTALL_SCRIPT_PATH [lindex $argv 2]
+set MACHINE_TYPE [lindex $argv 3]
+set CONFIG_TYPE [lindex $argv 4]
+set timeout -1
+
+# Now connect to the QA machine via SSH and run the QAInstall.sh script
+spawn ssh $QA_MACHINE_USER@$QA_MACHINE_IP "$QA_INSTALL_SCRIPT_PATH $MACHINE_TYPE $CONFIG_TYPE"
+
+# Handle SSH connection and script execution
+expect {
+    "yes/no" {
+        send "yes\r"
+        expect "password:"
+        send "$env(QA_MACHINE_PASSWORD)\r"
+    }
+    "password:" {
+        send "$env(QA_MACHINE_PASSWORD)\r"
+    }
+}
+
+# Wait for the script to complete
+expect eof

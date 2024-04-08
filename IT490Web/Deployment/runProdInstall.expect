@@ -1,0 +1,39 @@
+#!/usr/bin/expect -f
+
+# Set variables based on passed arguments
+set PROD_MACHINE_USER [lindex $argv 0]
+set PROD_MACHINE_IP [lindex $argv 1]
+set PROD_INSTALL_SCRIPT_PATH [lindex $argv 2]
+set MACHINE_TYPE [lindex $argv 3]
+set BUNDLE_TYPE [lindex $argv 4]
+set timeout -1
+
+# Now connect to the Production machine via SSH
+spawn ssh $PROD_MACHINE_USER@$PROD_MACHINE_IP
+
+# Handle password prompt
+expect "password:" 
+send "$env(PROD_MACHINE_PASSWORD)\r"
+
+# Now navigate to the script and run it
+expect "$ "
+send "sudo $PROD_INSTALL_SCRIPT_PATH\r"
+
+# Handle any sudo password prompt
+expect {
+    "password for*" {
+        send "$env(PROD_MACHINE_PASSWORD)\r"
+        expect "Please enter the Prod (layer 3) machine (FE, BE, DMZ):"
+        send -- "$MACHINE_TYPE\r"
+    }
+    "Please enter the Prod (layer 3) machine (FE, BE, DMZ):" {
+        send -- "$MACHINE_TYPE\r"
+    }
+}
+
+# Handle the bundle type input
+expect "Please Enter the bundle type (FE,BE,DMZ,DB,CSS):"
+send -- "$BUNDLE_TYPE\r"
+
+# Wait for script completion
+expect eof

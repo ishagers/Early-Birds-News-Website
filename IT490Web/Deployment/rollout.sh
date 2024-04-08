@@ -22,6 +22,8 @@ case $machine in
         devIP="10.147.17.233"
         devPass="YogiMaster123@"
         qaIP="10.147.17.67"
+        qaInstallPath="/var/www/html/IT490-Project/IT490Web/Deployment/QAInstall.sh"
+        EXPECT_PATH="/var/www/html/IT490-Project/IT490Web/Deployment/runQAInstall.expect"
         echo "Read FE machine details"
         ;;
     "BE")
@@ -30,7 +32,9 @@ case $machine in
         devIP="10.147.17.90"
         devPass="ANGELIT490DEVPASSWORD"
         qaIP="****DEVLAYERIPHERE****"
-        echo "Read BE machine details"
+        qaInstallPath="/var/www/html/IT490-Project/IT490Web/Deployment/QAInstall.sh"
+        EXPECT_PATH="/var/www/html/IT490-Project/IT490Web/Deployment/runQAInstall.expect"
+        echo "Read FE machine details"
         ;;
     "DMZ")
         path="/var/www/html/IT490-Project/IT490Web/DMZ"
@@ -38,7 +42,9 @@ case $machine in
         devIP="10.147.17.227"
         devPass="dmz490"
         qaIP="****DEVLAYERIPHERE****"
-        echo "Read DMZ machine details"
+        qaInstallPath="/var/www/html/IT490-Project/IT490Web/Deployment/QAInstall.sh"
+        EXPECT_PATH="/var/www/html/IT490-Project/IT490Web/Deployment/runQAInstall.expect"
+        echo "Read FE machine details"
         ;;
     *)
         echo "Error: Invalid machine type specified. Please enter 'FE', 'BE', or 'DMZ'."
@@ -99,3 +105,6 @@ echo "Cleanup complete."
     version_number=$(echo "$version_dir" | grep -oP '(?<=v)\d+$')
     mysql --user="$user" --password="$password" --database="$database" -e "INSERT INTO versionHistory (version, pkgName, passed) VALUES ('$version_number', '$version_dir', NULL);"
     echo "Version: $version_number pushed with package name: $pkgName"
+
+    # Execute the QAInstall.sh script on the QA machine using the expect script
+/usr/bin/expect -f "$EXPECT_PATH" "$devMachineName" "$qaIP" "$qaInstallPath" "$machine" "$type"
