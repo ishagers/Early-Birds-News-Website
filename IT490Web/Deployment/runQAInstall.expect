@@ -1,27 +1,50 @@
 #!/usr/bin/expect -f
 
-# Set variables based on passed arguments
+set timeout 20
 set QA_MACHINE_USER [lindex $argv 0]
 set QA_MACHINE_IP [lindex $argv 1]
 set QA_INSTALL_SCRIPT_PATH [lindex $argv 2]
 set MACHINE_TYPE [lindex $argv 3]
 set CONFIG_TYPE [lindex $argv 4]
-set timeout -1
 
-# Now connect to the QA machine via SSH and run the QAInstall.sh script
-spawn ssh $QA_MACHINE_USER@$QA_MACHINE_IP "$QA_INSTALL_SCRIPT_PATH $MACHINE_TYPE $CONFIG_TYPE"
+spawn ssh $QA_MACHINE_USER@$QA_MACHINE_IP
 
 # Handle SSH connection and script execution
 expect {
+    # Handle the SSH key verification prompt
     "yes/no" {
         send "yes\r"
-        expect "password:"
-        send "$env(QA_MACHINE_PASSWORD)\r"
+        exp_continue  ;# Continue expecting after sending "yes"
     }
+    # Handle the password prompt
     "password:" {
-        send "$env(QA_MACHINE_PASSWORD)\r"
+        send "YogiMaster123@\r"
+        exp_continue  ;# Continue expecting after sending the password
+    }
+    # Connection is established, now let's run the install script
+    "$ " {  ;# Adjust the prompt to match the one on your QA machine
+        send "$QA_INSTALL_SCRIPT_PATH $MACHINE_TYPE $CONFIG_TYPE\r"
     }
 }
 
-# Wait for the script to complete
-expect eof
+# Handle responses from the QAInstall.sh script execution
+expect {
+    "first expected output from QAInstall.sh" {
+        # Respond to the first expected output
+        send "$MACHINE_TYPE\r"
+        exp_continue  ;# Continue expecting
+    }
+    "second expected output from QAInstall.sh" {
+        # Respond to the second expected output
+        send "$CONFIG_TYPE\r"
+        exp_continue  ;# Continue expecting
+    }
+    # You can add more patterns and responses here if needed
+
+    # End the expect script when the script finishes and returns to the prompt
+    "$ " {
+        send "exit\r"
+    }
+}
+
+expect eof  ;# End of file (exit SSH session)
