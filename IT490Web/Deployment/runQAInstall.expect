@@ -29,12 +29,12 @@ expect {
 
 # Handle responses from the QAInstall.sh script execution
 expect {
-    "first expected output from QAInstall.sh" {
+    "Please enter the QA (layer 2) machine (FE, BE, DMZ): " {
         # Respond to the first expected output
         send "$MACHINE_TYPE\r"
         exp_continue  ;# Continue expecting
     }
-    "second expected output from QAInstall.sh" {
+    "Please Enter the bundle type (FE,BE,DMZ,DB,CSS): " {
         # Respond to the second expected output
         send "$CONFIG_TYPE\r"
         exp_continue  ;# Continue expecting

@@ -6,34 +6,40 @@ set PROD_MACHINE_IP [lindex $argv 1]
 set PROD_INSTALL_SCRIPT_PATH [lindex $argv 2]
 set MACHINE_TYPE [lindex $argv 3]
 set BUNDLE_TYPE [lindex $argv 4]
+set VERSION [lindex $argv 5]
 set timeout -1
 
-# Now connect to the Production machine via SSH
-spawn ssh $PROD_MACHINE_USER@$PROD_MACHINE_IP
+# Now connect to the Production machine via SSH and run the ProdInstall.sh script
+spawn ssh $PROD_MACHINE_USER@$PROD_MACHINE_IP "sudo $PROD_INSTALL_SCRIPT_PATH"
 
-# Handle password prompt
-expect "password:" 
-send "YogiMaster123@\r"
-
-# Now navigate to the script and run it
-expect "$ "
-send "sudo $PROD_INSTALL_SCRIPT_PATH\r"
-
-# Handle any sudo password prompt
+# Handle SSH connection and script execution
 expect {
-    "password for*" {
+    # First-time SSH connection will ask for host verification
+    "yes/no" {
+        send "yes\r"
+        expect "password:"
         send "YogiMaster123@\r"
-        expect "Please enter the Prod (layer 3) machine (FE, BE, DMZ):"
-        send -- "$MACHINE_TYPE\r"
     }
-    "Please enter the Prod (layer 3) machine (FE, BE, DMZ):" {
-        send -- "$MACHINE_TYPE\r"
+    # SSH password prompt
+    "password:" {
+        send "YogiMaster123@\r"
     }
 }
 
-# Handle the bundle type input
-expect "Please Enter the bundle type (FE,BE,DMZ,DB,CSS):"
-send -- "$BUNDLE_TYPE\r"
+# Expect the sudo prompt, if necessary
+expect {
+    "password for*" {
+        send "YogiMaster123@\r"
+        exp_continue
+    }
+    "Please enter the Prod (layer 3) machine (FE, BE, DMZ): " {
+        send -- "$MACHINE_TYPE\r"
+        exp_continue
+    }
+    "Please Enter the bundle type (FE,BE,DMZ,DB,CSS): " {
+        send -- "$BUNDLE_TYPE\r"
+    }
+}
 
-# Wait for script completion
+# Wait for the script to complete
 expect eof
