@@ -23,7 +23,7 @@ expect {
     }
     # Connection is established, now let's run the install script
     "$ " {  ;# Adjust the prompt to match the one on your QA machine
-        send "$QA_INSTALL_SCRIPT_PATH $MACHINE_TYPE $CONFIG_TYPE\r"
+        send "sudo $QA_INSTALL_SCRIPT_PATH $MACHINE_TYPE $CONFIG_TYPE\r"
     }
 }
 
