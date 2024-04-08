@@ -96,6 +96,6 @@ find . -type f ! -name "$pkgName.zip" -delete
 echo "Cleanup complete."
 
     # Insert version info into database
-    version_number="${version_dir: -1}" # Get the last character, which is the version number
+    version_number=$(echo "$version_dir" | grep -oP '(?<=v)\d+$')
     mysql --user="$user" --password="$password" --database="$database" -e "INSERT INTO versionHistory (version, pkgName, passed) VALUES ('$version_number', '$version_dir', NULL);"
     echo "Version: $version_number pushed with package name: $pkgName"
