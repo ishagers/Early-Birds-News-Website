@@ -1,4 +1,5 @@
 <?php
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -10,7 +11,7 @@ checkLogin();
 // Fetch topics from database
 $topics = fetchAllTopics();
 $currentPreferences = fetchUserPreferences($_SESSION['username']);
-$friendsList = fetchFriends($_SESSION['user_id']); // Fetching friends list
+$friendsList = fetchFriendsByUsername(getDatabaseConnection(), $_SESSION['username']); // Fetching friends list by username
 
 if (isset($_POST['submitPreferences'])) {
     $selectedTopics = $_POST['topics'] ?? [];
@@ -34,6 +35,7 @@ if (isset($_POST['clearPreferences'])) {
     header('Location: accountPreferences.php');
     exit;
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -44,9 +46,9 @@ if (isset($_POST['clearPreferences'])) {
     <link rel="stylesheet" href="../routes/menuStyles.css" />
 </head>
 <body>
-    
     <?php require('nav.php'); ?>
     <h2>Profile Settings</h2>
+
     <!-- Display Friends List -->
     <div class="friends-list">
         <h3>Your Friends:</h3>
@@ -59,7 +61,6 @@ if (isset($_POST['clearPreferences'])) {
 
     <form action="accountPreferences.php" method="post">
         <div class="topics-selection">
-            
             <h3>Select your topics of interest:</h3>
             <?php foreach ($topics as $topic): ?>
                 <label>
