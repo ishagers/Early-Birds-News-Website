@@ -28,7 +28,8 @@ body {
     .nav-bar ul {
         list-style-type: none;
         display: flex;
-        justify-content: center;
+        justify-content: flex-end; /* Align items to the right */
+        margin-right: 20px; /* Add right margin for some spacing from the edge */
     }
 
         .nav-bar ul li {
@@ -149,29 +150,38 @@ body {
 }
 
 .article-details-container button {
-    background-color: #007BFF;
-    color: #ffffff;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.2s;
+    background-color: #007BFF; /* Primary button color */
+    color: #ffffff; /* Text color */
+    padding: 10px 15px; /* Padding for size */
+    font-size: 16px; /* Appropriate text size */
+    border-radius: 5px; /* Rounded corners */
+    border: none; /* No border */
+    cursor: pointer; /* Cursor indicates action */
+    display: inline-block; /* Ensures proper spacing */
+    transition: background-color 0.2s, box-shadow 0.2s; /* Smooth transition for hover effects */
 }
 
     .article-details-container button:hover {
-        background-color: #0056b3;
+        background-color: #0056b3; /* Darker shade on hover */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
     }
+
+/* Specific styling for the 'Submit Rating' button if needed */
+#article-rating button {
+    width: auto; /* Adjust width as necessary */
+    margin-top: 10px; /* Space from the dropdown */
+}
 
 .article-details-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 750px; /* Adjust based on your layout preferences */
-    margin: 10px auto;
+    max-width: 750px; /* Adjust based on layout preferences */
+    margin: 20px auto;
     padding: 20px;
     border: 1px solid #005A9C;
-    background: #f4f4f4; /* Subtle grey background */
+    background-color: #f4f4f4; /* Subtle background color */
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     border-radius: 8px;
 }
