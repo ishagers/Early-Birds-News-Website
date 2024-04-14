@@ -136,6 +136,41 @@ function fetchFriendsByUsername($conn, $username) {
         return [];
     }
 }
+function fetchAllUsernames($currentUsername) {
+    $conn = getDatabaseConnection(); // Reuse the existing database connection function
+
+    try {
+        $sql = "SELECT username FROM users WHERE username != :currentUsername";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':currentUsername', $currentUsername);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetches only the usernames
+    } catch (PDOException $e) {
+        error_log("Database error: " . $e->getMessage()); 
+        return []; // Return an empty array on error
+    }
+}
+function sendFriendRequest($username1, $username2) {
+    $conn = getDatabaseConnection();
+    try {
+        // Convert usernames to user IDs
+        $ids = getUserIdsByUsername($conn, [$username1, $username2]);
+        $user_id1 = $ids[$username1];
+        $user_id2 = $ids[$username2];
+
+        // SQL to insert friend request
+        $sql = "INSERT INTO friends (user_id1, user_id2, status, action_user_id) VALUES (?, ?, 'pending', ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$user_id1, $user_id2, $user_id1]);
+
+        if ($stmt->rowCount() > 0) {
+            return ['status' => true, 'message' => 'Friend request sent successfully'];
+        }
+        return ['status' => false, 'message' => 'Failed to send friend request'];
+    } catch (PDOException $e) {
+        return ['status' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
 
 function insertNewsArticle($title, $content, $source, $url = null) {
     $response = array('status' => false, 'message' => '');
