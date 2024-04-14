@@ -204,7 +204,7 @@ body {
 
 .article-form {
     max-width: 600px;
-    margin-top:20px;
+    margin: 20px auto;
     padding: 20px;
     background-color: #ffffff; /* Ensure background contrasts with text */
     border: 2px solid #005A9C;
