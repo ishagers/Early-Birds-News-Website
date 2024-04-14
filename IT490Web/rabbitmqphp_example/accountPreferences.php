@@ -10,6 +10,8 @@ $topics = fetchAllTopics();
 $currentPreferences = fetchUserPreferences($_SESSION['username']);
 $friendsList = fetchFriendsByUsername(getDatabaseConnection(), $_SESSION['username']);
 $usernames = fetchAllUsernames($_SESSION['username']); // Fetching all other usernames
+$receivedRequests = fetchReceivedFriendRequests(getDatabaseConnection(), $_SESSION['username']);
+
 
 if (isset($_POST['submitPreferences'])) {
     $selectedTopics = $_POST['topics'] ?? [];
@@ -42,6 +44,22 @@ if (isset($_POST['clearPreferences'])) {
     <?php require('nav.php'); ?>
 
     <h2>Profile Settings</h2>
+    <!-- Display Received Friend Requests -->
+    <div class="friend-requests">
+        <h3>Received Friend Requests:</h3>
+        <ul>
+            <?php foreach ($receivedRequests as $request): ?>
+                <li>
+                    <?php echo htmlspecialchars($request['username']); ?>
+                    <form action="respondToRequest.php" method="post" style="display: inline;">
+                        <input type="hidden" name="requester_id" value="<?php echo htmlspecialchars($request['user_id1']); ?>">
+                        <button type="submit" name="response" value="accept">Accept</button>
+                        <button type="submit" name="response" value="reject">Reject</button>
+                    </form>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
 
     <!-- Display Friends List -->
     <div class="friends-list">

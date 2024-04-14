@@ -172,6 +172,24 @@ function sendFriendRequest($username1, $username2) {
     }
 }
 
+function fetchReceivedFriendRequests($conn, $username) {
+    try {
+        // Fetch user ID first
+        $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+        $stmt->execute([$username]);
+        $userId = $stmt->fetchColumn();
+
+        // Fetch pending friend requests
+        $stmt = $conn->prepare("SELECT u.username FROM friends f JOIN users u ON f.user_id1 = u.id WHERE f.user_id2 = ? AND f.status = 'pending'");
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Database error: " . $e->getMessage());
+        return [];
+    }
+}
+
+
 function insertNewsArticle($title, $content, $source, $url = null) {
     $response = array('status' => false, 'message' => '');
     try {
