@@ -243,6 +243,32 @@ function acceptFriendRequest($conn, $requester_id, $receiver_username) {
         return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
     }
 }
+function deleteFriend($conn, $user1_username, $user2_username) {
+    try {
+        $conn->beginTransaction(); // Start transaction
+
+        // Retrieve IDs based on usernames
+        $user1_id = getUserIdByUsername($conn, $user1_username);
+        $user2_id = getUserIdByUsername($conn, $user2_username);
+
+        // Prepare the SQL statement to delete the friendship
+        $sql = "DELETE FROM friends WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$user1_id, $user2_id, $user2_id, $user1_id]);
+
+        // Check if the deletion was successful
+        if ($stmt->rowCount() > 0) {
+            $conn->commit(); // Commit the transaction
+            return ['success' => true, 'message' => 'Friendship successfully deleted.'];
+        } else {
+            $conn->rollback(); // Rollback the transaction if no rows were affected
+            return ['success' => false, 'message' => 'No friendship was deleted.'];
+        }
+    } catch (PDOException $e) {
+        $conn->rollback(); // Ensure rollback on error
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
 
 
 function insertNewsArticle($title, $content, $source, $url = null) {

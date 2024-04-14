@@ -78,7 +78,7 @@ if (isset($_SESSION['message'])) {
         </ul>
     </div>
 
-    <!-- Display Friends List -->
+	<!-- Display Friends List -->
 	<div class="friends-list">
 	    <h3>Your Friends:</h3>
 	    <ul>
@@ -90,10 +90,16 @@ if (isset($_SESSION['message'])) {
 		        $friendStatus = htmlspecialchars($friend['status'] ?? 'No status');
 		        ?>
 		        <?php echo "{$friendName} - {$friendStatus}"; ?>
+		        <!-- Delete friend request form -->
+		        <form action="deleteFriend.php" method="post" style="display: inline;">
+		            <input type="hidden" name="friend_username" value="<?php echo $friendName; ?>">
+		            <button type="submit">Delete Friend</button>
+		        </form>
 		    </li>
 		<?php endforeach; ?>
 	    </ul>
 	</div>
+
     <!-- Display Other Usernames -->
     <div class="other-users">
         <h3>Other Users:</h3>
