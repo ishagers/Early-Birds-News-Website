@@ -44,18 +44,21 @@ if (!empty($_POST['title']) && !empty($_POST['content'])) {
     <title>Early Bird Articles - Create Article</title>
     <link rel="stylesheet" href="../routes/menuStyles.css" />
 </head>
-<body>
+<body class="create-article-page">
 
     <?php require('nav.php'); ?>
 
-    <div class="article-form">
-        <form method="post">
-            <label for="title">Article Title:</label><br />
-            <input type="text" id="title" name="title" required /><br />
-            <label for="content">Content:</label><br />
-            <textarea id="content" name="content" rows="10" cols="50" required></textarea><br />
-            <input type="submit" value="Submit Article" />
-        </form>
+    <div class="main-container">
+        <!-- Ensure this div covers all content you want centered -->
+        <div class="article-form">
+            <form method="post">
+                <label for="title">Article Title:</label><br />
+                <input type="text" id="title" name="title" required /><br />
+                <label for="content">Content:</label><br />
+                <textarea id="content" name="content" rows="10" cols="50" required></textarea><br />
+                <input type="submit" value="Submit Article" />
+            </form>
+        </div>
     </div>
 
     <div class="logout-button">

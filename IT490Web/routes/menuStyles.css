@@ -216,3 +216,111 @@ body {
         background-color: #0056b3;
     }
 
+.create-article-page .main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    padding: 20px;
+}
+
+.create-article-page .article-form {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    border: 2px solid #005A9C;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.create-article-page input[type="submit"] {
+    background-color: #007BFF;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+    .create-article-page input[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+/* Base styles for the article details page */
+.article-details-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 960px; /* Adjust based on your layout preferences */
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #005A9C;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+    .article-details-container h2,
+    .article-details-container h3 {
+        color: #005A9C;
+        margin: 10px 0;
+    }
+
+    .article-details-container p,
+    .article-details-container form {
+        width: 100%;
+        max-width: 900px;
+        text-align: left;
+        margin-bottom: 20px;
+    }
+
+    .article-details-container small {
+        display: block;
+        margin-top: 5px;
+        color: #666;
+        font-size: 0.8em;
+    }
+
+    /* Style for forms and buttons */
+    .article-details-container form {
+        margin-top: 20px;
+    }
+
+    .article-details-container input[type="email"],
+    .article-details-container textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .article-details-container button {
+        background-color: #007BFF;
+        color: #ffffff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+        .article-details-container button:hover {
+            background-color: #0056b3;
+        }
+
+/* Comments styling */
+.comments {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.comment-item {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
