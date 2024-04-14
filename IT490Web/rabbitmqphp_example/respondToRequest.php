@@ -35,7 +35,9 @@ if (isset($_POST['response'], $_POST['requester_id'])) {
         echo "Error: " . $e->getMessage();
     }
 
-    header('Location: accountPreferences.php');
+    header('Location: accountPreferences.php?friendsUpdated=true');
+	
+
     exit;
 }
 

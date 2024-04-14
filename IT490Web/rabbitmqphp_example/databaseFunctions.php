@@ -112,29 +112,22 @@ function fetchFriendsByUsername($conn, $username) {
         throw new Exception("Database connection is not established.");
     }
 
-    try {
-        $sql = "
-            SELECT CASE 
-                       WHEN u1.username = :username THEN u2.username 
-                       ELSE u1.username 
-                   END AS friend_username, 
-                   f.status
-            FROM friends f
-            JOIN users u1 ON u1.id = f.user_id1
-            JOIN users u2 ON u2.id = f.user_id2
-            WHERE (u1.username = :username OR u2.username = :username)
-                  AND f.status = 'accepted'
-                  AND u1.username != u2.username;
-        ";
+	try {
+		$sql = "SELECT CASE WHEN u1.username = :username THEN u2.username ELSE u1.username END AS friend_username, f.status
+		        FROM friends f
+		        JOIN users u1 ON u1.id = f.user_id1
+		        JOIN users u2 ON u2.id = f.user_id2
+		        WHERE (u1.username = :username OR u2.username = :username)
+		        AND f.status = 'accepted'";
 
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':username', $username);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        error_log("Failed to fetch friends by username: " . $e->getMessage());
-        return [];
-    }
+		$stmt = $conn->prepare($sql);
+		$stmt->bindParam(':username', $username);
+		$stmt->execute();
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	    } catch (PDOException $e) {
+		error_log("Failed to fetch friends by username: " . $e->getMessage());
+		return [];
+	    }
 }
 function fetchAllUsernames($currentUsername) {
     $conn = getDatabaseConnection(); // Reuse the existing database connection function
@@ -150,27 +143,41 @@ function fetchAllUsernames($currentUsername) {
         return []; // Return an empty array on error
     }
 }
-function sendFriendRequest($username1, $username2) {
-    $conn = getDatabaseConnection();
+function sendFriendRequest($conn, $username1, $username2) {
     try {
         // Convert usernames to user IDs
         $ids = getUserIdsByUsername($conn, [$username1, $username2]);
         $user_id1 = $ids[$username1];
         $user_id2 = $ids[$username2];
 
-        // SQL to insert friend request
-        $sql = "INSERT INTO friends (user_id1, user_id2, status, action_user_id) VALUES (?, ?, 'pending', ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([$user_id1, $user_id2, $user_id1]);
+        // Check if a friend request already exists
+        $checkStmt = $conn->prepare("SELECT * FROM friends WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)");
+        $checkStmt->execute([$user_id1, $user_id2, $user_id2, $user_id1]);
+        $existingRequest = $checkStmt->fetch();
 
-        if ($stmt->rowCount() > 0) {
-            return ['status' => true, 'message' => 'Friend request sent successfully'];
+        if ($existingRequest) {
+            // Friend request already exists, handle logic (e.g., inform the user or update request if status is different)
+            if ($existingRequest['status'] === 'pending') {
+                return ['status' => false, 'message' => 'Friend request already pending'];
+            } else {
+                // Optionally, you could re-send or update the request here
+                return ['status' => false, 'message' => 'A friend request already exists'];
+            }
+        } else {
+            // No existing request, proceed to insert
+            $insertStmt = $conn->prepare("INSERT INTO friends (user_id1, user_id2, status, action_user_id) VALUES (?, ?, 'pending', ?)");
+            $insertStmt->execute([$user_id1, $user_id2, $user_id1]);
+            if ($insertStmt->rowCount() > 0) {
+                return ['status' => true, 'message' => 'Friend request sent successfully'];
+            } else {
+                return ['status' => false, 'message' => 'Failed to send friend request'];
+            }
         }
-        return ['status' => false, 'message' => 'Failed to send friend request'];
     } catch (PDOException $e) {
         return ['status' => false, 'message' => 'Database error: ' . $e->getMessage()];
     }
 }
+
 
 function fetchReceivedFriendRequests($conn, $username) {
     try {
