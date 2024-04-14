@@ -48,9 +48,9 @@ if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article && $
 <body>
 
     <?php require('nav.php'); ?>
-
-    <div class="main-container">
-        <?php if ($article && $article['status']): ?>
+    <div class="article-details-container">
+        <div class="main-container">
+            <?php if ($article && $article['status']): ?>
             <div class="article-details">
                 <h2><?php echo htmlspecialchars($article['article']['title']); ?></h2>
                 <p><?php echo nl2br(htmlspecialchars($article['article']['content'])); ?></p>
@@ -65,24 +65,24 @@ if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article && $
                     <?php if (!empty($emailResponse)) {
                         echo "<p>$emailResponse</p>";
                     } ?>
-                    </div>
+                </div>
 
-                    <!-- Display Average Rating -->
-                    <?php $averageRatingResponse = getAverageRatingByArticleId($articleId); ?>
-                    <div id='ratings'>
-                        <h3>Average Rating</h3>
-                        <?php if ($averageRatingResponse['status']): ?>
-                            <p>Average Rating: <?php echo htmlspecialchars($averageRatingResponse['averageRating']); ?></p>
-                        <?php else: ?>
-                            <p>No ratings yet.</p>
-                        <?php endif; ?>
-                    </div>
+                <!-- Display Average Rating -->
+                <?php $averageRatingResponse = getAverageRatingByArticleId($articleId); ?>
+                <div id='ratings'>
+                    <h3>Average Rating</h3>
+                    <?php if ($averageRatingResponse['status']): ?>
+                    <p>Average Rating: <?php echo htmlspecialchars($averageRatingResponse['averageRating']); ?></p>
+                    <?php else: ?>
+                    <p>No ratings yet.</p>
+                    <?php endif; ?>
+                </div>
 
-                    <!-- Add Rating -->
-                    <div id='article-rating'>
-                        <h3>Rate this Article</h3>
-                        <form action='RatingAndPreference.php' method='POST'>
-                            <input type='hidden' name='article_id' value='<?php echo htmlspecialchars($articleId); ?>' />
+                <!-- Add Rating -->
+                <div id='article-rating'>
+                    <h3>Rate this Article</h3>
+                    <form action='RatingAndPreference.php' method='POST'>
+                        <input type='hidden' name='article_id' value='<?php echo htmlspecialchars($articleId); ?>' />
                         <label for='rating'>Rating:</label>
                         <select name='rating' id='rating' required>
                             <option value='1'>1</option>
@@ -99,11 +99,11 @@ if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article && $
                     <h3>Comments</h3>
                     <?php $comments = getCommentsByArticleId($articleId); ?>
                     <?php if (!empty($comments['comments'])): ?>
-                        <?php foreach ($comments['comments'] as $comment): ?>
-                            <p><strong><?php echo htmlspecialchars($comment['username']); ?>:</strong><?php echo htmlspecialchars($comment['comment']); ?></p>
-                        <?php endforeach; ?>
+                    <?php foreach ($comments['comments'] as $comment): ?>
+                    <p><strong><?php echo htmlspecialchars($comment['username']); ?>:</strong><?php echo htmlspecialchars($comment['comment']); ?></p>
+                    <?php endforeach; ?>
                     <?php else: ?>
-                        <p>No comments yet.</p>
+                    <p>No comments yet.</p>
                     <?php endif; ?>
                     <div id='submit-comment'>
                         <h3>Add a comment</h3>
@@ -118,10 +118,10 @@ if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article && $
                 </div>
 
             </div>
-        <?php else: ?>
+            <?php else: ?>
             <p>Article not found.</p>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
     </div>
-
 </body>
 </html>
