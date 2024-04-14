@@ -568,3 +568,64 @@ function SendArticle($recipientEmail, $articleTitle, $articleContent, $articleUr
 
     return $response;
 }
+
+function addCurrencyToUserByUsername($username, $amount)
+{
+    $response = array('status' => false, 'message' => '');
+
+    try {
+        $conn = getDatabaseConnection(); // Reuse the database connection function
+
+        // Begin transaction
+        $conn->beginTransaction();
+
+        // First, get the user's id
+        $userSql = "SELECT id FROM users WHERE username = :username LIMIT 1";
+        $userStmt = $conn->prepare($userSql);
+        $userStmt->bindParam(':username', $username);
+        $userStmt->execute();
+        $user = $userStmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user) {
+            // SQL statement to add currency to the user's EBP
+            $sql = "UPDATE users SET EBP = EBP + :amount WHERE id = :id";
+
+            // Prepare and bind parameters
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':amount', $amount, PDO::PARAM_INT);
+            $stmt->bindParam(':id', $user['id'], PDO::PARAM_INT);
+
+            // Execute the statement
+            $stmt->execute();
+
+            // Check if the update was successful
+            if ($stmt->rowCount() > 0) {
+                $response['status'] = true;
+                $response['message'] = "EBP added successfully";
+                $conn->commit(); // Commit the transaction
+            } else {
+                $conn->rollBack(); // Rollback the transaction on failure
+                $response['message'] = "No EBP was added. User not found or amount is zero.";
+            }
+        } else {
+            $conn->rollBack(); // Rollback the transaction if user not found
+            $response['message'] = "User not found.";
+        }
+    } catch (PDOException $e) {
+        $conn->rollBack(); // Rollback the transaction on error
+        $response['message'] = "Database error: " . $e->getMessage();
+    }
+
+    return $response;
+}
+
+function fetchUserEBP($username)
+{
+    $conn = getDatabaseConnection();
+    $sql = "SELECT EBP FROM users WHERE username = :username LIMIT 1";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':username', $username);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $user ? $user['EBP'] : 0;
+}
