@@ -33,12 +33,12 @@ if (isset($_POST['add_ebp'])) {
     <h1>Early Bird Articles</h1>
     <div class="user-info">
         Logged in as: <strong><?php echo htmlspecialchars($username); ?></strong>
+        <form method="post" action="">
+            <button type="submit" name="add_ebp">Add 5 EBP</button>
+        </form>
+        <img src="../assets/EBP.png" alt="EB Points:" width="32" height="32" />
+        <span id="ebpPoints"><?php echo $ebpPoints; ?></span>
     </div>
-    <form method="post" action="">
-        <button type="submit" name="add_ebp">Add 5 EBP</button>
-    </form>
-    <img src="../assets/EBP.png" alt="EB Points:" width="64" height="64" />
-    <span id="ebpPoints"><?php echo $ebpPoints; ?></span>
 </div>
 
 
