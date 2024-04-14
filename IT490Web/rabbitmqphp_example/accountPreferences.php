@@ -44,15 +44,21 @@ if (isset($_POST['clearPreferences'])) {
     <?php require('nav.php'); ?>
 
     <h2>Profile Settings</h2>
+
     <!-- Display Received Friend Requests -->
     <div class="friend-requests">
         <h3>Received Friend Requests:</h3>
         <ul>
             <?php foreach ($receivedRequests as $request): ?>
                 <li>
-                    <?php echo htmlspecialchars($request['username']); ?>
+                    <?php
+                    // Ensure username is not null before displaying
+                    $requesterUsername = htmlspecialchars($request['username'] ?? 'Unknown');
+                    $requesterId = htmlspecialchars($request['user_id1'] ?? '0'); // Provide a fallback ID or handle this case
+                    ?>
+                    <?php echo $requesterUsername; ?>
                     <form action="respondToRequest.php" method="post" style="display: inline;">
-                        <input type="hidden" name="requester_id" value="<?php echo htmlspecialchars($request['user_id1']); ?>">
+                        <input type="hidden" name="requester_id" value="<?php echo $requesterId; ?>">
                         <button type="submit" name="response" value="accept">Accept</button>
                         <button type="submit" name="response" value="reject">Reject</button>
                     </form>
@@ -66,27 +72,34 @@ if (isset($_POST['clearPreferences'])) {
         <h3>Your Friends:</h3>
         <ul>
             <?php foreach ($friendsList as $friend): ?>
-                <li><?php echo htmlspecialchars($friend['username']); ?> - <?php echo htmlspecialchars($friend['status']); ?></li>
+                <li>
+                    <?php
+                    // Use htmlspecialchars to prevent XSS and handle null values
+                    $friendName = htmlspecialchars($friend['username'] ?? 'Unknown');
+                    $friendStatus = htmlspecialchars($friend['status'] ?? 'No status');
+                    ?>
+                    <?php echo "{$friendName} - {$friendStatus}"; ?>
+                </li>
             <?php endforeach; ?>
         </ul>
     </div>
 
-	<!-- Display Other Usernames -->
-	<div class="other-users">
-	    <h3>Other Users:</h3>
-	    <ul>
-		<?php foreach ($usernames as $user): ?>
-		    <li>
-		        <?php echo htmlspecialchars($user['username']); ?>
-		        <!-- Form to send friend request -->
-		        <form action="sendFriendRequest.php" method="post" style="display: inline;">
-		            <input type="hidden" name="friend_username" value="<?php echo htmlspecialchars($user['username']); ?>">
-		            <button type="submit">Send Friend Request</button>
-		        </form>
-		    </li>
-		<?php endforeach; ?>
-	    </ul>
-	</div>
+    <!-- Display Other Usernames -->
+    <div class="other-users">
+        <h3>Other Users:</h3>
+        <ul>
+            <?php foreach ($usernames as $user): ?>
+                <li>
+                    <?php echo htmlspecialchars($user['username']); ?>
+                    <!-- Form to send friend request -->
+                    <form action="sendFriendRequest.php" method="post" style="display: inline;">
+                        <input type="hidden" name="friend_username" value="<?php echo htmlspecialchars($user['username']); ?>">
+                        <button type="submit">Send Friend Request</button>
+                    </form>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
 
     <!-- User Preferences Form -->
     <form action="accountPreferences.php" method="post">
