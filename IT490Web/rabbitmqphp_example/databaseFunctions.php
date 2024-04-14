@@ -243,7 +243,7 @@ function acceptFriendRequest($conn, $requester_id, $receiver_username) {
         return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
     }
 }
-s
+
 
 function insertNewsArticle($title, $content, $source, $url = null) {
     $response = array('status' => false, 'message' => '');
