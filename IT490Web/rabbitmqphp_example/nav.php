@@ -1,5 +1,5 @@
 <?php
-require('databaseFunctions.php');
+require_once 'databaseFunctions.php';
 // Check if the session is not started yet
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
