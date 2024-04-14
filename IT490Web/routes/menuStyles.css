@@ -204,7 +204,7 @@ body {
 
 .article-form {
     max-width: 600px;
-    margin: auto;
+    margin-top:20px;
     padding: 20px;
     background-color: #ffffff; /* Ensure background contrasts with text */
     border: 2px solid #005A9C;
@@ -237,9 +237,9 @@ body {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 960px; /* Adjust based on your layout preferences */
-    margin: 20px auto;
-    padding: 20px;
+    max-width: 750px; /* Adjust based on your layout preferences */
+    margin: 10px auto;
+    padding: 10px;
     border: 1px solid #005A9C;
     background: #fff;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -256,7 +256,7 @@ body {
         width: 100%;
         max-width: 900px;
         text-align: left;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
 
     .article-details-container small {
@@ -268,7 +268,7 @@ body {
 
     /* Style for forms and buttons */
     .article-details-container form {
-        margin-top: 20px;
+        margin-top: 10px;
     }
 
     .article-details-container input[type="email"],
@@ -284,7 +284,7 @@ body {
         background-color: #007BFF;
         color: #ffffff;
         border: none;
-        padding: 10px 15px;
+        padding: 10px 10px;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.2s;
@@ -297,7 +297,7 @@ body {
 /* Comments styling */
 .comments {
     width: 100%;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 .comment-item {
