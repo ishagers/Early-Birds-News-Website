@@ -1,4 +1,5 @@
 <?php
+session_start(); 
 require('rabbitmqphp_example/session.php');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -9,25 +10,23 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $queryValues = [
         'type' => 'login',
         'username' => $_POST['username'],
-        'password' => $_POST['password'], // Send plaintext password to be hashed and verified on the server
+        'password' => $_POST['password'], // Ensure this data is sent over HTTPS
     ];
 
     $result = publisher($queryValues);
 
-    if ($result['returnCode'] == '0') { // Assuming '0' means success
+    if ($result && $result['returnCode'] == '0') {
         // Login successful
         echo "Great, we found you: " . htmlspecialchars($result['message']);
-
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-
         $_SESSION['username'] = $_POST['username'];
+        $_SESSION['user_id'] = $result['user_id']; // Ensure 'user_id' is correctly provided by the response
+
         header("Location: rabbitmqphp_example/mainMenu.php"); // Redirect to the home page or dashboard
         exit();
     } else {
-        // Login failed
-        echo "<script>alert('" . htmlspecialchars($result['message']) . "');</script>";
+        // Login failed or result is not properly formatted
+        $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
+        echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
     }
 }
 ?>
@@ -60,3 +59,4 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
     </div>
 </body>
 </html>
+
