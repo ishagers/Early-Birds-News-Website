@@ -202,53 +202,35 @@ body {
         font-size: 24px;
     }
 
-.article-form, .form-buttons, .topics-selection {
-    background-color: #007BFF;
-    color: #ffffff;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-
-    .article-form:hover, .form-buttons:hover, .topics-selection:hover {
-        background-color: #0056b3;
-    }
-
-.create-article-page .main-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100vh;
-    padding: 20px;
-}
-
-.create-article-page .article-form {
-    width: 100%;
+.article-form {
     max-width: 600px;
+    margin: auto;
     padding: 20px;
+    background-color: #ffffff; /* Ensure background contrasts with text */
     border: 2px solid #005A9C;
-    background-color: #ffffff;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border-radius: 8px;
-    text-align: center;
 }
 
-.create-article-page input[type="submit"] {
-    background-color: #007BFF;
-    color: #ffffff;
-    padding: 10px 20px;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-}
-
-    .create-article-page input[type="submit"]:hover {
-        background-color: #0056b3;
+    .article-form input[type="text"], .article-form textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
     }
+
+    .article-form input[type="submit"] {
+        display: block; /* Make the button block to fill width */
+        width: 100%;
+        padding: 10px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .article-form input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
 /* Base styles for the article details page */
 .article-details-container {
     display: flex;
