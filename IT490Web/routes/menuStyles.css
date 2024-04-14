@@ -148,6 +148,11 @@ body {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+.article-details h2 {
+    text-decoration: underline; /* Adds underline to the title */
+    font-size: 28px; /* Increases the size of the title */
+    margin-bottom: 20px; /* Adds some space below the title */
+}
 
 .article-details-container select {
     background-color: #ffffff;
@@ -161,8 +166,8 @@ body {
 .article-details-container button {
     background-color: #007BFF; /* Primary button color */
     color: #ffffff; /* Text color */
-    padding: 10px 15px; /* Padding for size */
-    font-size: 16px; /* Appropriate text size */
+    padding: 7px 11px; /* Reduces padding to make buttons smaller */
+    font-size: 12px; /* Optionally reduce the font size for buttons */
     border-radius: 5px; /* Rounded corners */
     border: none; /* No border */
     cursor: pointer; /* Cursor indicates action */
@@ -207,3 +212,9 @@ body {
     .btn:hover {
         background-color: #0056b3; /* Darker shade for hover */
     }
+#article-rating button,
+#share-article button,
+#submit-comment button {
+    padding: 8px 12px; /* Same as above, for individual button adjustment */
+    font-size: 14px; /* Same as above, for individual button adjustment */
+}
