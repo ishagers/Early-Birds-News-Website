@@ -107,24 +107,35 @@ function login($username, $password)
     return $response;
 }
 
-function fetchFriends($userId) {
-    global $conn;  // Ensure global scope for $conn
-
+function fetchFriendsByUsername($conn, $username) {
     if ($conn === null) {
         throw new Exception("Database connection is not established.");
     }
 
     try {
-        $stmt = $conn->prepare("SELECT * FROM friends WHERE user_id = ?");
-        $stmt->execute([$userId]);
+        $sql = "
+            SELECT CASE 
+                       WHEN u1.username = :username THEN u2.username 
+                       ELSE u1.username 
+                   END AS friend_username, 
+                   f.status
+            FROM friends f
+            JOIN users u1 ON u1.id = f.user_id1
+            JOIN users u2 ON u2.id = f.user_id2
+            WHERE (u1.username = :username OR u2.username = :username)
+                  AND f.status = 'accepted'
+                  AND u1.username != u2.username;
+        ";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        error_log('Query failed: ' . $e->getMessage());
+        error_log("Failed to fetch friends by username: " . $e->getMessage());
         return [];
     }
 }
-
-
 
 function insertNewsArticle($title, $content, $source, $url = null) {
     $response = array('status' => false, 'message' => '');

@@ -1,28 +1,46 @@
 <?php
+
 require 'databaseFunctions.php'; 
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+if (!isset($_SESSION['username'])) {
+    header('Location: index.php');
     exit;
 }
 
-if (isset($_POST['friend_id'])) {
-    $user_id1 = $_SESSION['user_id'];
-    $user_id2 = $_POST['friend_id'];
+if (isset($_POST['friend_username'])) {
+    $username1 = $_SESSION['username'];
+    $username2 = $_POST['friend_username'];
 
-    if ($user_id1 == $user_id2) {
+    if ($username1 == $username2) {
         echo "You cannot friend yourself.";
         exit;
     }
 
-    $stmt = $conn->prepare("INSERT INTO friends (user_id1, user_id2, status, action_user_id) VALUES (?, ?, 'pending', ?)");
     try {
-        $stmt->execute([$user_id1, $user_id2, $user_id1]);
-        if ($stmt->rowCount() > 0) {
-            echo "Friend request sent!";
+        $conn = getDatabaseConnection();
+
+        // Fetch user IDs based on usernames
+        $stmt = $conn->prepare("SELECT id FROM users WHERE username IN (?, ?)");
+        $stmt->execute([$username1, $username2]);
+        $ids = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (count($ids) == 2) {
+            // Ensure both users are found
+            $user_id1 = $ids[0]['id'];
+            $user_id2 = $ids[1]['id'];
+
+            // Insert friend request
+            $stmt = $conn->prepare("INSERT INTO friends (user_id1, user_id2, status, action_user_id) VALUES (?, ?, 'pending', ?)");
+            $stmt->execute([$user_id1, $user_id2, $user_id1]);
+            
+            if ($stmt->rowCount() > 0) {
+                echo "Friend request sent!";
+            } else {
+                echo "Failed to send friend request.";
+            }
         } else {
-            echo "Failed to send friend request.";
+            echo "One or both users not found.";
         }
     } catch (PDOException $e) {
         echo "Database error: " . $e->getMessage();
@@ -30,5 +48,6 @@ if (isset($_POST['friend_id'])) {
 } else {
     echo "Invalid request.";
 }
+
 ?>
 
