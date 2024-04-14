@@ -1,37 +1,20 @@
 <?php
-echo "Script started.<br>";
+// Database connection settings
+$host = '10.147.17.233'; // MySQL server IP or hostname
+$dbname = 'EARLYBIRD'; // Database name
+$user = 'IT490DB'; // Database username
+$pass = 'IT490DB'; // Database password
 
-// MySQL connection parameters
-$servername = "10.147.17.233";
-$username = "IT490DB";
-$password = "IT490DB";
-$database = "EARLYBIRD";
+try {
+    $conn = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+    // Set the PDO error mode to exception
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $database);
-
-// Check connection
-if ($conn->connect_error) {
-    echo "Connection to DB Failed.<br>";
-    die("Connection failed: " . $conn->connect_error);
-} else {
-    echo "Connected to database successfully.<br>";
+    // echo "Connected successfully"; 
+} catch(PDOException $e) {
+    error_log($e->getMessage());
+    die("Connection failed: " . $e->getMessage()); 
 }
 
-$sql = "SELECT * FROM users";
-$result = $conn->query($sql);
-
-if ($result === false) {
-    echo "Error executing query: " . $conn->error . "<br>";
-} else {
-    if ($result->num_rows > 0) {
-        // Process your results here
-        echo "Query executed successfully, data retrieved.<br>";
-    } else {
-        echo "Query executed successfully, but no data found.<br>";
-    }
-}
-
-// Close connection
-$conn->close();
 ?>
+

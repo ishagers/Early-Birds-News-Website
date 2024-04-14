@@ -4,7 +4,7 @@ require once_DIR . '/vendor/autoload.php';
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-$host = '10.147.17.178'; // RabbitMQ server IP or hostname
+$host = '10.147.17.90'; // RabbitMQ server IP or hostname
 $port = 5672; // Default RabbitMQ port
 $user = 'RabbitMQ490';
 $password = 'it490rabbit';
