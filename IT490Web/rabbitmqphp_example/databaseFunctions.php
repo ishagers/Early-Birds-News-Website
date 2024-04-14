@@ -188,6 +188,22 @@ function fetchReceivedFriendRequests($conn, $username) {
         return [];
     }
 }
+function getUserIdByUsername($conn, $username) {
+    try {
+        // Prepare and execute the query to fetch the user ID
+        $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+        $stmt->execute([$username]);
+        $userId = $stmt->fetchColumn();
+        if ($userId) {
+            return $userId;
+        } else {
+            throw new Exception("User not found.");
+        }
+    } catch (PDOException $e) {
+        error_log("Database error: " . $e->getMessage());
+        throw $e;  // Re-throw the exception to handle it in the calling script
+    }
+}
 
 
 function insertNewsArticle($title, $content, $source, $url = null) {

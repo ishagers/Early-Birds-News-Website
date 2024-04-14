@@ -1,4 +1,5 @@
 <?php
+
 require 'databaseFunctions.php';
 session_start();
 
@@ -14,19 +15,26 @@ if (isset($_POST['response'], $_POST['requester_id'])) {
     $receiver_username = $_SESSION['username'];
 
     try {
+        $conn->beginTransaction(); // Start transaction
+
         $receiver_id = getUserIdByUsername($conn, $receiver_username);
         $status = $response === 'accept' ? 'accepted' : 'rejected';
+
         $stmt = $conn->prepare("UPDATE friends SET status = ? WHERE user_id1 = ? AND user_id2 = ?");
         $stmt->execute([$status, $requester_id, $receiver_id]);
 
         if ($stmt->rowCount() > 0) {
             echo "Friend request " . $status;
+            $conn->commit(); // Commit the transaction
         } else {
             echo "Failed to update friend request.";
+            $conn->rollback(); // Rollback the transaction
         }
     } catch (Exception $e) {
+        $conn->rollback(); // Ensure rollback on error
         echo "Error: " . $e->getMessage();
     }
+
     header('Location: accountPreferences.php');
     exit;
 }
