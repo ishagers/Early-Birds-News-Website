@@ -34,11 +34,11 @@ if (isset($_POST['add_ebp'])) {
     <div class="user-info">
         Logged in as: <strong><?php echo htmlspecialchars($username); ?></strong>
     </div>
-
     <form method="post" action="">
         <button type="submit" name="add_ebp">Add 5 EBP</button>
     </form>
-    
+    <img src="../assets/EBP.png" alt="EB Points:" width="64" height="64" />
+    <span id="ebpPoints"><?php echo $ebpPoints; ?></span>
 </div>
 
 
@@ -51,12 +51,7 @@ if (isset($_POST['add_ebp'])) {
         <li><a href="SearchArticles.php">SearchArticles</a></li>
         <li><a href="mainMenu.php">Home</a></li>
         <li><a href="NewsAPIData.php">Latest News</a></li>
-        <li>
-            <a href="store.php">
-                <img src="./assets/EBP.png" alt="EBP Token" width="64" height="64" />
-                <span id="ebpPoints"><?php echo $ebpPoints; ?></span>
-            </a>
-        </li>
+        <li><a href="store.php"></a></li>
     </ul>
 </div>
 
@@ -69,7 +64,7 @@ if (isset($_POST['add_ebp'])) {
             .then(data => {
                 document.getElementById('ebpPoints').textContent = data;
             });
-    }, 2000); // Update every 5 seconds, adjust as needed
+    }, 1000); // Update every 5 seconds, adjust as needed
 </script>
 
 </body>
