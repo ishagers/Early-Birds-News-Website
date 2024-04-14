@@ -55,7 +55,7 @@ if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article && $
                 <h2><?php echo htmlspecialchars($article['article']['title']); ?></h2>
                 <p><?php echo nl2br(htmlspecialchars($article['article']['content'])); ?></p>
                 <small>Published on: <?php echo htmlspecialchars($article['article']['publication_date']); ?></small>
-
+                <div class="article-end-separator"></div>
                 <div id='share-article'>
                     <h3>Share this Article</h3>
                     <form action='getArticleDetails.php?id=<?php echo urlencode($articleId); ?>' method='post'>

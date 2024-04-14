@@ -2,6 +2,7 @@
 * {
     margin: 0;
     padding: 0;
+    padding-left: 20px;
     box-sizing: border-box;
 }
 
@@ -219,3 +220,9 @@ body {
     font-size: 14px; /* Same as above, for individual button adjustment */
 }
 
+.article-end-separator {
+    width: 100%; /* Full width of the container */
+    height: 4px; /* Thickness of the line */
+    background-color: #005A9C; /* Color of the line */
+    margin: 20px 0; /* Spacing above and below the line */
+}
