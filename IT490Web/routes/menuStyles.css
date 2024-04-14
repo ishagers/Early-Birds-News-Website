@@ -137,7 +137,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%; /* Use 100% of the container width */
+    width: 600px; /* Use 100% of the container width */
     max-width: 900px; /* Max-width can be set as per design needs */
     min-width: 720px; /* Min-width ensures it doesn't get too narrow */
     margin: 20px auto;
@@ -147,14 +147,6 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     border-radius: 8px;
     overflow: hidden; /* Ensures no content spills out */
-}
-
-.article-details {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center; /* Center-align the text for all children */
-    width: 100%; /* Full width to center align the children */
 }
 
 .article-details-container input[type="email"],
