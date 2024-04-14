@@ -13,6 +13,7 @@ body {
 }
 
 .header {
+    position: relative;
     background-color: #005A9C;
     color: #ffffff;
     text-align: center;
@@ -81,6 +82,14 @@ body {
     font-weight: bold;
     color: #FFD700;
     font-size: 1.2em;
+}
+.user-info {
+    position: absolute; /* Position relative to the header */
+    right: 20px; /* Distance from the right edge of the header */
+    top: 50%; /* Align vertically at the center */
+    transform: translateY(-50%); /* Adjust vertical alignment */
+    display: flex;
+    align-items: center;
 }
 
 
@@ -185,3 +194,16 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     border-radius: 8px;
 }
+.btn {
+    background-color: #007BFF; /* Primary button color */
+    color: #ffffff; /* Text color */
+    padding: 10px 20px; /* Padding for size */
+    border: none; /* No border for the button */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Indicates it's clickable */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+    .btn:hover {
+        background-color: #0056b3; /* Darker shade for hover */
+    }

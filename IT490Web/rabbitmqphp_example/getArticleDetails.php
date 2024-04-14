@@ -91,7 +91,7 @@ if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article && $
                             <option value='4'>4</option>
                             <option value='5'>5</option>
                         </select>
-                        <input type='submit' name='submitRating' value='Submit Rating' />
+                        <input type='submit' name='submitRating' value='Submit Rating' class='btn' />
                     </form>
                 </div>
 
@@ -111,9 +111,6 @@ if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article && $
                             <textarea name='comment' required></textarea>
                             <button type='submit' name='submitComment'>Submit Comment</button>
                         </form>
-                        <?php if (!empty($commentResponse)) {
-                            echo "<p>$commentResponse</p>";
-                        } ?>
                     </div>
                 </div>
 
