@@ -112,23 +112,31 @@ function fetchFriendsByUsername($conn, $username) {
         throw new Exception("Database connection is not established.");
     }
 
-	try {
-		$sql = "SELECT CASE WHEN u1.username = :username THEN u2.username ELSE u1.username END AS friend_username, f.status
-		        FROM friends f
-		        JOIN users u1 ON u1.id = f.user_id1
-		        JOIN users u2 ON u2.id = f.user_id2
-		        WHERE (u1.username = :username OR u2.username = :username)
-		        AND f.status = 'accepted'";
+    try {
+        $sql = "
+            SELECT u.username, f.status
+            FROM friends f
+            JOIN users u ON u.id = f.user_id2
+            WHERE f.user_id1 = (SELECT id FROM users WHERE username = :username)
+              AND f.status = 'accepted'
+            UNION
+            SELECT u.username, f.status
+            FROM friends f
+            JOIN users u ON u.id = f.user_id1
+            WHERE f.user_id2 = (SELECT id FROM users WHERE username = :username)
+              AND f.status = 'accepted';
+        ";
 
-		$stmt = $conn->prepare($sql);
-		$stmt->bindParam(':username', $username);
-		$stmt->execute();
-		return $stmt->fetchAll(PDO::FETCH_ASSOC);
-	    } catch (PDOException $e) {
-		error_log("Failed to fetch friends by username: " . $e->getMessage());
-		return [];
-	    }
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Failed to fetch friends by username: " . $e->getMessage());
+        return [];
+    }
 }
+
 function fetchAllUsernames($currentUsername) {
     $conn = getDatabaseConnection(); // Reuse the existing database connection function
 

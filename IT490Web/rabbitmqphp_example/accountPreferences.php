@@ -12,6 +12,8 @@ $friendsList = fetchFriendsByUsername(getDatabaseConnection(), $_SESSION['userna
 $usernames = fetchAllUsernames($_SESSION['username']); // Fetching all other usernames
 $receivedRequests = fetchReceivedFriendRequests(getDatabaseConnection(), $_SESSION['username']);
 
+// Debugging output to see what's being returned by fetchFriendsByUsername()
+echo '<pre>'; print_r($friendsList); echo '</pre>'; 
 
 if (isset($_POST['submitPreferences'])) {
     $selectedTopics = $_POST['topics'] ?? [];
@@ -77,22 +79,21 @@ if (isset($_SESSION['message'])) {
     </div>
 
     <!-- Display Friends List -->
-    <div class="friends-list">
-        <h3>Your Friends:</h3>
-        <ul>
-            <?php foreach ($friendsList as $friend): ?>
-                <li>
-                    <?php
-                    // Use htmlspecialchars to prevent XSS and handle null values
-                    $friendName = htmlspecialchars($friend['username'] ?? 'Unknown');
-                    $friendStatus = htmlspecialchars($friend['status'] ?? 'No status');
-                    ?>
-                    <?php echo "{$friendName} - {$friendStatus}"; ?>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </div>
-
+	<div class="friends-list">
+	    <h3>Your Friends:</h3>
+	    <ul>
+		<?php foreach ($friendsList as $friend): ?>
+		    <li>
+		        <?php
+		        // Use htmlspecialchars to prevent XSS and handle null values
+		        $friendName = htmlspecialchars($friend['username'] ?? 'Unknown');
+		        $friendStatus = htmlspecialchars($friend['status'] ?? 'No status');
+		        ?>
+		        <?php echo "{$friendName} - {$friendStatus}"; ?>
+		    </li>
+		<?php endforeach; ?>
+	    </ul>
+	</div>
     <!-- Display Other Usernames -->
     <div class="other-users">
         <h3>Other Users:</h3>
