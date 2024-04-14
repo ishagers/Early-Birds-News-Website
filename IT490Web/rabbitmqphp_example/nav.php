@@ -12,7 +12,7 @@ $ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) 
 if (isset($_POST['add_ebp'])) {
     if (isset($_SESSION['username'])) {
         $currencyResponse = addCurrencyToUserByUsername($_SESSION['username'], 5);
-        echo "<p>" . htmlspecialchars($currencyResponse['5 EBP Added']) . "</p>";
+        echo "<p>" . htmlspecialchars($currencyResponse['message']) . "</p>";
     } else {
         echo "<p>User must be logged in to receive currency.</p>";
     }
@@ -50,7 +50,6 @@ if (isset($_POST['add_ebp'])) {
         <li><a href="privateArticle.php">Private</a></li>
         <li><a href="SearchArticles.php">SearchArticles</a></li>
         <li><a href="mainMenu.php">Home</a></li>
-        <li><a href="NewsAPIData.php">Latest News</a></li>
         <li><a href="NewsAPIData.php">Latest News</a></li>
         <li>
             <a href="store.php">
