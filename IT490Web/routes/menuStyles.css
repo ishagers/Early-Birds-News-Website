@@ -138,8 +138,8 @@ body {
     flex-direction: column;
     align-items: center;
     width: 100%; /* Use 100% of the container width */
-    max-width: 960px; /* Max-width can be set as per design needs */
-    min-width: 750px; /* Min-width ensures it doesn't get too narrow */
+    max-width: 1200px; /* Max-width can be set as per design needs */
+    min-width: 1000px; /* Min-width ensures it doesn't get too narrow */
     margin: 20px auto;
     padding: 20px;
     border: 1px solid #005A9C;
@@ -161,7 +161,7 @@ body {
 .article-details h2 {
     text-decoration: underline; /* Adds underline to the title */
     font-size: 28px; /* Increases the size of the title */
-    margin-bottom: 20px; /* Adds some space below the title */
+    margin-bottom: 16px; /* Adds some space below the title */
 }
 
 .article-details-container select {
