@@ -133,10 +133,20 @@ body {
             background-color: #0056b3;
         }
 
-.article-details-container form {
+.article-details-container {
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: center;
+    width: 100%; /* Use 100% of the container width */
+    max-width: 960px; /* Max-width can be set as per design needs */
+    min-width: 750px; /* Min-width ensures it doesn't get too narrow */
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #005A9C;
+    background-color: #f4f4f4; /* Subtle background color */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden; /* Ensures no content spills out */
 }
 
 .article-details-container input[type="email"],
