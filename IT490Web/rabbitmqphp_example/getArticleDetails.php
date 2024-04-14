@@ -12,6 +12,8 @@ checkLogin();
 $username = $_SESSION['username'];
 $articleId = $userId = null;
 $article = null;
+$emailResponse = '';
+$commentResponse = '';
 
 // Check if an article ID is provided and fetch the article
 if (isset($_GET['id'])) {
@@ -19,116 +21,79 @@ if (isset($_GET['id'])) {
     $article = getArticleById($articleId); // Assume this function returns the article array with a 'status' key
 }
 
-// Now that you have the article details, you can handle the share request
+// Handle the share request
 if (isset($_POST['submitShare']) && !empty($_POST['shareEmail']) && $article && $article['status']) {
-    $recipientEmail = sanitizeInput($_POST['shareEmail']); // Sanitize the email input
+    $recipientEmail = sanitizeInput($_POST['shareEmail']);
     $articleTitle = htmlspecialchars($article['article']['title']);
     $articleContent = nl2br(htmlspecialchars($article['article']['content']));
-    $articleUrl = ""; // If you have an article URL, include it here
+    $articleUrl = "";
 
-    // Call the SendArticle function
     $emailResponse = SendArticle($recipientEmail, $articleTitle, $articleContent, $articleUrl);
-
-    // Feedback message from attempting to send the article
-    echo "<p>" . $emailResponse['message'] . "</p>"; // Display feedback message
 }
 
-// Display rating submission feedback
-if (isset($_SESSION['message'])) {
-    echo "<p>" . $_SESSION['message'] . "</p>";
-    unset($_SESSION['message']); // Clear the message after displaying
+// Handle comment submission
+if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article && $article['status']) {
+    $commentResponse = submitComment($articleId, sanitizeInput($_POST['comment']), $username);
 }
 
-if (isset($_GET['id'])) {
-    $articleId = $_GET['id'];
+?>
 
-    try {
-        $pdo = getDatabaseConnection();
-        $userStmt = $pdo->prepare("SELECT id FROM users WHERE username = :username");
-        $userStmt->execute(['username' => $username]);
-        $user = $userStmt->fetch(PDO::FETCH_ASSOC);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Article Details - Early Bird Articles</title>
+    <link rel="stylesheet" href="../routes/menuStyles.css" />
+</head>
+<body>
 
-        if ($user) {
-            $userId = $user['id'];
-	    $article = getArticleById($articleId);
-            // Process comment submission
-            if (isset($_POST['submitComment']) && !empty($_POST['comment'])) {
-                // Assume submitComment() is a function that processes the comment submission
-                $commentResponse = submitComment($articleId, sanitizeInput($_POST['comment']), $username);
-                echo "<p>" . $commentResponse['message'] . "</p>"; // Display feedback from comment submission
-            }
-        }
-    } catch (PDOException $e) {
-        die("Could not connect to the database: " . $e->getMessage());
-    }
+    <?php require('nav.php'); ?>
 
-}
-if ($article && $article['status']) {
-    // Article title, content, and publication date display logic...
-    echo "<h2>" . htmlspecialchars($article['article']['title']) . "</h2>";
-    echo "<p>" . nl2br(htmlspecialchars($article['article']['content'])) . "</p>";
-    echo "<small>Published on: " . htmlspecialchars($article['article']['publication_date']) . "</small>";
+    <div class="main-container">
+        <?php if ($article && $article['status']): ?>
+            <div class="article-details">
+                <h2><?php echo htmlspecialchars($article['article']['title']); ?></h2>
+                <p><?php echo nl2br(htmlspecialchars($article['article']['content'])); ?></p>
+                <small>Published on: <?php echo htmlspecialchars($article['article']['publication_date']); ?></small>
 
-    // Ratings display logic...
-    $averageRatingResponse = getAverageRatingByArticleId($articleId);
-    if ($averageRatingResponse['status']) {
-        echo "<div id='ratings'>";
-        echo "<h3>Average Rating: " . htmlspecialchars($averageRatingResponse['averageRating']) . "</h3>";
-        echo "</div>";
-    } else {
-        echo "<p>No ratings yet.</p>";
-    }
+                <div id='share-article'>
+                    <h3>Share this Article</h3>
+                    <form action='getArticleDetails.php?id=<?php echo urlencode($articleId); ?>' method='post'>
+                        <input type='email' name='shareEmail' placeholder='Enter email to share' required />
+                        <button type='submit' name='submitShare'>Share Article</button>
+                    </form>
+                    <?php if (!empty($emailResponse)) {
+                        echo "<p>$emailResponse</p>";
+                    } ?>
+                </div>
 
-    // Fetch and display comments
-    $comments = getCommentsByArticleId($articleId);
-    if ($comments['status']) {
-        echo "<div id='comments'>";
-        echo "<h3>Comments</h3>";
-        if (!empty($comments['comments'])) {
-            foreach ($comments['comments'] as $comment) {
-                echo "<p><strong>" . htmlspecialchars($comment['username']) . ":</strong> " . htmlspecialchars($comment['comment']) . "</p>";
-            }
-        } else {
-            echo "<p>No comments yet.</p>";
-        }
-        echo "</div>";
-    }
+                <div id='comments'>
+                    <h3>Comments</h3>
+                    <?php $comments = getCommentsByArticleId($articleId); ?>
+                    <?php if (!empty($comments['comments'])): ?>
+                        <?php foreach ($comments['comments'] as $comment): ?>
+                            <p><strong><?php echo htmlspecialchars($comment['username']); ?>:</strong><?php echo htmlspecialchars($comment['comment']); ?></p>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p>No comments yet.</p>
+                    <?php endif; ?>
+                    <div id='submit-comment'>
+                        <h3>Add a comment</h3>
+                        <form action='getArticleDetails.php?id=<?php echo urlencode($articleId); ?>' method='post'>
+                            <textarea name='comment' required></textarea>
+                            <button type='submit' name='submitComment'>Submit Comment</button>
+                        </form>
+                        <?php if (!empty($commentResponse)) {
+                            echo "<p>$commentResponse</p>";
+                        } ?>
+                    </div>
+                </div>
 
-    // Add a comment form
-    echo "<div id='submit-comment'>";
-    echo "<h3>Add a comment</h3>";
-    echo "<form action='getArticleDetails.php?id=" . htmlspecialchars($articleId) . "' method='post'>";
-    echo "<textarea name='comment' required></textarea>";
-    echo "<button type='submit' name='submitComment'>Submit Comment</button>";
-    echo "</form>";
-    echo "</div>";
+            </div>
+        <?php else: ?>
+            <p>Article not found.</p>
+        <?php endif; ?>
+    </div>
 
-    // Add rating submission form here
-    echo "<div id='article-rating'>";
-    echo "<h3>Rate this Article</h3>";
-    echo "<form action='RatingAndPreference.php' method='POST'>";
-    echo "<input type='hidden' name='article_id' value='" . htmlspecialchars($articleId) . "'>";
-    echo "<label for='rating'>Rating:</label>";
-    echo "<select name='rating' id='rating' required>";
-    echo "<option value='1'>1</option>";
-    echo "<option value='2'>2</option>";
-    echo "<option value='3'>3</option>";
-    echo "<option value='4'>4</option>";
-    echo "<option value='5'>5</option>";
-    echo "</select>";
-    echo "<input type='submit' name='submitRating' value='Submit Rating'>";
-    echo "</form>";
-    echo "</div>";
-
-    echo "<div id='share-article'>";
-echo "<h3>Share this Article</h3>";
-echo "<form action='getArticleDetails.php?id=" . htmlspecialchars($articleId) . "' method='post'>";
-echo "<input type='email' name='shareEmail' placeholder='Enter email to share' required>";
-echo "<button type='submit' name='submitShare'>Share Article</button>";
-echo "</form>";
-echo "</div>";
-
-} else {
-    echo "<p>Article not found.</p>";
-}
-
+</body>
+</html>
