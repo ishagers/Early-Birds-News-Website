@@ -219,7 +219,31 @@ function getUserIdByUsername($conn, $username) {
         throw $e;  // Re-throw the exception to handle it in the calling script
     }
 }
+function acceptFriendRequest($conn, $requester_id, $receiver_username) {
+    try {
+        $conn->beginTransaction(); // Start transaction
 
+        // Get the receiver's user ID from the username
+        $receiver_id = getUserIdByUsername($conn, $receiver_username);
+
+        // Prepare the SQL to update the friend request status
+        $stmt = $conn->prepare("UPDATE friends SET status = 'accepted' WHERE user_id1 = ? AND user_id2 = ?");
+        $stmt->execute([$requester_id, $receiver_id]);
+
+        // Check if the update was successful
+        if ($stmt->rowCount() > 0) {
+            $conn->commit(); // Commit the transaction
+            return ['success' => true, 'message' => 'Friend request accepted successfully.'];
+        } else {
+            $conn->rollback(); // Rollback the transaction if no rows were updated
+            return ['success' => false, 'message' => 'Failed to accept friend request. No changes were made.'];
+        }
+    } catch (PDOException $e) {
+        $conn->rollback(); // Ensure rollback on error
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
+s
 
 function insertNewsArticle($title, $content, $source, $url = null) {
     $response = array('status' => false, 'message' => '');
