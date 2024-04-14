@@ -4,6 +4,8 @@ require('rabbitmqphp_example/session.php');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+
 require('rabbitmqphp_example/SQLPublish.php');
 
 if (!empty($_POST['username']) && !empty($_POST['password'])) {
