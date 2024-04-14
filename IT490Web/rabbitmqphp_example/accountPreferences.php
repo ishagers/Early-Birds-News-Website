@@ -1,13 +1,16 @@
 <?php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
+
 require('session.php'); // Adjust the path as necessary
 require('databaseFunctions.php');
-checkLogin(); // Call the checkLogin function to ensure the user is logged in
+
+checkLogin(); 
 
 // Fetch topics from database
 $topics = fetchAllTopics();
 $currentPreferences = fetchUserPreferences($_SESSION['username']);
+$friendsList = fetchFriends($_SESSION['user_id']); // Fetching friends list
 
 if (isset($_POST['submitPreferences'])) {
     $selectedTopics = $_POST['topics'] ?? [];
@@ -37,15 +40,26 @@ if (isset($_POST['clearPreferences'])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Early Bird Articles - User Preferences</title>
+    <title>Early Bird Articles - User Settings</title>
     <link rel="stylesheet" href="../routes/menuStyles.css" />
 </head>
 <body>
-
+    
     <?php require('nav.php'); ?>
+    <h2>Profile Settings</h2>
+    <!-- Display Friends List -->
+    <div class="friends-list">
+        <h3>Your Friends:</h3>
+        <ul>
+            <?php foreach ($friendsList as $friend): ?>
+                <li><?php echo htmlspecialchars($friend['username']); ?> - <?php echo htmlspecialchars($friend['status']); ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
 
     <form action="accountPreferences.php" method="post">
         <div class="topics-selection">
+            
             <h3>Select your topics of interest:</h3>
             <?php foreach ($topics as $topic): ?>
                 <label>
@@ -66,3 +80,4 @@ if (isset($_POST['clearPreferences'])) {
 
 </body>
 </html>
+

@@ -107,6 +107,30 @@ function login($username, $password)
     return $response;
 }
 
+function fetchFriends($userId) {
+    global $conn; // Ensure that $conn is accessible if it's defined elsewhere
+
+    $sql = "SELECT u.username, f.status 
+            FROM users u 
+            JOIN friends f ON u.id = f.user_id2 
+            WHERE f.user_id1 = ? AND f.status = 'accepted'
+            UNION
+            SELECT u.username, f.status 
+            FROM users u 
+            JOIN friends f ON u.id = f.user_id1 
+            WHERE f.user_id2 = ? AND f.status = 'accepted'";
+
+    try {
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$userId, $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Failed to fetch friends: " . $e->getMessage());
+        return [];
+    }
+}
+
+
 function insertNewsArticle($title, $content, $source, $url = null) {
     $response = array('status' => false, 'message' => '');
     try {
