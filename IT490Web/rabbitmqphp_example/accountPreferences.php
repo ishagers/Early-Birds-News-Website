@@ -30,6 +30,15 @@ if (isset($_POST['clearPreferences'])) {
     header('Location: accountPreferences.php');
     exit;
 }
+if (isset($_GET['friendsUpdated'])) {
+    $friendsList = fetchFriendsByUsername(getDatabaseConnection(), $_SESSION['username']); // Refetch the friends list
+}
+	// Display any session messages if they exist
+if (isset($_SESSION['message'])) {
+    echo "<p>" . $_SESSION['message'] . "</p>";
+    unset($_SESSION['message']); // Clear the message after displaying
+}
+
 
 ?>
 

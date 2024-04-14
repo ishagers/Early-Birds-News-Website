@@ -17,6 +17,7 @@ if (isset($_POST['response'], $_POST['requester_id'])) {
     try {
         $conn->beginTransaction(); // Start transaction
 
+        // Assuming getUserIdByUsername is defined and working correctly
         $receiver_id = getUserIdByUsername($conn, $receiver_username);
         $status = $response === 'accept' ? 'accepted' : 'rejected';
 
@@ -24,20 +25,18 @@ if (isset($_POST['response'], $_POST['requester_id'])) {
         $stmt->execute([$status, $requester_id, $receiver_id]);
 
         if ($stmt->rowCount() > 0) {
-            echo "Friend request " . $status;
+            $_SESSION['message'] = "Friend request " . $status . " successfully.";
             $conn->commit(); // Commit the transaction
         } else {
-            echo "Failed to update friend request.";
+            $_SESSION['message'] = "Failed to update friend request.";
             $conn->rollback(); // Rollback the transaction
         }
     } catch (Exception $e) {
         $conn->rollback(); // Ensure rollback on error
-        echo "Error: " . $e->getMessage();
+        $_SESSION['message'] = "Error: " . $e->getMessage();
     }
 
     header('Location: accountPreferences.php?friendsUpdated=true');
-	
-
     exit;
 }
 
