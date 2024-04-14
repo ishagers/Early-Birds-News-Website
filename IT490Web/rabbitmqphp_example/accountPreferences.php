@@ -1,37 +1,30 @@
 <?php
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
-require('session.php'); // Adjust the path as necessary
+require('session.php');
 require('databaseFunctions.php');
 
-checkLogin(); 
+checkLogin();
 
-// Fetch topics from database
+// Fetch all necessary data
 $topics = fetchAllTopics();
 $currentPreferences = fetchUserPreferences($_SESSION['username']);
-$friendsList = fetchFriendsByUsername(getDatabaseConnection(), $_SESSION['username']); // Fetching friends list by username
+$friendsList = fetchFriendsByUsername(getDatabaseConnection(), $_SESSION['username']);
+$usernames = fetchAllUsernames($_SESSION['username']); // Fetching all other usernames
 
 if (isset($_POST['submitPreferences'])) {
     $selectedTopics = $_POST['topics'] ?? [];
-    $username = $_SESSION['username']; // Ensure session username is correctly set
+    $username = $_SESSION['username'];
 
-    // Update user preferences
     foreach ($selectedTopics as $topicId) {
-        saveUserPreference($username, $topicId); // Function to save preference
+        saveUserPreference($username, $topicId);
     }
 
-    // Redirect to the same page to refresh the content
     header('Location: accountPreferences.php');
     exit;
 }
 
 if (isset($_POST['clearPreferences'])) {
-    // Clear user preferences
-    $message = clearUserPreferences($_SESSION['username']);
-
-    // Redirect to the same page to refresh the content
+    clearUserPreferences($_SESSION['username']);
     header('Location: accountPreferences.php');
     exit;
 }
@@ -47,6 +40,7 @@ if (isset($_POST['clearPreferences'])) {
 </head>
 <body>
     <?php require('nav.php'); ?>
+
     <h2>Profile Settings</h2>
 
     <!-- Display Friends List -->
@@ -59,6 +53,24 @@ if (isset($_POST['clearPreferences'])) {
         </ul>
     </div>
 
+	<!-- Display Other Usernames -->
+	<div class="other-users">
+	    <h3>Other Users:</h3>
+	    <ul>
+		<?php foreach ($usernames as $user): ?>
+		    <li>
+		        <?php echo htmlspecialchars($user['username']); ?>
+		        <!-- Form to send friend request -->
+		        <form action="sendFriendRequest.php" method="post" style="display: inline;">
+		            <input type="hidden" name="friend_username" value="<?php echo htmlspecialchars($user['username']); ?>">
+		            <button type="submit">Send Friend Request</button>
+		        </form>
+		    </li>
+		<?php endforeach; ?>
+	    </ul>
+	</div>
+
+    <!-- User Preferences Form -->
     <form action="accountPreferences.php" method="post">
         <div class="topics-selection">
             <h3>Select your topics of interest:</h3>
