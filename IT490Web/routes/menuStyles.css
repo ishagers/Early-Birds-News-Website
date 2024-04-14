@@ -40,7 +40,17 @@ body {
                 text-decoration: none;
                 font-weight: bold;
                 font-size: 18px;
+                padding: 10px 15px;
+                display: block;
+                transition: background-color 0.3s, color 0.3s;
+                border-radius: 5px;
+                cursor: pointer;
             }
+
+                .nav-bar ul li a:hover, .nav-bar ul li a:focus {
+                    background-color: #033f77;
+                    color: #ffd700;
+                }
 
 .logout-button {
     margin: 20px;
@@ -73,21 +83,21 @@ body {
 }
 
 .main-container {
-    display: flex; /* Establish flex container */
-    justify-content: space-between; /* Space between the article list and details */
-    margin: 20px; /* Add margin around the container */
+    display: flex;
+    justify-content: space-between;
+    margin: 20px;
 }
 
 .articles-list {
-    flex-basis: 40%; /* Adjusted width for article list */
-    margin-right: 10px; /* Adds a margin between list and details */
+    flex-basis: 40%;
+    margin-right: 10px;
     padding: 10px;
     border: 2px solid #005A9C;
     border-radius: 8px;
     background-color: #f9f9f9;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    overflow-y: auto; /* Allows scrolling for the list */
-    height: fit-content; /* Adjust height based on content */
+    overflow-y: auto;
+    height: fit-content;
 }
 
 .article-title {
@@ -97,35 +107,32 @@ body {
 }
 
     .article-title:hover {
-        color: #003366; /* Darker shade for hover state */
-        text-decoration: underline; /* Adds underline on hover */
+        color: #003366;
+        text-decoration: underline;
     }
 
     .article-title:active {
-        color: #FFA500; /* Color change when clicked */
-        text-decoration: none; /* Removes underline on click */
+        color: #FFA500;
+        text-decoration: none;
     }
 
 .article-details {
-    flex-basis: 60%; /* Takes up the rest of the space next to the article list */
+    flex-basis: 60%;
     margin: 20px;
-    padding: 10px;
-    border-left: 2px solid #005A9C; /* Separates article details from list */
-    height: fit-content; /* Adjust height based on content */
-    overflow-y: auto; /* Enables scrolling if content overflows */
-    background-color: #f9f9f9;
+    padding: 20px;
+    border-left: 2px solid #005A9C;
+    height: fit-content;
+    overflow-y: auto;
+    background-color: #ffffff;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-/* Add this rule to clear floats if you have used them */
-.clearfix::after {
-    content: "";
-    clear: both;
-    display: table;
+    color: #333;
+    text-align: left;
 }
 
 .article, .article-detail {
     margin-bottom: 10px;
+    font-size: 18px;
+    line-height: 1.8;
 }
 
     .article h3, .article-detail h2 {
@@ -133,21 +140,11 @@ body {
         font-size: 24px;
     }
 
-    .article p, .article small, .article-detail p, .article-detail small {
-        font-size: 18px;
-        line-height: 1.5;
-        color: #333;
-    }
-
     .article small, .article-detail small {
         display: block;
         margin-top: 10px;
         color: #666;
     }
-
-.article-detail {
-    /* Styles for the detailed article content, comments, and ratings */
-}
 
 .comments-section, .ratings-section {
     margin-top: 20px;
@@ -169,7 +166,7 @@ body {
     text-align: right;
     margin-right: 40px;
     color: #fff;
-    font-size: 18px; /* Increased font size */
+    font-size: 18px;
 }
 
     .user-info a {
@@ -179,94 +176,28 @@ body {
         font-size: 24px;
     }
 
-.article-form {
-    max-width: 600px; /* Adjust based on your preference */
-    margin: 40px auto; /* Center the form with automatic margins */
-    padding: 20px;
-    border: 2px solid #007BFF; /* Cool blue border */
-    border-radius: 10px; /* Rounded corners */
-    background-color: #f4f4f4; /* Light background for the form area */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+.article-form, .form-buttons, .topics-selection {
+    background-color: #007BFF;
+    color: #ffffff;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
 }
 
-    /* Form elements */
-    .article-form form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px; /* Space between form elements */
+    .article-form:hover, .form-buttons:hover, .topics-selection:hover {
+        background-color: #0056b3;
     }
 
-    .article-form label {
-        font-weight: bold;
-        margin-bottom: 5px; /* Space between label and input */
-    }
-
-    .article-form input[type="text"],
-    .article-form textarea,
-    .article-form input[type="submit"] {
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc; /* Light border for inputs */
-        font-size: 16px; /* Larger font size for readability */
-    }
-
-    .article-form input[type="submit"] {
-        background-color: #007BFF; /* Cool blue background for submit button */
-        color: #ffffff; /* White text color */
-        cursor: pointer; /* Changes the cursor to indicate it's clickable */
-        border: none; /* Removes the border */
-    }
-
-        .article-form input[type="submit"]:hover {
-            background-color: #0056b3; /* Darker blue on hover */
-        }
-
-.topics-selection {
-    width: 40%; /* Takes up 40% of the container width */
-    margin: 20px 0; /* Adds margin to the top and bottom */
-    padding: 15px;
-    border: 2px solid #007bff; /* Blue border */
-    border-radius: 8px; /* Rounded corners */
-    background-color: #f0f8ff; /* Light blue background */
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns */
-    gap: 10px; /* Gap between grid items */
+.eb-points-label {
+    margin-right: 5px;
+    color: #ffffff;
 }
 
-    /* Style checkboxes and labels */
-    .topics-selection label {
-        display: flex;
-        align-items: center; /* Align checkbox and label text */
-        cursor: pointer; /* Pointer cursor on hover */
-    }
-
-/* Styles for the buttons below the topics */
-.form-buttons {
-    display: flex;
-    justify-content: start; /* Aligns buttons to the start of the container */
-    gap: 10px; /* Adds a gap between the buttons */
-}
-
-    .form-buttons input[type="submit"] {
-        padding: 10px 20px;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        font-weight: bold;
-        background-color: #007bff; /* Blue background */
-        color: white; /* White text */
-    }
-
-        .form-buttons input[type="submit"]:hover {
-            background-color: #0056b3; /* Darker blue on hover */
-        }
-
-/* Adjust the article details to take the remaining space */
-.article-details {
-    width: 60%; /* Take the remaining space */
-    /* Other styling properties */
-}
-
-.topics-selection form {
-    width: 100%; /* Make the form take up the entire width of its parent */
+.eb-points {
+    font-weight: bold;
+    color: #FFD700;
+    font-size: 1.2em;
 }

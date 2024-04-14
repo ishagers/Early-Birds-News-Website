@@ -29,17 +29,18 @@ if (isset($_POST['add_ebp'])) {
 </head>
 <body>
 
-<div class="header">
-    <h1>Early Bird Articles</h1>
-    <div class="user-info">
-        Logged in as: <strong><?php echo htmlspecialchars($username); ?></strong>
-        <form method="post" action="">
-            <button type="submit" name="add_ebp">Add 5 EBP</button>
-        </form>
-        <img src="../assets/EBP.png" alt="EB Points:" width="32" height="32" />
-        <span id="ebpPoints"><?php echo $ebpPoints; ?></span>
+    <div class="header">
+        <h1>Early Bird Articles</h1>
+        <div class="user-info">
+            Logged in as: <strong><?php echo htmlspecialchars($username); ?></strong>
+            <form method="post" action="">
+                <button type="submit" name="add_ebp">Add 5 EBP</button>
+            </form>
+            <img src="../assets/EBP.png" alt="EB Points:" width="32" height="32" />
+            <span class="eb-points-label">EB Points:</span>
+            <span id="ebpPoints" class="eb-points"><?php echo $ebpPoints; ?></span>
+        </div>
     </div>
-</div>
 
 
 <div class="nav-bar">
