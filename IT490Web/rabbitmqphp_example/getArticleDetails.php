@@ -65,6 +65,34 @@ if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article && $
                     <?php if (!empty($emailResponse)) {
                         echo "<p>$emailResponse</p>";
                     } ?>
+                    </div>
+
+                    <!-- Display Average Rating -->
+                    <?php $averageRatingResponse = getAverageRatingByArticleId($articleId); ?>
+                    <div id='ratings'>
+                        <h3>Average Rating</h3>
+                        <?php if ($averageRatingResponse['status']): ?>
+                            <p>Average Rating: <?php echo htmlspecialchars($averageRatingResponse['averageRating']); ?></p>
+                        <?php else: ?>
+                            <p>No ratings yet.</p>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Add Rating -->
+                    <div id='article-rating'>
+                        <h3>Rate this Article</h3>
+                        <form action='RatingAndPreference.php' method='POST'>
+                            <input type='hidden' name='article_id' value='<?php echo htmlspecialchars($articleId); ?>' />
+                        <label for='rating'>Rating:</label>
+                        <select name='rating' id='rating' required>
+                            <option value='1'>1</option>
+                            <option value='2'>2</option>
+                            <option value='3'>3</option>
+                            <option value='4'>4</option>
+                            <option value='5'>5</option>
+                        </select>
+                        <input type='submit' name='submitRating' value='Submit Rating' />
+                    </form>
                 </div>
 
                 <div id='comments'>
