@@ -19,7 +19,7 @@ $articleData = fetchArticles(15, 'public', 'user');
 
     <?php require('nav.php'); ?>
 
-    <div class="main-container">
+    <div class="mainMenu-container">
         <!-- Article Titles -->
         <div class="articles-list">
             <?php if ($articleData['status']): ?>
