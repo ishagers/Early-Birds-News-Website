@@ -62,8 +62,9 @@ if (isset($_SESSION['message'])) {
 		        <?= $requesterUsername ?>
 		        <form action="respondToRequest.php" method="post">
 		            <input type="hidden" name="requester" value="<?php echo $requesterId; ?>">
-		            <button type="submit" name="response" value="accept">Accept</button>
-		            <button type="submit" name="response" value="reject">Reject</button>
+				<button type="submit" name="response" value="accept">Accept</button>
+				<button type="submit" name="response" value="reject">Reject</button>
+
 		        </form>
 		    </li>
 		<?php endforeach; ?>
