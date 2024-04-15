@@ -206,25 +206,23 @@ function fetchReceivedFriendRequests($conn, $username) {
 
 function getUserIdByUsername($conn, $username) {
     try {
-        // Prepare and execute the query to fetch the user ID
         $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
         $stmt->execute([$username]);
         $userId = $stmt->fetchColumn();
-	error_log("Fetched user ID: {$userId} for username: '{$username}'");
+
+        // Log what ID is fetched for which username
+        error_log("Fetched user ID: {$userId} for username: '{$username}'");
 
         if ($userId) {
             return $userId;
         } else {
-            return $userId ?: null; // Return null if no user ID found
-            throw new Exception("User not found: " . $username);
+            // Log and handle the case where no user is found
+            error_log("User not found for username: '{$username}'");
+            return null; // Return null if no user ID found
         }
     } catch (PDOException $e) {
         // Log database errors
-        error_log("Database error: " . $e->getMessage());
-        throw $e; // Re-throw the exception to handle it in the calling script
-    } catch (Exception $e) {
-        // Log user not found errors
-        error_log("User not found: " . $e->getMessage());
+        error_log("Database error in getUserIdByUsername: " . $e->getMessage());
         throw $e; // Re-throw the exception to handle it in the calling script
     }
 }
@@ -260,9 +258,6 @@ function updateFriendRequestStatus($conn, $requesterUsername, $receiverUsername,
         return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
     }
 }
-
-
-
 
 function acceptFriendRequest($conn, $requester_id, $receiver_username) {
     try {
