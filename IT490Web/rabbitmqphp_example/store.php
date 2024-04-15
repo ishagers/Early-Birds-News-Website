@@ -48,4 +48,34 @@ function purchaseItem($username, $itemId) {
 }
 
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Store</title>
+    <link rel="stylesheet" href="../routes/menuStyles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Store</h1>
+        <p>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></p>
+    </div>
+    <div class="store-items">
+        <?php
+        $items = fetchStoreItems();
+        foreach ($items as $item) {
+            echo '<div class="item">';
+            echo '<h3>' . htmlspecialchars($item['name']) . '</h3>';
+            echo '<p>Cost: ' . htmlspecialchars($item['cost']) . ' EB Points</p>';
+            echo '<form action="" method="post">';
+            echo '<input type="hidden" name="item_id" value="' . $item['id'] . '">';
+            echo '<button type="submit" name="purchase">Buy Now</button>';
+            echo '</form>';
+            echo '</div>';
+        }
+        ?>
+    </div>
+</body>
+</html>
+
 
