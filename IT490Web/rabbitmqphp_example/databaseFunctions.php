@@ -160,6 +160,9 @@ function sendFriendRequest($conn, $username1, $username2) {
             return ['status' => false, 'message' => 'One or both users not found.'];
         }
 
+        // Log initial user IDs for debugging
+        error_log("Initial IDs: User1: $user_id1, User2: $user_id2, Action User: $username1");
+
         // Ensure user_id1 is always the smaller ID to maintain consistency
         if ($user_id1 > $user_id2) {
             $temp = $user_id1;
@@ -167,19 +170,21 @@ function sendFriendRequest($conn, $username1, $username2) {
             $user_id2 = $temp;
         }
 
-        // Check if any friend request exists regardless of status
-        $stmt = $conn->prepare("SELECT * FROM friends WHERE user_id1 = ? AND user_id2 = ?");
-        $stmt->execute([$user_id1, $user_id2]);
-        $existingRequest = $stmt->fetch();
+        // Log swapped user IDs for debugging
+        error_log("Swapped IDs if needed: User1: $user_id1, User2: $user_id2");
 
-        if ($existingRequest) {
-            // Handle existing request logic, possibly updating status or notifying users
+        // Check if any friend request exists regardless of status
+        $stmt = $conn->prepare("SELECT * FROM friends WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)");
+        $stmt->execute([$user_id1, $user_id2, $user_id2, $user_id1]);
+        if ($stmt->fetch()) {
             return ['status' => false, 'message' => 'A friend request already exists or has been processed.'];
         }
 
         // Insert the new friend request
         $stmt = $conn->prepare("INSERT INTO friends (user_id1, user_id2, status, action_user_id) VALUES (?, ?, 'pending', ?)");
-        $stmt->execute([$user_id1, $user_id2, $user_id1]);
+        // Ensure the action_user_id is correctly set to the user who initiated the request
+        $action_user_id = getUserIdByUsername($conn, $username1);  // This ensures the correct user is set as the initiator
+        $stmt->execute([$user_id1, $user_id2, $action_user_id]);
 
         if ($stmt->rowCount() > 0) {
             return ['status' => true, 'message' => 'Friend request sent successfully.'];
@@ -190,6 +195,7 @@ function sendFriendRequest($conn, $username1, $username2) {
         return ['status' => false, 'message' => 'Database error: ' . $e->getMessage()];
     }
 }
+
 
 
 function fetchReceivedFriendRequests($conn, $username) {
