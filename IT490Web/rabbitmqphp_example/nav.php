@@ -49,13 +49,14 @@ if (isset($_POST['add_ebp'])) {
         <li><a href="article-history.php">Article History</a></li>
         <li><a href="accountPreferences.php">Profile Preferences</a></li>
         <li><a href="privateArticle.php">Private</a></li>
-        <li><a href="SearchArticles.php">SearchArticles</a></li>
+        <li><a href="SearchArticles.php">Search Articles</a></li>
         <li><a href="mainMenu.php">Home</a></li>
         <li><a href="NewsAPIData.php">Latest News</a></li>
-        <li><a href="store.php"></a></li>
-        <li><a href="Chat.php"></a></li>
+        <li><a href="store.php">Store</a></li>
+        <li><a href="Chat.php">Chat</a></li>
     </ul>
 </div>
+
 
 <script>
     // Checks for changes in EBP points and update the display 
