@@ -1,5 +1,5 @@
 function loadFriends() {
-    fetch('path/to/fetchFriends.php')
+    fetch('fetchFriends.php')
     .then(response => response.json())
     .then(data => {
         data.forEach(friend => {
