@@ -271,11 +271,11 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh; /* Ensures at least the full height of the viewport, but can expand */
-    padding: 20px;
-    margin: auto;
-    width: 80%;
-    border: 2px solid blue;
+    margin: 15px auto;
+    padding-top: 600px; /* Adds space above the container */
+    padding-bottom: 600px; /* Adds space below the container */
+    border: 3px solid blue;
+    width: 50%;
     box-sizing: border-box;
 }
 
@@ -311,3 +311,15 @@ body {
     .article button.btn:hover {
         background-color: #0056b3;
     }
+
+.private-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 15px auto;
+    padding: 20px;
+    border: 3px solid blue;
+    width: 50%;
+    box-sizing: border-box;
+}
