@@ -1,8 +1,6 @@
-var currentFriend = '';  // Global variable to store the current friend's username
 var selectedFriendId = ''; // Global variable to store the current friend's user ID
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Assuming 'token' is defined and populated correctly somewhere in your app
     var conn = new WebSocket('ws://10.147.17.233:8080?token=' + token);
 
     conn.onopen = function(e) {
@@ -11,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     conn.onmessage = function(e) {
         var data = JSON.parse(e.data);
-        // Check if the message is from the current selected friend or system messages
         if (data.fromUserId === selectedFriendId || data.from === 'server') {
             displayMessage(data.message, data.fromUserId);
         }
@@ -26,15 +23,15 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     window.startChatWith = function(friendId, friendName) {
-        selectedFriendId = friendId; // Assuming friendId is passed correctly to start chat
+        selectedFriendId = friendId; 
         document.getElementById('chat-title').textContent = 'Chatting with ' + friendName;
         document.getElementById('messages').innerHTML = ''; // Clear previous messages
-        console.log("Chat started with: " + friendName); // Debugging to check if the function is called
+        console.log("Chat started with: " + friendName); 
     };
 
     window.sendMessage = function() {
         var messageInput = document.getElementById('messageInput');
-        if (messageInput && messageInput.value.trim() !== '' && selectedFriendId) {
+        if (messageInput.value.trim() !== '' && selectedFriendId) {
             var message = {
                 type: 'message',
                 targetUserId: selectedFriendId,
@@ -58,5 +55,4 @@ function displayMessage(message, fromUserId) {
         console.error('Messages container not found!');
     }
 }
-
 
