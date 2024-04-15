@@ -1,10 +1,16 @@
 <?php
-require 'session.php';
-require 'nav.php';
-checkLogin();
+
+require 'session.php';  // Handle sessions
+require 'nav.php';      // Include navigation bar
+
+checkLogin(); // Ensure the user is logged in
 
 // Fetch friend list dynamically
 $friendsList = fetchFriendsByUsername(getDatabaseConnection(), $_SESSION['username']);
+
+// Assume the token is stored in $_SESSION['token'] when the user logs in
+$token = $_SESSION['token'] ?? 'no-token'; // Ensure you have a fallback or handle cases where the token is not set
+
 ?>
 
 <!DOCTYPE html>
@@ -12,8 +18,12 @@ $friendsList = fetchFriendsByUsername(getDatabaseConnection(), $_SESSION['userna
 <head>
     <meta charset="UTF-8">
     <title>Chat Page</title>
-    <link rel="stylesheet" href="path/to/styles.css">
-    <script src="websocket.js"></script>
+    <link rel="stylesheet" href="css/styles.css"> <!-- Updated path to styles.css -->
+    <script>
+        // This makes the session token available to the WebSocket script
+        var token = "<?php echo $token; ?>";
+    </script>
+    <script src="websocket.js"></script> <!-- Include WebSocket logic for chat -->
 </head>
 <body>
     <!-- Chat Widget -->
@@ -34,6 +44,7 @@ $friendsList = fetchFriendsByUsername(getDatabaseConnection(), $_SESSION['userna
     <main>
         <!-- Main content of the page -->
     </main>
+
     <script src="loadFriends.js"></script>
 </body>
 </html>

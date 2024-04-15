@@ -20,9 +20,12 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
     if ($result && $result['returnCode'] == '0') {
         // Login successful
         echo "Great, we found you: " . htmlspecialchars($result['message']);
+
+
         $_SESSION['username'] = $_POST['username'];
         $_SESSION['user_id'] = $result['user_id']; // Ensure 'user_id' is correctly provided by the response
-
+	        // This part goes after validating user credentials
+	$_SESSION['token'] = generateToken();
         header("Location: rabbitmqphp_example/mainMenu.php"); // Redirect to the home page or dashboard
         exit();
     } else {

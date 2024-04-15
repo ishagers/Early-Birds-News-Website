@@ -14,8 +14,10 @@ class Chat implements MessageComponentInterface {
     }
 
     public function onOpen(ConnectionInterface $conn) {
-        $session = $conn->WebSocket->request->getCookies()['PHPSESSID'];
-        $userId = $this->verifySession($session);
+        parse_str($conn->WebSocket->request->getQuery(), $params);
+        $token = $params['token'] ?? null;
+        $userId = $this->verifySession($token);
+
         if ($userId) {
             $this->clients->attach($conn);
             $this->userLookup[$userId] = $conn;
@@ -26,10 +28,12 @@ class Chat implements MessageComponentInterface {
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
-        $data = json_decode($msg);
-        if ($data->type == 'message' && isset($this->userLookup[$data->targetUserId])) {
-            $targetConn = $this->userLookup[$data->targetUserId];
-            $targetConn->send($data->message);
+        $data = json_decode($msg, true);
+        if (isset($data['type']) && $data['type'] === 'message' && isset($this->userLookup[$data['targetUserId']])) {
+            $targetConn = $this->userLookup[$data['targetUserId']];
+            if ($targetConn) {
+                $targetConn->send(json_encode(['from' => array_search($from, $this->userLookup), 'message' => $data['message']]));
+            }
         }
     }
 
@@ -45,10 +49,11 @@ class Chat implements MessageComponentInterface {
         $conn->close();
     }
 
-    private function verifySession($sessionId) {
-        // Verify session ID and return user ID if valid
-        return $_SESSION[$sessionId]['user_id'] ?? false;
+    private function verifySession($token) {
+        // Implement the actual session verification logic here
+        // This should ideally interact with your database or session management to verify the token
+        // Here, assume `$token` is directly the user ID
+        return $token; // For example, returning the token as userId directly for simplicity
     }
 }
-
 

@@ -3,7 +3,7 @@
 use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
-use MyApp\Chat;  // Correct namespace based on your composer.json
+use MyApp\Chat;
 
 require __DIR__ . '/../../vendor/autoload.php'; // Correct path to the autoload.php file
 

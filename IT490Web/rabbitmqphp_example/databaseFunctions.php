@@ -106,6 +106,9 @@ function login($username, $password)
 
     return $response;
 }
+function generateToken($length = 32) {
+    return bin2hex(random_bytes($length));  // Generates a random token
+}
 
 function fetchFriendsByUsername($conn, $username) {
     if ($conn === null) {

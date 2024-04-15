@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var conn = new WebSocket('ws://10.147.17.233:8080');
+    var conn = new WebSocket('ws://10.147.17.233:8080?token=' + token);
+
 
     conn.onopen = function(e) {
         console.log("Connection established!");
