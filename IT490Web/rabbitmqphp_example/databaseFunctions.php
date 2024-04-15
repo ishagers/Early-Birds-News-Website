@@ -228,12 +228,14 @@ function acceptFriendRequest($conn, $requester_id, $receiver_username) {
         // Get the receiver's user ID from the username
         $receiver_id = getUserIdByUsername($conn, $receiver_username);
         if (!$receiver_id) {
-            $conn->rollback(); // Ensure no changes are made if user ID is not found
+            $conn->rollback(); // Rollback if user ID is not found
             return ['success' => false, 'message' => 'Receiver user not found.'];
         }
 
-        // Prepare the SQL to update the friend request status
-        $stmt = $conn->prepare("UPDATE friends SET status = 'accepted' WHERE user_id1 = :requester_id AND user_id2 = :receiver_id AND status = 'pending'");
+        // Prepare the SQL to update the friend request status for both possible directions
+        $stmt = $conn->prepare("UPDATE friends SET status = 'accepted' 
+                                WHERE (user_id1 = :requester_id AND user_id2 = :receiver_id AND status = 'pending')
+                                OR (user_id1 = :receiver_id AND user_id2 = :requester_id AND status = 'pending')");
         $stmt->execute([
             ':requester_id' => $requester_id,
             ':receiver_id' => $receiver_id
@@ -252,6 +254,7 @@ function acceptFriendRequest($conn, $requester_id, $receiver_username) {
         return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
     }
 }
+
 
 function deleteFriend($conn, $user1_username, $user2_username) {
     try {
