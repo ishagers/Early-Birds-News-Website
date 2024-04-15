@@ -48,12 +48,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function displayMessage(message, fromUserId) {
     var messages = document.getElementById('messages');
+    console.log('Attempting to display message:', message, 'from:', fromUserId);
     if (messages) {
         var messageDiv = document.createElement('div');
-        messageDiv.textContent = `${fromUserId}: ${message}`; // Enhance display to show who the message is from
+        messageDiv.textContent = `${fromUserId}: ${message}`; // Display format
         messages.appendChild(messageDiv);
+        console.log('Message appended to container');
     } else {
         console.error('Messages container not found!');
     }
 }
+
 
