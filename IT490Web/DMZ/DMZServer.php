@@ -1,12 +1,20 @@
 #!/usr/bin/php
 <?php
+require_once __DIR__ . '/../rabbitmqphp_example/vendor/autoload.php';  // Make sure this path is correct
+
+use PhpAmqpLib\Connection\AMQPStreamConnection;
 
 require_once __DIR__ . '/../rabbitmqphp_example/path.inc';
 require_once __DIR__ . '/../rabbitmqphp_example/get_host_info.inc';
 require_once __DIR__ . '/../rabbitmqphp_example/rabbitMQLib.inc';
-require_once __DIR__ . '/../rabbitmqphp_example/databaseFunctions.php'; // Make sure this script has the `saveApiArticle` function
-
+require_once __DIR__ . '/../rabbitmqphp_example/databaseFunctions.php';
+use RabbitMQApp\rabbitMQClient;
 $iniFilePath = __DIR__ . '/DMZServer.ini'; // Ensure this path is correct
+
+
+
+$client = new rabbitMQClient($iniFilePath, "DMZServer");
+
 
 function processMessage($msg) {
     echo "Processing: {$msg->body}\n";
@@ -41,7 +49,7 @@ function processMessage($msg) {
     $msg->ack(); // Acknowledge message processing is complete
 }
 
-$client = new rabbitMQClient($iniFilePath, "testServer");
+$client = new rabbitMQClient($iniFilePath, "DMZServer");
 
 // Setup consumer
 $connection = new AMQPStreamConnection(
