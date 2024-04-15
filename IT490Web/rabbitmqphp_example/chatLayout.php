@@ -1,8 +1,10 @@
 <?php
-require 'session.php';  // Handle sessions
-require 'nav.php';      // Include navigation bar
+require 'session.php';
+require 'nav.php';
+checkLogin();
 
-checkLogin(); // Ensure the user is logged in
+// Fetch friend list dynamically
+$friendsList = fetchFriendsByUsername(getDatabaseConnection(), $_SESSION['username']);
 ?>
 
 <!DOCTYPE html>
@@ -11,22 +13,27 @@ checkLogin(); // Ensure the user is logged in
     <meta charset="UTF-8">
     <title>Chat Page</title>
     <link rel="stylesheet" href="path/to/styles.css">
-    <script src="websocket.js"></script> <!-- WebSocket logic for chat -->
+    <script src="websocket.js"></script>
 </head>
 <body>
     <!-- Chat Widget -->
     <div id="chat-widget">
+        <div id="friends-list">
+            <?php foreach ($friendsList as $friend): ?>
+                <div onclick="startChatWith('<?= htmlspecialchars($friend['username']) ?>')">
+                    <?= htmlspecialchars($friend['username']) ?>
+                    <!-- Display online/offline status -->
+                </div>
+            <?php endforeach; ?>
+        </div>
         <div id="messages"></div>
         <input type="text" id="messageInput" placeholder="Type a message...">
         <button onclick="sendMessage()">Send</button>
     </div>
 
-    <!-- Main content of the page -->
     <main>
-        <!-- Content specific to this page -->
+        <!-- Main content of the page -->
     </main>
-
-    <!-- Include any additional scripts needed for this page -->
     <script src="loadFriends.js"></script>
 </body>
 </html>
