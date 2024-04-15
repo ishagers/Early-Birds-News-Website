@@ -13,28 +13,31 @@ $receivedRequests = fetchReceivedFriendRequests(getDatabaseConnection(), $_SESSI
 
 if (isset($_POST['submitPreferences'])) {
     $selectedTopics = $_POST['topics'] ?? [];
-    $username = $_SESSION['username'];
     foreach ($selectedTopics as $topicId) {
-        saveUserPreference($username, $topicId);
+        saveUserPreference($_SESSION['username'], $topicId);
     }
+    $_SESSION['message'] = "Preferences updated successfully.";
     header('Location: accountPreferences.php');
     exit;
 }
 
 if (isset($_POST['clearPreferences'])) {
     clearUserPreferences($_SESSION['username']);
+    $_SESSION['message'] = "Preferences cleared.";
     header('Location: accountPreferences.php');
     exit;
 }
 
 if (isset($_GET['friendsUpdated'])) {
     $friendsList = fetchFriendsByUsername(getDatabaseConnection(), $_SESSION['username']); // Refetch the friends list
+    $_SESSION['message'] = "Friend list updated.";
 }
 
 if (isset($_SESSION['message'])) {
     echo "<p>" . $_SESSION['message'] . "</p>";
     unset($_SESSION['message']); // Clear the message after displaying
 }
+
 ?>
 
 <!DOCTYPE html>
