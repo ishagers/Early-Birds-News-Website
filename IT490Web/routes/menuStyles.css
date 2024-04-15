@@ -272,8 +272,8 @@ body {
     align-items: center;
     justify-content: center;
     margin: 15px auto;
-    padding-top: 400px; /* Adds space above the container */
-    padding-bottom: 350px; /* Adds space below the container */
+    padding-top: 600px; /* Adds space above the container */
+    padding-bottom: 600px; /* Adds space below the container */
     border: 3px solid blue;
     width: 50%;
     box-sizing: border-box;
