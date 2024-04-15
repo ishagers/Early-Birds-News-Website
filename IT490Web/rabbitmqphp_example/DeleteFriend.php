@@ -8,10 +8,10 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-if (isset($_POST['deleteFriendUsername'])) {
+if (isset($_POST['friend_username'])) {  
     $conn = getDatabaseConnection();
     $currentUsername = $_SESSION['username'];
-    $friendUsername = $_POST['friend_username'];
+    $friendUsername = $_POST['friend_username']; 
 
     $result = deleteFriend($conn, $currentUsername, $friendUsername);
 
@@ -21,15 +21,13 @@ if (isset($_POST['deleteFriendUsername'])) {
         $_SESSION['message'] = "Failed to delete friend: " . $result['message'];
     }
 
-    // Ensure this is the correct relative or absolute URL
     header('Location: accountPreferences.php?friendsUpdated=true');
     exit;
-}
-
-// Optionally add an else clause to handle unexpected accesses
-else {
+} else {
+    $_SESSION['message'] = "No data submitted.";
     header('Location: accountPreferences.php');
     exit;
 }
+
 ?>
 
