@@ -27,7 +27,7 @@ $token = $_SESSION['token'] ?? 'no-token'; // Ensure you have a fallback or hand
 </head>
 <body>
     <!-- Chat Widget -->
-    <<div id="chat-widget">
+    <div id="chat-widget">
     <div id="friends-list">
         <h3>Friends List</h3>
         <?php foreach ($friendsList as $friend): ?>
