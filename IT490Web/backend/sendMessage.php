@@ -17,10 +17,12 @@ if (isset($_POST['user_id']) && isset($_POST['message'])) {
         echo "Message sent successfully";
     } else {
         echo "Error: " . $stmt->error;
+        error_log('Insert message failed: ' . $stmt->error); // Log error to server log
     }
     $stmt->close();
 } else {
     echo "User ID or message not provided";
+    error_log('User ID or message not provided in sendMessage.php');
 }
 $db->close();
 ?>

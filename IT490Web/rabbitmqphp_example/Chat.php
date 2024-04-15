@@ -27,6 +27,7 @@ $ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) 
             right: 20px;
             width: 300px;
             height: 400px;
+            overflow: hidden; /* ensure internal scrolling behaves */
             background-color: white;
             box-shadow: 0 0 5px rgba(0,0,0,0.2);
             border-radius: 8px;
@@ -34,7 +35,7 @@ $ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) 
             display: flex;
             flex-direction: column;
             padding: 10px;
-            display: none; /* Initially hidden */
+            display: flex; /* Initially hidden */
         }
 
         .chat-messages {
@@ -85,16 +86,17 @@ function toggleChat() {
 
 function fetchMessages() {
     $.ajax({
-        url: '../backend/getMessages.php',  // Correct path to the getMessages.php
+        url: '../backend/getMessages.php',
         type: 'GET',
-        success: function(data) {
-            var messages = JSON.parse(data);
-            $('#chatBox').html('');
+        dataType: 'json',  // Ensures jQuery treats the response as JSON.
+        success: function(messages) {
+            var chatBox = $('#chatBox');
+            chatBox.html(''); // Clear previous messages
             $.each(messages, function(i, message) {
-                $('#chatBox').append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
+                chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
             });
         },
-        error: function(error) {
+        error: function(xhr, status, error) {
             console.error('Error fetching messages:', error);
         }
     });
