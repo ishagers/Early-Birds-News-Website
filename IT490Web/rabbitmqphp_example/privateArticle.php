@@ -58,22 +58,21 @@ try {
     <h1>Your Articles</h1>
     <div class="mainMenu-container">
         <?php foreach ($articles as $article): ?>
-        <div class="articles-list">
-            <h2><?= htmlspecialchars($article['title']) ?></h2>
-            <p><?= nl2br(htmlspecialchars($article['content'])) ?></p>
-            <small>Published on: <?= htmlspecialchars($article['publication_date']) ?></small>
-            <!-- Consider showing the source of the article or excluding API sourced articles from these operations -->
-            <?php if ($article['source'] == 'user'): ?>
-            <form method="post">
-                <input type="hidden" name="article_id" value="<?= $article['id'] ?>" />
-                <?php if ($article['is_private']): ?>
-                <button type="submit" name="make_public">Make Public</button>
-                <?php else: ?>
-                <button type="submit" name="make_private">Make Private</button>
+            <div class="article">
+                <h2><?= htmlspecialchars($article['title']) ?></h2>
+                <p><?= nl2br(htmlspecialchars($article['content'])) ?></p>
+                <small>Published on: <?= htmlspecialchars($article['publication_date']) ?></small>
+                <?php if ($article['source'] == 'user'): ?>
+                    <form method="post">
+                        <input type="hidden" name="article_id" value="<?= $article['id'] ?>" />
+                        <?php if ($article['is_private']): ?>
+                            <button type="submit" name="make_public" class="btn">Make Public</button>
+                        <?php else: ?>
+                            <button type="submit" name="make_private" class="btn">Make Private</button>
+                        <?php endif; ?>
+                    </form>
                 <?php endif; ?>
-            </form>
-            <?php endif; ?>
-        </div>
+            </div>
         <?php endforeach; ?>
     </div>
 
