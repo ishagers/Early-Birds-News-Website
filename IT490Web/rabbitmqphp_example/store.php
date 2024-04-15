@@ -8,7 +8,6 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// Fetch items from the database
 function fetchStoreItems() {
     // Ideally, this function should fetch items from your database
     return [
@@ -18,20 +17,17 @@ function fetchStoreItems() {
     ];
 }
 
-// Handle item purchase
 if (isset($_POST['purchase'])) {
     $itemId = $_POST['item_id'];
     $username = $_SESSION['username'];
     purchaseItem($username, $itemId);
 }
 
-// Function to process a purchase
 function purchaseItem($username, $itemId) {
     $items = fetchStoreItems();
     foreach ($items as $item) {
         if ($item['id'] == $itemId) {
             $cost = $item['cost'];
-            // Try to subtract cost from user's EB points and update database
             $updateResult = updateEBPoints($username, -$cost);
             if ($updateResult['status']) {
                 echo "<p>Purchase successful!</p>";
@@ -43,13 +39,14 @@ function purchaseItem($username, $itemId) {
     }
     echo "<p>Item not found.</p>";
 }
+?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Store</title>
-    <link rel="stylesheet" href="futuristicStyles.css">  <!-- Link to the futuristic CSS -->
+    <link rel="stylesheet" href="futuristicStyles.css">
 </head>
 <body>
     <div class="header">
