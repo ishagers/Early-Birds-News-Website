@@ -60,11 +60,12 @@ if (isset($_SESSION['message'])) {
                         $requesterId = htmlspecialchars($request['user_id1'] ?? '0');
                         ?>
                         <?= $requesterUsername ?>
-                        <form action="respondToRequest.php" method="post" style="display: inline;">
-                            <input type="hidden" name="requester_id" value="<?= $requesterId ?>">
-                            <button type="submit" name="response" value="accept">Accept</button>
-                            <button type="submit" name="response" value="reject">Reject</button>
-                        </form>
+                       <form action="respondToRequest.php" method="post">
+			    <input type="hidden" name="requester" value="<?php echo $requesterUsername; ?>">
+			    <button type="submit" name="response" value="accept">Accept</button>
+			    <button type="submit" name="response" value="reject">Reject</button>
+			</form>
+
                     </li>
                 <?php endforeach; ?>
             </ul>
