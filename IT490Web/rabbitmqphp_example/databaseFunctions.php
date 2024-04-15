@@ -74,39 +74,6 @@ function fetchUserEBP($username)
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     return $user ? $user['EBP'] : 0;
 }
-function updateEBPoints($username, $amount)
-{
-    $conn = getDatabaseConnection();
-    $response = ['status' => false, 'message' => ''];
-
-    try {
-        // First, get the user's current EB points
-        $currentEBP = fetchUserEBP($username);
-        if ($currentEBP + $amount < 0) {
-            // Prevent update if it results in negative points
-            $response['message'] = 'Insufficient EB points.';
-            return $response;
-        }
-
-        // Update the user's EBP in the database
-        $sql = "UPDATE users SET EBP = EBP + :amount WHERE username = :username";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':amount', $amount, PDO::PARAM_INT);
-        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
-        $stmt->execute();
-
-        if ($stmt->rowCount() > 0) {
-            $response['status'] = true;
-            $response['message'] = 'EB points updated successfully.';
-        } else {
-            $response['message'] = 'No changes made to EB points.';
-        }
-    } catch (PDOException $e) {
-        $response['message'] = 'Database error: ' . $e->getMessage();
-    }
-
-    return $response;
-}
 
 function login($username, $password)
 {
