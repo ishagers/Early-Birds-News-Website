@@ -229,13 +229,20 @@ function getUserIdByUsername($conn, $username) {
 
 function updateFriendRequestStatus($conn, $requesterUsername, $receiverUsername, $status) {
     try {
+        // Fetch user IDs
         $requester_id = getUserIdByUsername($conn, $requesterUsername);
         $receiver_id = getUserIdByUsername($conn, $receiverUsername);
 
+        // Check if user IDs were found
         if (!$requester_id || !$receiver_id) {
-            return ['success' => false, 'message' => 'User not found: ' . (!$requester_id ? $requesterUsername : $receiverUsername)];
+            $missingUser = !$requester_id ? $requesterUsername : $receiverUsername;
+            return [
+                'success' => false,
+                'message' => "User not found: {$missingUser}"
+            ];
         }
 
+        // Update the status of the friend request
         $sql = "UPDATE friends SET status = ? WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$status, $requester_id, $receiver_id, $receiver_id, $requester_id]);
@@ -248,8 +255,6 @@ function updateFriendRequestStatus($conn, $requesterUsername, $receiverUsername,
     } catch (PDOException $e) {
         error_log("Database error: " . $e->getMessage());
         return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
-    } catch (Exception $e) {
-        return ['success' => false, 'message' => $e->getMessage()];
     }
 }
 
