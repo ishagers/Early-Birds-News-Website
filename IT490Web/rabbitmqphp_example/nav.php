@@ -29,6 +29,38 @@ if (isset($_POST['add_ebp'])) {
     <title>Early Bird Articles</title>
     <link rel="stylesheet" href="../routes/menuStyles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            background-color: white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            display: none; /* Initially hidden */
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .chat-input {
+            width: calc(100% - 20px); /* accounting for padding */
+            margin-bottom: 5px;
+        }
+
+        button {
+            align-self: center;
+        }
+    </style>
 </head>
 <body>
 
@@ -45,63 +77,5 @@ if (isset($_POST['add_ebp'])) {
     </div>
 </div>
 
-<div class="nav-bar">
-    <ul>
-        <li><a href="writeArticle.php">Create Article</a></li>
-        <li><a href="article-history.php">Article History</a></li>
-        <li><a href="accountPreferences.php">Profile Preferences</a></li>
-        <li><a href="privateArticle.php">Private</a></li>
-        <li><a href="SearchArticles.php">Search Articles</a></li>
-        <li><a href="mainMenu.php">Home</a></li>
-        <li><a href="NewsAPIData.php">Latest News</a></li>
-        <li><a href="store.php">Store</a></li>
-    </ul>
-</div>
-
-<!-- Chat Container -->
-<div id="chatContainer" style="margin: 20px;">
-    <h2>Chat</h2>
-    <div id="chatBox" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 5px;"></div>
-    <textarea id="message" placeholder="Type your message here..." style="width: 100%;"></textarea>
-    <button onclick="sendMessage()">Send</button>
-</div>
-
-<script>
-function fetchMessages() {
-    $.ajax({
-        url: 'getMessages.php',
-        type: 'GET',
-        success: function(data) {
-            var messages = JSON.parse(data);
-            $('#chatBox').html('');
-            $.each(messages, function(i, message) {
-                $('#chatBox').append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
-            });
-        }
-    });
-}
-
-function sendMessage() {
-    var userId = '<?php echo $_SESSION['user_id']; ?>';  // Inject the user's ID into the script
-    var message = $('#message').val();
-    $.post('sendMessage.php', { user_id: userId, message: message }, function(response) {
-        $('#message').val(''); // Clear the message input box
-        fetchMessages(); // Fetch messages to update the chat
-    });
-}
-
-setInterval(fetchMessages, 2000);  // Polling every 2 seconds
-
-// Update EBP points periodically
-setInterval(function() {
-    fetch('getEBP.php')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('ebpPoints').textContent = data;
-        });
-}, 5000); // Update every 5 seconds
-</script>
-
-</body>
-</html>
+<div class="nav-bar
 
