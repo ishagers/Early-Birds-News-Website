@@ -160,15 +160,9 @@ function sendFriendRequest($conn, $username1, $username2) {
             return ['status' => false, 'message' => 'One or both users not found.'];
         }
 
-        if ($user_id1 > $user_id2) {
-            $temp = $user_id1;
-            $user_id1 = $user_id2;
-            $user_id2 = $temp;
-        }
-
         // Check if a friend request already exists
-        $stmt = $conn->prepare("SELECT * FROM friends WHERE (user_id1 = ? AND user_id2 = ?)");
-        $stmt->execute([$user_id1, $user_id2]);
+        $stmt = $conn->prepare("SELECT * FROM friends WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)");
+        $stmt->execute([$user_id1, $user_id2, $user_id2, $user_id1]);
         if ($stmt->fetch()) {
             return ['status' => false, 'message' => 'A friend request already exists or has already been processed.'];
         }
@@ -185,6 +179,7 @@ function sendFriendRequest($conn, $username1, $username2) {
         return ['status' => false, 'message' => 'Error: ' . $e->getMessage()];
     }
 }
+
 
 
 function fetchReceivedFriendRequests($conn, $username) {
