@@ -1,11 +1,11 @@
 /* Basic Reset */
-body, h1, p, div, form, input, button {
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Background and Font Styles */
+/* Global Styles */
 body {
     font-family: 'Arial', sans-serif;
     background-color: #121212;
@@ -14,7 +14,6 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    margin: 0;
     padding: 20px;
 }
 
@@ -29,6 +28,8 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
+    width: 80%;  /* Limit the width to avoid very wide stretches on larger screens */
+    max-width: 1200px; /* Maximum width for the container */
 }
 
 .item {
@@ -36,7 +37,8 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    width: 200px;
+    width: 100%; /* Default to 100% for mobile-first approach */
+    max-width: 200px; /* Maximum item width */
     text-align: center;
 }
 
@@ -55,18 +57,56 @@ button {
     border: none;
     padding: 10px 20px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
     border-radius: 5px;
 }
 
 button:hover {
     background-color: #357ABD;
+    transform: scale(1.05);  /* Slightly increase the size on hover for better interaction feedback */
 }
 
-/* Responsive Design */
+/* Responsive Design Adjustments */
+@media (max-width: 1200px) {
+    .store-items {
+        width: 90%;
+    }
+}
+
+@media (max-width: 800px) {
+    .store-items {
+        width: 100%;
+    }
+}
+
 @media (max-width: 600px) {
     .store-items {
         flex-direction: column;
+    }
+    .item {
+        max-width: none;  /* Allow item to take full width in smaller screens */
+    }
+}
+
+/* Aspect Ratio Handling for wide screens */
+@media (min-aspect-ratio: 16/9) {
+    .store-items {
+        justify-content: space-around;
+    }
+}
+
+/* Print Styling */
+@media print {
+    body {
+        background-color: #FFFFFF;
+        color: #000000;
+        align-items: flex-start;
+    }
+    .item {
+        box-shadow: none;
+    }
+    button {
+        display: none; /* Hide buttons on print */
     }
 }
 
