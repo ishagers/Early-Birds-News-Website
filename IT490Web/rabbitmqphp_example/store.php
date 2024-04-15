@@ -10,7 +10,7 @@ if (!isset($_SESSION['username'])) {
 
 // Fetch items from the database
 function fetchStoreItems() {
-    // Implement this function to fetch items from your database
+    // Ideally, this function should fetch items from your database
     return [
         ['id' => 1, 'name' => 'Dark Mode', 'cost' => 100],
         ['id' => 2, 'name' => 'Custom Cursor', 'cost' => 150],
@@ -22,31 +22,29 @@ function fetchStoreItems() {
 if (isset($_POST['purchase'])) {
     $itemId = $_POST['item_id'];
     $username = $_SESSION['username'];
-    // Implement this function to process the purchase
     purchaseItem($username, $itemId);
 }
 
-// Example function to process a purchase
+// Function to process a purchase
 function purchaseItem($username, $itemId) {
     $items = fetchStoreItems();
     foreach ($items as $item) {
         if ($item['id'] == $itemId) {
             $cost = $item['cost'];
-            // Subtract cost from user's EB points and update database
-            $currentEBP = fetchUserEBP($username);
-            if ($currentEBP >= $cost) {
-                updateEBPoints($username, -$cost);
+            // Try to subtract cost from user's EB points and update database
+            $updateResult = updateEBPoints($username, -$cost);
+            if ($updateResult['status']) {
                 echo "<p>Purchase successful!</p>";
-                return;
             } else {
-                echo "<p>Insufficient EB Points.</p>";
-                return;
+                echo "<p>" . $updateResult['message'] . "</p>";
             }
+            return;
         }
     }
     echo "<p>Item not found.</p>";
 }
 
+// HTML and form for displaying and purchasing items
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -77,5 +75,4 @@ function purchaseItem($username, $itemId) {
     </div>
 </body>
 </html>
-
 
