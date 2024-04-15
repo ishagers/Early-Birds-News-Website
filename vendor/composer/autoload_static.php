@@ -40,6 +40,10 @@ class ComposerStaticInit26ec20f4f65e6e16ab9b7fc3f6867ccf
             'Psr\\Http\\Message\\' => 17,
             'PHPMailer\\PHPMailer\\' => 20,
         ),
+        'M' => 
+        array (
+            'MyApp\\' => 6,
+        ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
@@ -111,6 +115,10 @@ class ComposerStaticInit26ec20f4f65e6e16ab9b7fc3f6867ccf
         'PHPMailer\\PHPMailer\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
+        'MyApp\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/IT490Web/backend/src/MyApp',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
