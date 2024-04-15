@@ -18,7 +18,7 @@ $token = $_SESSION['token'] ?? 'no-token'; // Ensure you have a fallback or hand
 <head>
     <meta charset="UTF-8">
     <title>Chat Page</title>
-    <link rel="stylesheet" href="css/styles.css"> <!-- Updated path to styles.css -->
+    <link rel="stylesheet" href="css/chat-styles.css"> <!-- Updated path to styles.css -->
     <script>
         // This makes the session token available to the WebSocket script
         var token = "<?php echo $token; ?>";
