@@ -58,7 +58,7 @@ try {
     <h1>Your Articles</h1>
     <div class="mainMenu-container">
         <?php foreach ($articles as $article): ?>
-        <div class="article">
+        <div class="articles-list">
             <h2><?= htmlspecialchars($article['title']) ?></h2>
             <p><?= nl2br(htmlspecialchars($article['content'])) ?></p>
             <small>Published on: <?= htmlspecialchars($article['publication_date']) ?></small>
