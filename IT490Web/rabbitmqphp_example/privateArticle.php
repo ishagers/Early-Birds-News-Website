@@ -56,7 +56,7 @@ try {
     <?php require('nav.php'); ?>
 
     <h1>Your Articles</h1>
-    <div class="mainMenu-container">
+    <div class="private-container">
         <?php foreach ($articles as $article): ?>
             <div class="article">
                 <h2><?= htmlspecialchars($article['title']) ?></h2>
