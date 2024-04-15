@@ -1,10 +1,11 @@
 <?php
 
-require dirname(__DIR__) . '/vendor/autoload.php';
 use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 use MyApp\Chat;
+
+require __DIR__ . '/../../vendor/autoload.php'; // Correct path to the autoload.php file
 
 $chatServer = IoServer::factory(
     new HttpServer(
@@ -16,5 +17,4 @@ $chatServer = IoServer::factory(
 );
 
 $chatServer->run();
-?>
 
