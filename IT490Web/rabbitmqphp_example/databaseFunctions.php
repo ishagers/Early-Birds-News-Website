@@ -153,33 +153,34 @@ function fetchAllUsernames($currentUsername) {
 }
 function sendFriendRequest($conn, $username1, $username2) {
     try {
-        // Convert usernames to user IDs
-        $ids = getUserIdsByUsername($conn, [$username1, $username2]);
-        $user_id1 = $ids[$username1];
-        $user_id2 = $ids[$username2];
+        // Fetch user IDs based on usernames
+        $stmt = $conn->prepare("SELECT id, username FROM users WHERE username IN (?, ?)");
+        $stmt->execute([$username1, $username2]);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Check if a friend request already exists
-        $checkStmt = $conn->prepare("SELECT * FROM friends WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)");
-        $checkStmt->execute([$user_id1, $user_id2, $user_id2, $user_id1]);
-        $existingRequest = $checkStmt->fetch();
+        if (count($results) == 2) {
+            // Map usernames to their respective IDs
+            $userIds = array_column($results, 'id', 'username');
+            $user_id1 = $userIds[$username1];
+            $user_id2 = $userIds[$username2];
 
-        if ($existingRequest) {
-            // Friend request already exists, handle logic (e.g., inform the user or update request if status is different)
-            if ($existingRequest['status'] === 'pending') {
-                return ['status' => false, 'message' => 'Friend request already pending'];
+            // Check if a friend request already exists
+            $stmt = $conn->prepare("SELECT * FROM friends WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)");
+            $stmt->execute([$user_id1, $user_id2, $user_id2, $user_id1]);
+            if ($stmt->fetch()) {
+                return ['status' => false, 'message' => 'A friend request already exists or has already been processed.'];
+            }
+
+            // Insert the friend request since it does not exist
+            $stmt = $conn->prepare("INSERT INTO friends (user_id1, user_id2, status, action_user_id) VALUES (?, ?, 'pending', ?)");
+            $stmt->execute([$user_id1, $user_id2, $user_id1]);
+            if ($stmt->rowCount() > 0) {
+                return ['status' => true, 'message' => 'Friend request sent successfully.'];
             } else {
-                // Optionally, we can re-send or update the request here
-                return ['status' => false, 'message' => 'A friend request already exists'];
+                return ['status' => false, 'message' => 'Failed to send friend request.'];
             }
         } else {
-            // No existing request, proceed to insert
-            $insertStmt = $conn->prepare("INSERT INTO friends (user_id1, user_id2, status, action_user_id) VALUES (?, ?, 'pending', ?)");
-            $insertStmt->execute([$user_id1, $user_id2, $user_id1]);
-            if ($insertStmt->rowCount() > 0) {
-                return ['status' => true, 'message' => 'Friend request sent successfully'];
-            } else {
-                return ['status' => false, 'message' => 'Failed to send friend request'];
-            }
+            return ['status' => false, 'message' => 'One or both users not found.'];
         }
     } catch (PDOException $e) {
         return ['status' => false, 'message' => 'Database error: ' . $e->getMessage()];
@@ -222,23 +223,24 @@ function getUserIdByUsername($conn, $username) {
 }
 function updateFriendRequestStatus($conn, $requesterUsername, $receiverUsername, $status) {
     try {
-        // Assuming both usernames are converted to user IDs within this function or before this function is called.
         $requester_id = getUserIdByUsername($conn, $requesterUsername);
         $receiver_id = getUserIdByUsername($conn, $receiverUsername);
 
-        $sql = "UPDATE friends SET status = :status WHERE (user_id1 = :requester_id AND user_id2 = :receiver_id) OR (user_id1 = :receiver_id AND user_id2 = :requester_id)";
+        if (!$requester_id || !$receiver_id) {
+            return false; // Ensuring both IDs are valid
+        }
+
+        $sql = "UPDATE friends SET status = ? WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->execute([
-            ':status' => $status,
-            ':requester_id' => $requester_id,
-            ':receiver_id' => $receiver_id
-        ]);
+        $stmt->execute([$status, $requester_id, $receiver_id, $receiver_id, $requester_id]);
+
         return $stmt->rowCount() > 0;
     } catch (PDOException $e) {
         error_log("Database error: " . $e->getMessage());
         return false;
     }
 }
+
 
 function acceptFriendRequest($conn, $requester_id, $receiver_username) {
     try {

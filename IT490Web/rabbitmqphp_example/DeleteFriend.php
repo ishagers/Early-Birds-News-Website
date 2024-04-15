@@ -11,7 +11,7 @@ if (!isset($_SESSION['username'])) {
 if (isset($_POST['deleteFriendUsername'])) {
     $conn = getDatabaseConnection();
     $currentUsername = $_SESSION['username'];
-    $friendUsername = $_POST['deleteFriendUsername'];
+    $friendUsername = $_POST['friend_username'];
 
     $result = deleteFriend($conn, $currentUsername, $friendUsername);
 

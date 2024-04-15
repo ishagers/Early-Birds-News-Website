@@ -92,7 +92,7 @@ if (isset($_SESSION['message'])) {
 		        <?php echo "{$friendName} - {$friendStatus}"; ?>
 		        <!-- Delete friend request form -->
 		        <form action="deleteFriend.php" method="post" style="display: inline;">
-		            <input type="hidden" name="deleteFriendUsername" value="<?php echo $friendName; ?>">
+		            <input type="hidden" name="friend_username" value="<?php echo $friendName; ?>">
 		            <button type="submit">Delete Friend</button>
 		        </form>
 		    </li>
