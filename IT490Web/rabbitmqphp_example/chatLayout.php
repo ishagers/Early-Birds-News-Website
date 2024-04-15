@@ -11,7 +11,7 @@ checkLogin(); // Ensure the user is logged in
     <meta charset="UTF-8">
     <title>Chat Page</title>
     <link rel="stylesheet" href="path/to/styles.css">
-    <script src="path/to/websocket.js"></script> <!-- WebSocket logic for chat -->
+    <script src="websocket.js"></script> <!-- WebSocket logic for chat -->
 </head>
 <body>
     <!-- Chat Widget -->
@@ -27,7 +27,7 @@ checkLogin(); // Ensure the user is logged in
     </main>
 
     <!-- Include any additional scripts needed for this page -->
-    <script src="path/to/other_script.js"></script>
+    <script src="loadFriends.js"></script>
 </body>
 </html>
 
