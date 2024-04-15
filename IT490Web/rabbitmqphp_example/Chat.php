@@ -85,7 +85,7 @@ function toggleChat() {
 
 function fetchMessages() {
     $.ajax({
-        url: 'getMessages.php',
+        url: '../backend/getMessages.php',  // Correct path to the getMessages.php
         type: 'GET',
         success: function(data) {
             var messages = JSON.parse(data);
@@ -93,6 +93,9 @@ function fetchMessages() {
             $.each(messages, function(i, message) {
                 $('#chatBox').append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
             });
+        },
+        error: function(error) {
+            console.error('Error fetching messages:', error);
         }
     });
 }
@@ -100,9 +103,11 @@ function fetchMessages() {
 function sendMessage() {
     var userId = '<?php echo $_SESSION['user_id']; ?>';  // Inject the user's ID into the script
     var message = $('#message').val();
-    $.post('sendMessage.php', { user_id: userId, message: message }, function(response) {
+    $.post('../backend/sendMessage.php', { user_id: userId, message: message }, function(response) {
         $('#message').val(''); // Clear the message input box
         fetchMessages(); // Fetch messages to update the chat
+    }).fail(function(error) {
+        console.error('Error sending message:', error);
     });
 }
 

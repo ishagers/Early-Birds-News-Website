@@ -1,13 +1,17 @@
 <?php
-include '../rabbitmqphp_example/databaseFunctions.php';
+require_once '../rabbitmqphp_example/databaseFunctions.php';
 
-$result = $db->query("SELECT users.username, chat_messages.message, chat_messages.timestamp FROM chat_messages INNER JOIN users ON chat_messages.user_id = users.id ORDER BY chat_messages.id DESC LIMIT 20");
+// Prepare a statement to fetch messages with user information
+$stmt = $db->prepare("SELECT u.username, m.message, m.timestamp FROM chat_messages m INNER JOIN users u ON m.user_id = u.id ORDER BY m.id DESC LIMIT 20");
+$stmt->execute();
+$result = $stmt->get_result();
 
 $messages = array();
 while ($row = $result->fetch_assoc()) {
     $messages[] = $row;
 }
 echo json_encode($messages);
+
+$stmt->close();
 $db->close();
 ?>
-

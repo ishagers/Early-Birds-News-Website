@@ -1,15 +1,26 @@
 <?php
-include '../rabbitmqphp_example/databaseFunctions.php';  // Updated path to databaseFunctions.php
+require_once '../rabbitmqphp_example/databaseFunctions.php';  // Updated path to databaseFunctions.php
 
-$user_id = mysqli_real_escape_string($db, $_POST['user_id']);  // Assume user_id is posted by the client
-$message = mysqli_real_escape_string($db, $_POST['message']);
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-$sql = "INSERT INTO chat_messages (user_id, message) VALUES ('$user_id', '$message')";
-if ($db->query($sql) === TRUE) {
-    echo "Message sent successfully";
+// Check if both user_id and message are provided
+if (isset($_POST['user_id']) && isset($_POST['message'])) {
+    $user_id = $_POST['user_id'];
+    $message = $_POST['message'];
+
+    // Prepare a statement to insert data
+    $stmt = $db->prepare("INSERT INTO chat_messages (user_id, message) VALUES (?, ?)");
+    $stmt->bind_param("is", $user_id, $message);
+    if ($stmt->execute()) {
+        echo "Message sent successfully";
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+    $stmt->close();
 } else {
-    echo "Error: " . $sql . "<br>" . $db->error;
+    echo "User ID or message not provided";
 }
 $db->close();
 ?>
-
