@@ -46,7 +46,7 @@ function purchaseItem($username, $itemId) {
 <head>
     <meta charset="UTF-8">
     <title>Store</title>
-    <link rel="stylesheet" href="futuristicStyles.css">
+    <link rel="stylesheet" href="css/futuristicStyles.css">
 </head>
 <body>
     <div class="header">
