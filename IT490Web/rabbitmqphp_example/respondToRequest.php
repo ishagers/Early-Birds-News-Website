@@ -18,7 +18,7 @@ if (isset($_POST['response'], $_POST['requester']) && isset($_SESSION['username'
         exit;
     }
 
-    $status = $response === 'accept' ? 'accepted' : 'rejected';
+    $status = $response === 'accept' ? 'accepted' : 'declined';
     $result = updateFriendRequestStatus($conn, $requesterUsername, $receiverUsername, $status);
 
     if ($result['success']) {
