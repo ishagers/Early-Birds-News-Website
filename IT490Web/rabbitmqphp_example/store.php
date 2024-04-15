@@ -45,13 +45,12 @@ function purchaseItem($username, $itemId) {
 }
 
 // HTML and form for displaying and purchasing items
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Store</title>
-    <link rel="stylesheet" href="../routes/menuStyles.css">
+    <link rel="stylesheet" href="futuristicStyles.css">  <!-- Link to the futuristic CSS -->
 </head>
 <body>
     <div class="header">

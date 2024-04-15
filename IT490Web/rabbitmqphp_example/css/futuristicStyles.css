@@ -1,0 +1,72 @@
+/* Basic Reset */
+body, h1, p, div, form, input, button {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Background and Font Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+.header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.store-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.item {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    width: 200px;
+    text-align: center;
+}
+
+.item h3 {
+    color: #4A90E2;
+    margin-bottom: 10px;
+}
+
+.item p {
+    margin-bottom: 20px;
+}
+
+button {
+    background-color: #4A90E2;
+    color: #FFF;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #357ABD;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .store-items {
+        flex-direction: column;
+    }
+}
+

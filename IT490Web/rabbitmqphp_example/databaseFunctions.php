@@ -913,13 +913,4 @@ function addCurrencyToUserByUsername($username, $amount)
     return $response;
 }
 
-function fetchUserEBP($username)
-{
-    $conn = getDatabaseConnection();
-    $sql = "SELECT EBP FROM users WHERE username = :username LIMIT 1";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':username', $username);
-    $stmt->execute();
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $user ? $user['EBP'] : 0;
-}
+
