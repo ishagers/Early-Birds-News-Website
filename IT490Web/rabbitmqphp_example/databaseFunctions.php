@@ -89,11 +89,8 @@ function login($username, $password)
             // Verify the password
             if (password_verify($password, $user['hash'])) {
                 // Password is correct
-                return [
-                    'status' => true,
-                    'message' => 'Login successful',
-                    'user_id' => $user['id']  // Make sure to return user_id
-                ];
+                $response['status'] = true;
+                $response['message'] = "Login successful";
             } else {
                 // Password is incorrect
                 $response['message'] = "Invalid username or password";
@@ -108,14 +105,6 @@ function login($username, $password)
     }
 
     return $response;
-}
-
-
-function generateAndStoreToken($userId, $conn) {
-    $token = bin2hex(random_bytes(32));  // Generate a secure token
-    $stmt = $conn->prepare("INSERT INTO user_sessions (user_id, token) VALUES (?, ?)");
-    $stmt->execute([$userId, $token]);
-    return $token;
 }
 
 function fetchFriendsByUsername($conn, $username) {

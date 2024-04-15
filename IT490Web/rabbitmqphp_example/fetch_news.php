@@ -11,17 +11,9 @@ $url = "https://gnews.io/api/v4/search?q={$query}&lang=en&country=us&max=10&toke
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-$response = curl_exec($ch);
-if ($response === false) {
-    echo "Curl error: " . curl_error($ch);
-    curl_close($ch);
-    exit;
-}
-$data = json_decode($response, true);
+$data = json_decode(curl_exec($ch), true);
 curl_close($ch);
-
-// Check if articles key exists and is not empty
-$articles = isset($data['articles']) ? $data['articles'] : [];
+$articles = $data['articles'];
 
 // Database connection details
 $servername = "10.147.17.233";
@@ -43,7 +35,6 @@ foreach ($articles as $article) {
     $title = $article['title'] ?? 'No title available.';
     $content = $article['content'] ?? 'No content available.';
     $articleUrl = $article['url'] ?? '#';
-    $imageSrc = $article['image'] ?? 'path_to_default_image.jpg'; // Set a default image path if none is provided
 
     // Check if an article with the same title already exists
     $stmt = $conn->prepare("SELECT COUNT(*) FROM articles WHERE title = ?");
@@ -63,7 +54,7 @@ foreach ($articles as $article) {
 
     // For a better web display, include hyperlinks and images
     echo "<li>";
-    echo "<img src='" . htmlspecialchars($imageSrc) . "' alt='' style='width:100px; height:auto;'>";
+    echo "<img src='" . htmlspecialchars($article['image']) . "' alt='' style='width:100px; height:auto;'>";
     echo "<a href='" . htmlspecialchars($articleUrl) . "' target='_blank'>" . htmlspecialchars($title) . "</a>";
     echo "</li>";
 }
@@ -73,5 +64,4 @@ echo "</ul>"; // Close the unordered list
 // Close the database connection
 $conn->close();
 
-?>
 

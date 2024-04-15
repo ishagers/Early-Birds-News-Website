@@ -1,17 +1,12 @@
 <?php
 session_start(); 
 require('rabbitmqphp_example/session.php');
-require('rabbitmqphp_example/databaseFunctions.php');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require('rabbitmqphp_example/SQLPublish.php');
 
-// Define the generateToken function if it's not elsewhere in your included files
-function generateToken($length = 64) {
-    return bin2hex(random_bytes($length));
-}
+require('rabbitmqphp_example/SQLPublish.php');
 
 if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $queryValues = [
@@ -25,16 +20,8 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
     if ($result && $result['returnCode'] == '0') {
         // Login successful
         echo "Great, we found you: " . htmlspecialchars($result['message']);
-
         $_SESSION['username'] = $_POST['username'];
-        if(isset($result['user_id'])) {
-            $_SESSION['user_id'] = $result['user_id']; // Store user_id in session
-
-            // Generate a token for session identification
-            $token = generateToken();
-            // Store the token in the session or send it to the client
-            $_SESSION['token'] = $token;
-        }
+        $_SESSION['user_id'] = $result['user_id']; // Ensure 'user_id' is correctly provided by the response
 
         header("Location: rabbitmqphp_example/mainMenu.php"); // Redirect to the home page or dashboard
         exit();
