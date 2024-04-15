@@ -13,10 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var data = JSON.parse(e.data);
         // Check if the message is from the current selected friend or system messages
         if (data.fromUserId === selectedFriendId || data.from === 'server') {
-            var messages = document.getElementById('messages');
-            var messageDiv = document.createElement('div');
-            messageDiv.textContent = data.message; // Safe text content
-            messages.appendChild(messageDiv); // Append new message div to the messages container
+            displayMessage(data.message, data.fromUserId);
         }
     };
 
@@ -37,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.sendMessage = function() {
         var messageInput = document.getElementById('messageInput');
-        if (messageInput.value.trim() !== '' && selectedFriendId) {
+        if (messageInput && messageInput.value.trim() !== '' && selectedFriendId) {
             var message = {
                 type: 'message',
                 targetUserId: selectedFriendId,
@@ -48,4 +45,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 });
+
+function displayMessage(message, fromUserId) {
+    var messages = document.getElementById('messages');
+    if (messages) {
+        var messageDiv = document.createElement('div');
+        messageDiv.textContent = `${fromUserId}: ${message}`; // Enhance display to show who the message is from
+        messages.appendChild(messageDiv);
+    } else {
+        console.error('Messages container not found!');
+    }
+}
 
