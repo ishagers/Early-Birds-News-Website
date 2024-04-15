@@ -10,8 +10,6 @@ body {
     background-color: #f4f4f4;
     color: #333;
     line-height: 1.6;
-    padding-top: 60px;
-    padding-bottom: 50px;
     margin: 0;
     box-sizing: border-box;
 }
@@ -274,10 +272,10 @@ body {
     align-items: center;
     justify-content: center;
     padding: 20px;
-    margin-top: 30px; /* Adds space above the container */
+    margin-top: 100px; /* Adds space above the container */
     margin-bottom: 30px; /* Adds space below the container */
     border: 2px solid blue;
-    width: 80%;
+    width: 60%;
     box-sizing: border-box;
 }
 
