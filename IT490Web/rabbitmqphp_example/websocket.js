@@ -7,26 +7,31 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     conn.onmessage = function(e) {
-        var messages = document.getElementById('messages');
-        var messageDiv = document.createElement('div'); // Create a new div for each message
-        messageDiv.textContent = e.data; // Safe text content
-        messages.appendChild(messageDiv); // Append new message div to the messages container
+        var data = JSON.parse(e.data);
+        if (data.fromUserId === selectedFriendId || data.fromUserId === "server") {  // Ensure messages are from the selected friend or server
+            var messages = document.getElementById('messages');
+            var messageDiv = document.createElement('div');
+            messageDiv.textContent = data.message;  // Display the message
+            messages.appendChild(messageDiv);
+        }
     };
 
-    conn.onerror = function(error) {
-        console.error('WebSocket Error:', error);
-    };
-
-    conn.onclose = function(e) {
-        console.log('Connection closed', e);
+    window.selectFriend = function(friendId, friendName) {
+        selectedFriendId = friendId;
+        document.getElementById('chat-title').textContent = 'Chatting with ' + friendName;
+        document.getElementById('messages').innerHTML = '';  // Optionally clear messages when changing friend
     };
 
     window.sendMessage = function() {
         var messageInput = document.getElementById('messageInput');
-        if (messageInput.value.trim() !== '') { // Check if the message is not just whitespace
-            conn.send(messageInput.value);
-            messageInput.value = ''; // Clear input after sending
+        if (messageInput.value.trim() !== '' && selectedFriendId) {
+            var message = {
+                type: 'private',
+                targetUserId: selectedFriendId,
+                message: messageInput.value
+            };
+            conn.send(JSON.stringify(message));
+            messageInput.value = '';  // Clear input after sending
         }
     };
 });
-

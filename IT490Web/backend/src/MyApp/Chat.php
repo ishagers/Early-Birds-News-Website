@@ -27,15 +27,23 @@ class Chat implements MessageComponentInterface {
         }
     }
 
-    public function onMessage(ConnectionInterface $from, $msg) {
-        $data = json_decode($msg, true);
-        if (isset($data['type']) && $data['type'] === 'message' && isset($this->userLookup[$data['targetUserId']])) {
+public function onMessage(ConnectionInterface $from, $msg) {
+    $data = json_decode($msg, true);
+    if (isset($data['type'], $data['targetUserId'], $data['message']) && $data['type'] === 'message') {
+        if (isset($this->userLookup[$data['targetUserId']])) {
             $targetConn = $this->userLookup[$data['targetUserId']];
             if ($targetConn) {
-                $targetConn->send(json_encode(['from' => array_search($from, $this->userLookup), 'message' => $data['message']]));
+                // Include sender's user ID to enable client-side display logic
+                $data['fromUserId'] = array_search($from, $this->userLookup);
+                // Ensure the message content is properly sanitized or encoded to prevent XSS or other injection attacks
+                $targetConn->send(json_encode([
+                    'fromUserId' => $data['fromUserId'],
+                    'message' => htmlspecialchars($data['message'])
+                ]));
             }
         }
     }
+}
 
     public function onClose(ConnectionInterface $conn) {
         $this->clients->detach($conn);
