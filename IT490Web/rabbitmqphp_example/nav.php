@@ -1,7 +1,5 @@
 <?php
-
 require_once 'databaseFunctions.php';
-
 // Check if the session is not started yet
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -19,7 +17,6 @@ if (isset($_POST['add_ebp'])) {
         echo "<p>User must be logged in to receive currency.</p>";
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -27,55 +24,51 @@ if (isset($_POST['add_ebp'])) {
 <head>
     <meta charset="UTF-8">
     <title>Early Bird Articles</title>
+    <!-- Link to the external CSS file -->
     <link rel="stylesheet" href="../routes/menuStyles.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <style>
-        .chat-widget {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 300px;
-            height: 400px;
-            background-color: white;
-            box-shadow: 0 0 5px rgba(0,0,0,0.2);
-            border-radius: 8px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            display: none; /* Initially hidden */
-        }
-
-        .chat-messages {
-            flex-grow: 1;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-
-        .chat-input {
-            width: calc(100% - 20px); /* accounting for padding */
-            margin-bottom: 5px;
-        }
-
-        button {
-            align-self: center;
-        }
-    </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>Early Bird Articles</h1>
-    <div class="user-info">
-        Logged in as: <strong><?php echo htmlspecialchars($username); ?></strong>
-        <form method="post" action="">
-            <button type="submit" name="add_ebp">Add 5 EBP</button>
-        </form>
-        <img src="../assets/EBP.png" alt="EB Points:" width="32" height="32" />
-        <span class="eb-points-label">EB Points:</span>
-        <span id="ebpPoints" class="eb-points"><?php echo $ebpPoints; ?></span>
+    <div class="header">
+        <h1>Early Bird Articles</h1>
+        <div class="user-info">
+            Logged in as: <strong><?php echo htmlspecialchars($username); ?></strong>
+            <form method="post" action="">
+                <button type="submit" name="add_ebp">Add 5 EBP</button>
+            </form>
+            <img src="../assets/EBP.png" alt="EB Points:" width="32" height="32" />
+            <span class="eb-points-label">EB Points:</span>
+            <span id="ebpPoints" class="eb-points"><?php echo $ebpPoints; ?></span>
+        </div>
     </div>
+
+
+<div class="nav-bar">
+    <ul>
+        <li><a href="writeArticle.php">Create Article</a></li>
+        <li><a href="article-history.php">Article History</a></li>
+        <li><a href="accountPreferences.php">Profile Preferences</a></li>
+        <li><a href="privateArticle.php">Private</a></li>
+        <li><a href="SearchArticles.php">SearchArticles</a></li>
+        <li><a href="mainMenu.php">Home</a></li>
+        <li><a href="NewsAPIData.php">Latest News</a></li>
+        <li><a href="store.php"></a></li>
+        <li><a href="Chat.php"></a></li>
+    </ul>
 </div>
 
-<div class="nav-bar
+<script>
+    // Checks for changes in EBP points and update the display 
+    setInterval(function() {
+        // This assumes you have a route like "getEBP.php" that returns the current user's EBP points
+        fetch('getEBP.php')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('ebpPoints').textContent = data;
+            });
+    }, 1000); // Update every 5 seconds, adjust as needed
+</script>
+
+</body>
+</html>
 
