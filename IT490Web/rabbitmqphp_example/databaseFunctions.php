@@ -152,31 +152,37 @@ function fetchAllUsernames($currentUsername) {
     }
 }
 function sendFriendRequest($conn, $username1, $username2) {
-    // Fetch user IDs based on usernames
-    $ids = getUserIdsByUsername($conn, [$username1, $username2]);
-    $user_id1 = $ids[$username1];
-    $user_id2 = $ids[$username2];
+    try {
+        $user_id1 = getUserIdByUsername($conn, $username1);
+        $user_id2 = getUserIdByUsername($conn, $username2);
 
-    if ($user_id1 > $user_id2) {
-        $temp = $user_id1;
-        $user_id1 = $user_id2;
-        $user_id2 = $temp;
-    }
+        if (!$user_id1 || !$user_id2) {
+            return ['status' => false, 'message' => 'One or both users not found.'];
+        }
 
-    // Check if a friend request already exists
-    $stmt = $conn->prepare("SELECT * FROM friends WHERE (user_id1 = ? AND user_id2 = ?)");
-    $stmt->execute([$user_id1, $user_id2]);
-    if ($stmt->fetch()) {
-        return ['status' => false, 'message' => 'A friend request already exists or has already been processed.'];
-    }
+        if ($user_id1 > $user_id2) {
+            $temp = $user_id1;
+            $user_id1 = $user_id2;
+            $user_id2 = $temp;
+        }
 
-    // Insert the friend request since it does not exist
-    $stmt = $conn->prepare("INSERT INTO friends (user_id1, user_id2, status, action_user_id) VALUES (?, ?, 'pending', ?)");
-    $stmt->execute([$user_id1, $user_id2, $user_id1]);
-    if ($stmt->rowCount() > 0) {
-        return ['status' => true, 'message' => 'Friend request sent successfully.'];
-    } else {
-        return ['status' => false, 'message' => 'Failed to send friend request.'];
+        // Check if a friend request already exists
+        $stmt = $conn->prepare("SELECT * FROM friends WHERE (user_id1 = ? AND user_id2 = ?)");
+        $stmt->execute([$user_id1, $user_id2]);
+        if ($stmt->fetch()) {
+            return ['status' => false, 'message' => 'A friend request already exists or has already been processed.'];
+        }
+
+        // Insert the friend request since it does not exist
+        $stmt = $conn->prepare("INSERT INTO friends (user_id1, user_id2, status, action_user_id) VALUES (?, ?, 'pending', ?)");
+        $stmt->execute([$user_id1, $user_id2, $user_id1]);
+        if ($stmt->rowCount() > 0) {
+            return ['status' => true, 'message' => 'Friend request sent successfully.'];
+        } else {
+            return ['status' => false, 'message' => 'Failed to send friend request.'];
+        }
+    } catch (Exception $e) {
+        return ['status' => false, 'message' => 'Error: ' . $e->getMessage()];
     }
 }
 
@@ -220,19 +226,27 @@ function updateFriendRequestStatus($conn, $requesterUsername, $receiverUsername,
         $receiver_id = getUserIdByUsername($conn, $receiverUsername);
 
         if (!$requester_id || !$receiver_id) {
-            return false; // Ensuring both IDs are valid
+            return [
+                'success' => false,
+                'message' => 'User not found: ' . (!$requester_id ? $requesterUsername : $receiverUsername)
+            ]; // Providing more detail on which user was not found
         }
 
         $sql = "UPDATE friends SET status = ? WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$status, $requester_id, $receiver_id, $receiver_id, $requester_id]);
 
-        return $stmt->rowCount() > 0;
+        if ($stmt->rowCount() > 0) {
+            return ['success' => true, 'message' => 'Friend request status updated successfully.'];
+        } else {
+            return ['success' => false, 'message' => 'No changes made. It is possible the request does not exist or it was already in the desired state.'];
+        }
     } catch (PDOException $e) {
         error_log("Database error: " . $e->getMessage());
-        return false;
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
     }
 }
+
 
 
 function acceptFriendRequest($conn, $requester_id, $receiver_username) {
