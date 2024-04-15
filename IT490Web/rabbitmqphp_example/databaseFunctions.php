@@ -168,7 +168,7 @@ function sendFriendRequest($conn, $username1, $username2) {
             if ($existingRequest['status'] === 'pending') {
                 return ['status' => false, 'message' => 'Friend request already pending'];
             } else {
-                // Optionally, you could re-send or update the request here
+                // Optionally, we can re-send or update the request here
                 return ['status' => false, 'message' => 'A friend request already exists'];
             }
         } else {
@@ -251,6 +251,11 @@ function deleteFriend($conn, $user1_username, $user2_username) {
         $user1_id = getUserIdByUsername($conn, $user1_username);
         $user2_id = getUserIdByUsername($conn, $user2_username);
 
+        if (!$user1_id || !$user2_id) {
+            $conn->rollback(); // Rollback if any user ID is not found
+            return ['success' => false, 'message' => 'User not found.'];
+        }
+
         // Prepare the SQL statement to delete the friendship
         $sql = "DELETE FROM friends WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)";
         $stmt = $conn->prepare($sql);
@@ -269,6 +274,7 @@ function deleteFriend($conn, $user1_username, $user2_username) {
         return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
     }
 }
+
 
 
 function insertNewsArticle($title, $content, $source, $url = null) {
@@ -695,12 +701,12 @@ function SendArticle($recipientEmail, $articleTitle, $articleContent, $articleUr
     try {
         $mail = new PHPMailer(true); // Create instance with exceptions enabled
 
-        // Your existing PHPMailer settings
+        // The existing PHPMailer settings
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'earlybird6900@gmail.com'; // Your SMTP username
-        $mail->Password = 'mtxekiuhxgpllxqu'; // Your SMTP password
+        $mail->Username = 'earlybird6900@gmail.com'; // The SMTP username
+        $mail->Password = 'mtxekiuhxgpllxqu'; // The SMTP password
         $mail->SMTPSecure = 'ssl';
         $mail->Port = 465;
         $mail->setFrom('earlybird6900@gmail.com', 'EarlyBird Platform');
