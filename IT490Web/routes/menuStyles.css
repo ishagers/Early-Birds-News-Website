@@ -1,0 +1,325 @@
+/* Basic reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.header {
+    position: relative;
+    background-color: #005A9C;
+    color: #ffffff;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.nav-bar {
+    background: #022f5b;
+    color: #ffffff;
+    padding: 10px 0;
+}
+
+    .nav-bar ul {
+        list-style-type: none;
+        display: flex;
+        justify-content: flex-end; /* Align items to the right */
+        margin-right: 20px; /* Add right margin for some spacing from the edge */
+    }
+
+        .nav-bar ul li {
+            margin: 0 15px;
+        }
+
+            .nav-bar ul li a {
+                color: #ffffff;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 18px;
+                padding: 10px 15px;
+                display: block;
+                transition: background-color 0.3s, color 0.3s;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+                .nav-bar ul li a:hover, .nav-bar ul li a:focus {
+                    background-color: #033f77;
+                    color: #ffd700;
+                }
+
+.logout-button {
+    margin: 20px;
+    text-align: center;
+}
+
+    .logout-button a {
+        display: inline-block;
+        text-decoration: none;
+        background-color: #D7263D;
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+        .logout-button a:hover {
+            background-color: #bf1e2e;
+        }
+
+.eb-points-label {
+    margin-right: 5px;
+    color: #ffffff;
+}
+
+.eb-points {
+    font-weight: bold;
+    color: #FFD700;
+    font-size: 1.2em;
+}
+.user-info {
+    position: absolute; /* Position relative to the header */
+    right: 20px; /* Distance from the right edge of the header */
+    top: 50%; /* Align vertically at the center */
+    transform: translateY(-50%); /* Adjust vertical alignment */
+    display: flex;
+    align-items: center;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .nav-bar ul {
+        flex-direction: column;
+    }
+
+        .nav-bar ul li {
+            margin: 10px 0;
+        }
+}
+.article-form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff; /* Ensure background contrasts with text */
+    border: 2px solid #005A9C;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+    .article-form input[type="text"], .article-form textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+    }
+
+    .article-form input[type="submit"] {
+        display: block; /* Make the button block to fill width */
+        width: 100%;
+        padding: 10px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .article-form input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+.article-details-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 600px; /* Use 100% of the container width */
+    max-width: 900px; /* Max-width can be set as per design needs */
+    min-width: 720px; /* Min-width ensures it doesn't get too narrow */
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #005A9C;
+    background-color: #f4f4f4; /* Subtle background color */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden; /* Ensures no content spills out */
+}
+
+.article-details-container input[type="email"],
+.article-details-container select,
+.article-details-container textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px; /* Adds space between form elements */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.article-details h2 {
+    text-decoration: underline; /* Adds underline to the title */
+    font-size: 28px; /* Increases the size of the title */
+    margin-bottom: 16px; /* Adds some space below the title */
+}
+
+.article-details-container select {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 10px; /* Space between the dropdown and the submit button */
+}
+
+.article-details-container button {
+    background-color: #007BFF; /* Primary button color */
+    color: #ffffff; /* Text color */
+    padding: 7px 11px; /* Reduces padding to make buttons smaller */
+    font-size: 12px; /* Optionally reduce the font size for buttons */
+    border-radius: 5px; /* Rounded corners */
+    border: none; /* No border */
+    cursor: pointer; /* Cursor indicates action */
+    display: inline-block; /* Ensures proper spacing */
+    transition: background-color 0.2s, box-shadow 0.2s; /* Smooth transition for hover effects */
+}
+
+    .article-details-container button:hover {
+        background-color: #0056b3; /* Darker shade on hover */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    }
+
+/* Specific styling for the 'Submit Rating' button if needed */
+#article-rating button {
+    width: auto; /* Adjust width as necessary */
+    margin-top: 10px; /* Space from the dropdown */
+}
+
+.article-details-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 750px; /* Adjust based on layout preferences */
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #005A9C;
+    background-color: #f4f4f4; /* Subtle background color */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+.btn {
+    background-color: #007BFF; /* Primary button color */
+    color: #ffffff; /* Text color */
+    padding: 10px 20px; /* Padding for size */
+    border: none; /* No border for the button */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Indicates it's clickable */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+    .btn:hover {
+        background-color: #0056b3; /* Darker shade for hover */
+    }
+#article-rating button,
+#share-article button,
+#submit-comment button {
+    padding: 8px 12px; /* Same as above, for individual button adjustment */
+    font-size: 14px; /* Same as above, for individual button adjustment */
+}
+
+.article-end-separator {
+    width: 100%; /* Full width of the container */
+    height: 4px; /* Thickness of the line */
+    background-color: #005A9C; /* Color of the line */
+    margin: 20px 0; /* Spacing above and below the line */
+}
+
+.mainMenu-container {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    flex-direction: column; 
+    height: 100vh; 
+    padding: 20px; 
+    border: 2px solid blue; 
+    margin: auto; 
+    width: 80%; 
+    box-sizing: border-box; 
+}
+
+.articles-list {
+    width: 100%;
+}
+
+.article h3 {
+    margin: 10px 0; 
+    text-align: center; 
+}
+
+.article small {
+    display: block;
+    text-align: center;
+    margin-bottom: 10px; 
+}
+
+.mainMenu-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 15px auto;
+    padding-top: 600px; /* Adds space above the container */
+    padding-bottom: 600px; /* Adds space below the container */
+    border: 3px solid blue;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+.article h3 a {
+    background-color: yellow; /* Highlight color */
+    padding: 2px 5px; /* Adds padding around the text */
+    text-decoration: none; /* Removes underline */
+    color: black; /* Sets text color, adjust as needed */
+    display: inline-block; /* Allows background color to fit the text */
+}
+
+.article h3 {
+    margin: 10px 0; /* Adds vertical spacing */
+    text-align: center;
+}
+
+.article small {
+    display: block;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.article button.btn {
+    padding: 8px 16px;
+    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .article button.btn:hover {
+        background-color: #0056b3;
+    }
+
+.private-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 15px auto;
+    padding: 20px;
+    border: 3px solid blue;
+    width: 50%;
+    box-sizing: border-box;
+}
