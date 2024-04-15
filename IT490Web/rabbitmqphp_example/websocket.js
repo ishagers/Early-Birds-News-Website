@@ -1,6 +1,9 @@
-document.addEventListener('DOMContentLoaded', function() {
-    var conn = new WebSocket('ws://10.147.17.233:8080?token=' + token);
+var currentFriend = '';  // Global variable to store the current friend's username
+var selectedFriendId = ''; // Global variable to store the current friend's user ID
 
+document.addEventListener('DOMContentLoaded', function() {
+    // Assuming 'token' is defined and populated correctly somewhere in your app
+    var conn = new WebSocket('ws://10.147.17.233:8080?token=' + token);
 
     conn.onopen = function(e) {
         console.log("Connection established!");
@@ -8,30 +11,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     conn.onmessage = function(e) {
         var data = JSON.parse(e.data);
-        if (data.fromUserId === selectedFriendId || data.fromUserId === "server") {  // Ensure messages are from the selected friend or server
+        // Check if the message is from the current selected friend or system messages
+        if (data.fromUserId === selectedFriendId || data.from === 'server') {
             var messages = document.getElementById('messages');
             var messageDiv = document.createElement('div');
-            messageDiv.textContent = data.message;  // Display the message
-            messages.appendChild(messageDiv);
+            messageDiv.textContent = data.message; // Safe text content
+            messages.appendChild(messageDiv); // Append new message div to the messages container
         }
     };
 
-    window.selectFriend = function(friendId, friendName) {
-        selectedFriendId = friendId;
+    conn.onerror = function(error) {
+        console.error('WebSocket Error:', error);
+    };
+
+    conn.onclose = function(e) {
+        console.log('Connection closed', e);
+    };
+
+    window.startChatWith = function(friendId, friendName) {
+        selectedFriendId = friendId; // Assuming friendId is passed correctly to start chat
         document.getElementById('chat-title').textContent = 'Chatting with ' + friendName;
-        document.getElementById('messages').innerHTML = '';  // Optionally clear messages when changing friend
+        document.getElementById('messages').innerHTML = ''; // Clear previous messages
+        console.log("Chat started with: " + friendName); // Debugging to check if the function is called
     };
 
     window.sendMessage = function() {
         var messageInput = document.getElementById('messageInput');
         if (messageInput.value.trim() !== '' && selectedFriendId) {
             var message = {
-                type: 'private',
+                type: 'message',
                 targetUserId: selectedFriendId,
                 message: messageInput.value
             };
-            conn.send(JSON.stringify(message));
-            messageInput.value = '';  // Clear input after sending
+            conn.send(JSON.stringify(message)); // Send the message as a stringified JSON
+            messageInput.value = ''; // Clear input after sending
         }
     };
 });
+

@@ -27,23 +27,35 @@ class Chat implements MessageComponentInterface {
         }
     }
 
-public function onMessage(ConnectionInterface $from, $msg) {
-    $data = json_decode($msg, true);
-    if (isset($data['type'], $data['targetUserId'], $data['message']) && $data['type'] === 'message') {
+    public function onMessage(ConnectionInterface $from, $msg) {
+        $data = json_decode($msg, true);
+        if (!isset($data['type']) || !isset($data['targetUserId']) || !isset($data['message'])) {
+            return; // Exit if any essential data is missing
+        }
+
+        switch ($data['type']) {
+            case 'message':
+                $this->handlePrivateMessage($from, $data);
+                break;
+            default:
+                // Handle other types of messages or actions if needed
+                break;
+        }
+    }
+
+    protected function handlePrivateMessage(ConnectionInterface $from, array $data) {
         if (isset($this->userLookup[$data['targetUserId']])) {
             $targetConn = $this->userLookup[$data['targetUserId']];
             if ($targetConn) {
-                // Include sender's user ID to enable client-side display logic
-                $data['fromUserId'] = array_search($from, $this->userLookup);
-                // Ensure the message content is properly sanitized or encoded to prevent XSS or other injection attacks
+                $fromUserId = array_search($from, $this->userLookup);
+                $safeMessage = htmlspecialchars($data['message'], ENT_QUOTES, 'UTF-8');
                 $targetConn->send(json_encode([
-                    'fromUserId' => $data['fromUserId'],
-                    'message' => htmlspecialchars($data['message'])
+                    'fromUserId' => $fromUserId,
+                    'message' => $safeMessage
                 ]));
             }
         }
     }
-}
 
     public function onClose(ConnectionInterface $conn) {
         $this->clients->detach($conn);
