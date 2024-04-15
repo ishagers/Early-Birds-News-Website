@@ -6,21 +6,23 @@
 }
 
 /* Global Styles */
-body {
+body, html {
     font-family: 'Arial', sans-serif;
     background-color: #121212;
     color: #ffffff;
+    height: 100vh; /* Full viewport height */
+    margin: 0;
+    padding: 0;
     display: flex;
+    flex-direction: column; /* Stack vertically */
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding: 20px;
 }
 
 .header {
-    width: 100%;
     text-align: center;
-    margin-bottom: 20px;
+    width: 100%;
+    margin-bottom: 20px; /* Space between header and items */
 }
 
 .store-items {
@@ -28,8 +30,9 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
-    width: 80%;  /* Limit the width to avoid very wide stretches on larger screens */
+    width: 100%; /* Use 100% of the container's width */
     max-width: 1200px; /* Maximum width for the container */
+    align-items: center;
 }
 
 .item {
@@ -37,7 +40,7 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    width: 100%; /* Default to 100% for mobile-first approach */
+    width: calc(33.333% - 20px); /* Three items per row, minus gap */
     max-width: 200px; /* Maximum item width */
     text-align: center;
 }
@@ -63,19 +66,13 @@ button {
 
 button:hover {
     background-color: #357ABD;
-    transform: scale(1.05);  /* Slightly increase the size on hover for better interaction feedback */
+    transform: scale(1.05);
 }
 
-/* Responsive Design Adjustments */
-@media (max-width: 1200px) {
-    .store-items {
-        width: 90%;
-    }
-}
-
+/* Responsive Adjustments */
 @media (max-width: 800px) {
-    .store-items {
-        width: 100%;
+    .item {
+        width: 50%; /* Two items per row in smaller screens */
     }
 }
 
@@ -84,18 +81,17 @@ button:hover {
         flex-direction: column;
     }
     .item {
-        max-width: none;  /* Allow item to take full width in smaller screens */
+        width: 100%; /* Full width for very small screens */
+        max-width: none;
     }
 }
 
-/* Aspect Ratio Handling for wide screens */
 @media (min-aspect-ratio: 16/9) {
     .store-items {
         justify-content: space-around;
     }
 }
 
-/* Print Styling */
 @media print {
     body {
         background-color: #FFFFFF;
