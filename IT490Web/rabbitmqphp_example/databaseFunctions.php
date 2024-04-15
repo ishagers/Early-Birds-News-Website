@@ -203,6 +203,7 @@ function fetchReceivedFriendRequests($conn, $username) {
         return [];
     }
 }
+
 function getUserIdByUsername($conn, $username) {
     try {
         // Prepare and execute the query to fetch the user ID
@@ -219,16 +220,24 @@ function getUserIdByUsername($conn, $username) {
         throw $e;  // Re-throw the exception to handle it in the calling script
     }
 }
+
 function acceptFriendRequest($conn, $requester_id, $receiver_username) {
     try {
         $conn->beginTransaction(); // Start transaction
 
         // Get the receiver's user ID from the username
         $receiver_id = getUserIdByUsername($conn, $receiver_username);
+        if (!$receiver_id) {
+            $conn->rollback(); // Ensure no changes are made if user ID is not found
+            return ['success' => false, 'message' => 'Receiver user not found.'];
+        }
 
         // Prepare the SQL to update the friend request status
-        $stmt = $conn->prepare("UPDATE friends SET status = 'accepted' WHERE user_id1 = ? AND user_id2 = ?");
-        $stmt->execute([$requester_id, $receiver_id]);
+        $stmt = $conn->prepare("UPDATE friends SET status = 'accepted' WHERE user_id1 = :requester_id AND user_id2 = :receiver_id AND status = 'pending'");
+        $stmt->execute([
+            ':requester_id' => $requester_id,
+            ':receiver_id' => $receiver_id
+        ]);
 
         // Check if the update was successful
         if ($stmt->rowCount() > 0) {
@@ -236,13 +245,14 @@ function acceptFriendRequest($conn, $requester_id, $receiver_username) {
             return ['success' => true, 'message' => 'Friend request accepted successfully.'];
         } else {
             $conn->rollback(); // Rollback the transaction if no rows were updated
-            return ['success' => false, 'message' => 'Failed to accept friend request. No changes were made.'];
+            return ['success' => false, 'message' => 'No pending friend request to accept.'];
         }
     } catch (PDOException $e) {
         $conn->rollback(); // Ensure rollback on error
         return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
     }
 }
+
 function deleteFriend($conn, $user1_username, $user2_username) {
     try {
         $conn->beginTransaction(); // Start transaction
