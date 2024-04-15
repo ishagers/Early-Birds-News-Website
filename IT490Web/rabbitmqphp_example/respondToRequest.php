@@ -4,35 +4,42 @@ require 'databaseFunctions.php';
 
 session_start();
 
-if (isset($_POST['response'], $_POST['requester']) && isset($_SESSION['username'])) {
-    $conn = getDatabaseConnection();
-   $response = htmlspecialchars($response, ENT_QUOTES, 'UTF-8');
-   $requesterUsername = htmlspecialchars($requesterUsername, ENT_QUOTES, 'UTF-8');
-   $receiverUsername = htmlspecialchars($receiverUsername, ENT_QUOTES, 'UTF-8');
-
-
-    if (!in_array($response, ['accept', 'reject'], true)) {
-        $_SESSION['message'] = "Invalid response action.";
+// Function to log and set error messages
+function handleError($message, $redirect = true) {
+    error_log($message);
+    $_SESSION['message'] = $message;
+    if ($redirect) {
         header('Location: accountPreferences.php');
         exit;
     }
+}
+
+if (isset($_POST['response'], $_POST['requester']) && isset($_SESSION['username'])) {
+    $conn = getDatabaseConnection();
+
+    $response = htmlspecialchars($_POST['response'], ENT_QUOTES, 'UTF-8');
+    $requesterUsername = htmlspecialchars($_POST['requester'], ENT_QUOTES, 'UTF-8');
+    $receiverUsername = $_SESSION['username'];
+
+    // Validate the response action
+    if (!in_array($response, ['accept', 'reject'], true)) {
+        handleError("Invalid response action.");
+    }
 
     // Depending on action, process accordingly
-    if ($response === 'accept' || $response === 'reject') {
-        $status = $response === 'accept' ? 'accepted' : 'rejected';
-        $result = updateFriendRequestStatus($conn, $requesterId, $receiverUsername, $status);
-        $_SESSION['message'] = $result ? "Friend request {$response}ed." : "Error {$response}ing request.";
+    $status = $response === 'accept' ? 'accepted' : 'rejected';
+    $result = updateFriendRequestStatus($conn, $requesterUsername, $receiverUsername, $status);
+
+    if ($result['success']) {
+        $_SESSION['message'] = "Friend request {$response}ed.";
     } else {
-        $_SESSION['message'] = "Invalid response action.";
+        handleError("Error {$response}ing request: " . $result['message']);
     }
 
     header('Location: accountPreferences.php');
     exit;
 } else {
-    $_SESSION['message'] = "Invalid request or action.";
-    header('Location: accountPreferences.php');
-    exit;
+    handleError("Invalid request or action.");
 }
-
 ?>
 
