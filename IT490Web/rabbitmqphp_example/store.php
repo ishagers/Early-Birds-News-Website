@@ -44,7 +44,6 @@ function purchaseItem($username, $itemId) {
     echo "<p>Item not found.</p>";
 }
 
-// HTML and form for displaying and purchasing items
 <!DOCTYPE html>
 <html lang="en">
 <head>
