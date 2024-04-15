@@ -210,10 +210,12 @@ function getUserIdByUsername($conn, $username) {
         $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
         $stmt->execute([$username]);
         $userId = $stmt->fetchColumn();
+	error_log("Fetched user ID: {$userId} for username: '{$username}'");
 
         if ($userId) {
             return $userId;
         } else {
+            return $userId ?: null; // Return null if no user ID found
             throw new Exception("User not found: " . $username);
         }
     } catch (PDOException $e) {
@@ -241,6 +243,7 @@ function updateFriendRequestStatus($conn, $requesterUsername, $receiverUsername,
                 'message' => "User not found: {$missingUser}"
             ];
         }
+	error_log("Updating status for requester ID: {$requester_id}, receiver ID: {$receiver_id}");
 
         // Update the status of the friend request
         $sql = "UPDATE friends SET status = ? WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)";
