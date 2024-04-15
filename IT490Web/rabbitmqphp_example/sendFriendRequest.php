@@ -7,7 +7,7 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-if (isset($_POST['friend_username'])) {
+if (isset($_POST['howfriend_username'])) {
     $username1 = $_SESSION['username'];
     $username2 = $_POST['friend_username'];
 
