@@ -271,11 +271,11 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    margin-top: 100px; /* Adds space above the container */
-    margin-bottom: 30px; /* Adds space below the container */
-    border: 2px solid blue;
-    width: 60%;
+    padding: 10px;
+    margin-top: 220px; /* Adds space above the container */
+    margin-bottom: 150px; /* Adds space below the container */
+    border: 3px solid blue;
+    width: 50%;
     box-sizing: border-box;
 }
 
