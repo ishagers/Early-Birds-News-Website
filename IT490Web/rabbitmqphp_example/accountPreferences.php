@@ -50,26 +50,26 @@ if (isset($_SESSION['message'])) {
     <h2>Profile Settings</h2>
 
     <div class="content">
-        <section class="friend-requests">
-            <h3>Received Friend Requests:</h3>
-            <ul>
-                <?php foreach ($receivedRequests as $request): ?>
-                    <li>
-                        <?php
-                        $requesterUsername = htmlspecialchars($request['username'] ?? 'Unknown');
-                        $requesterId = htmlspecialchars($request['user_id1'] ?? '0');
-                        ?>
-                        <?= $requesterUsername ?>
-                       <form action="respondToRequest.php" method="post">
-			    <input type="hidden" name="requester" value="<?php echo $requesterUsername; ?>">
-			    <button type="submit" name="response" value="accept">Accept</button>
-			    <button type="submit" name="response" value="reject">Reject</button>
-			</form>
+<section class="friend-requests">
+	    <h3>Received Friend Requests:</h3>
+	    <ul>
+		<?php foreach ($receivedRequests as $request): ?>
+		    <li>
+		        <?php
+		        $requesterUsername = htmlspecialchars($request['username'] ?? 'Unknown');
+		        $requesterId = htmlspecialchars($request['user_id1'] ?? '0'); 
+		        ?>
+		        <?= $requesterUsername ?>
+		        <form action="respondToRequest.php" method="post">
+		            <input type="hidden" name="requester" value="<?php echo $requesterId; ?>">
+		            <button type="submit" name="response" value="accept">Accept</button>
+		            <button type="submit" name="response" value="reject">Reject</button>
+		        </form>
+		    </li>
+		<?php endforeach; ?>
+	    </ul>
+	</section>
 
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        </section>
 
         <section class="friends-list">
             <h3>Your Friends:</h3>
