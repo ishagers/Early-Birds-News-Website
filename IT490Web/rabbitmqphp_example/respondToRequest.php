@@ -6,9 +6,10 @@ session_start();
 
 if (isset($_POST['response'], $_POST['requester']) && isset($_SESSION['username'])) {
     $conn = getDatabaseConnection();
-    $response = filter_var($_POST['response'], FILTER_SANITIZE_STRING);
-    $requesterId = filter_var($_POST['requester'], FILTER_VALIDATE_INT);  // Validate and sanitize input as integer
-    $receiverUsername = $_SESSION['username'];
+   $response = htmlspecialchars($response, ENT_QUOTES, 'UTF-8');
+   $requesterUsername = htmlspecialchars($requesterUsername, ENT_QUOTES, 'UTF-8');
+   $receiverUsername = htmlspecialchars($receiverUsername, ENT_QUOTES, 'UTF-8');
+
 
     if (!in_array($response, ['accept', 'reject'], true)) {
         $_SESSION['message'] = "Invalid response action.";
