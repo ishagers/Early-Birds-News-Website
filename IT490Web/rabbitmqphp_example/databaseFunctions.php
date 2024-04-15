@@ -210,16 +210,23 @@ function getUserIdByUsername($conn, $username) {
         $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
         $stmt->execute([$username]);
         $userId = $stmt->fetchColumn();
+
         if ($userId) {
             return $userId;
         } else {
-            throw new Exception("User not found.");
+            throw new Exception("User not found: " . $username);
         }
     } catch (PDOException $e) {
+        // Log database errors
         error_log("Database error: " . $e->getMessage());
-        throw $e;  // Re-throw the exception to handle it in the calling script
+        throw $e; // Re-throw the exception to handle it in the calling script
+    } catch (Exception $e) {
+        // Log user not found errors
+        error_log("User not found: " . $e->getMessage());
+        throw $e; // Re-throw the exception to handle it in the calling script
     }
 }
+
 function updateFriendRequestStatus($conn, $requesterUsername, $receiverUsername, $status) {
     try {
         $requester_id = getUserIdByUsername($conn, $requesterUsername);
