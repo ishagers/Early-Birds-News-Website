@@ -27,19 +27,21 @@ $token = $_SESSION['token'] ?? 'no-token'; // Ensure you have a fallback or hand
 </head>
 <body>
     <!-- Chat Widget -->
-    <div id="chat-widget">
-        <div id="friends-list">
-            <?php foreach ($friendsList as $friend): ?>
-                <div onclick="startChatWith('<?= htmlspecialchars($friend['username']) ?>')">
-                    <?= htmlspecialchars($friend['username']) ?>
-                    <!-- Display online/offline status -->
-                </div>
-            <?php endforeach; ?>
-        </div>
+    <<div id="chat-widget">
+    <div id="friends-list">
+        <h3>Friends List</h3>
+        <?php foreach ($friendsList as $friend): ?>
+            <div class="friend" onclick="startChatWith('<?= htmlspecialchars($friend['username']) ?>')">
+                <?= htmlspecialchars($friend['username']) ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+    <div id="chat-area">
         <div id="messages"></div>
         <input type="text" id="messageInput" placeholder="Type a message...">
         <button onclick="sendMessage()">Send</button>
     </div>
+</div>
 
     <main>
         <!-- Main content of the page -->

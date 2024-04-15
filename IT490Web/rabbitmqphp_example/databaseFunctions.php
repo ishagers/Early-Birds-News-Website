@@ -106,8 +106,11 @@ function login($username, $password)
 
     return $response;
 }
-function generateToken($length = 32) {
-    return bin2hex(random_bytes($length));  // Generates a random token
+function generateAndStoreToken($userId, $conn) {
+    $token = bin2hex(random_bytes(32));  // Generate a secure token
+    $stmt = $conn->prepare("INSERT INTO user_sessions (user_id, token) VALUES (?, ?)");
+    $stmt->execute([$userId, $token]);
+    return $token;
 }
 
 function fetchFriendsByUsername($conn, $username) {

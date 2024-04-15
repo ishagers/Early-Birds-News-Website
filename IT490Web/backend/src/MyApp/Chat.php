@@ -50,10 +50,23 @@ class Chat implements MessageComponentInterface {
     }
 
     private function verifySession($token) {
-        // Implement the actual session verification logic here
-        // This should ideally interact with your database or session management to verify the token
-        // Here, assume `$token` is directly the user ID
-        return $token; // For example, returning the token as userId directly for simplicity
+        $conn = getDatabaseConnection();
+
+        try {
+            $stmt = $conn->prepare("SELECT user_id FROM user_sessions WHERE token = :token AND expires_at > NOW()");
+            $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+            $stmt->execute();
+            $userId = $stmt->fetchColumn();
+
+            if ($userId) {
+                return $userId;
+            } else {
+                return false;
+            }
+        } catch (PDOException $e) {
+            error_log("Database error in verifySession: " . $e->getMessage());
+            return false;
+        }
     }
 }
 
