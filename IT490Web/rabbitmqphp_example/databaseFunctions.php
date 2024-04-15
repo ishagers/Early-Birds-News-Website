@@ -428,6 +428,38 @@ function createArticle($title, $content, $author, $source = 'user', $url = null)
 
     return $response;
 }
+function saveApiArticle($title, $content, $source, $url = null) {
+    $response = array('status' => false, 'message' => '');
+
+    try {
+        $conn = getDatabaseConnection(); // Use the database connection function
+
+        // SQL statement to insert a new article with 'source' and optional 'url'
+        $sql = "INSERT INTO articles (title, content, author_id, is_private, publication_date, source, url) VALUES (:title, :content, NULL, 0, NOW(), :source, :url)";
+
+        // Prepare and bind parameters
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':title', $title);
+        $stmt->bindParam(':content', $content);
+        $stmt->bindParam(':source', $source);
+        $stmt->bindParam(':url', $url);
+
+        // Execute the statement
+        $stmt->execute();
+
+        // Update response status and message on success
+        if ($stmt->rowCount() > 0) {
+            $response['status'] = true;
+            $response['message'] = "Article from API inserted successfully.";
+        } else {
+            $response['message'] = "Failed to insert article from API.";
+        }
+    } catch (PDOException $e) {
+        $response['message'] = "Database error while inserting article from API: " . $e->getMessage();
+    }
+
+    return $response;
+}
 
 
 function fetchArticles($limit = 15, $filter = 'public', $sourceFilter = 'user')
