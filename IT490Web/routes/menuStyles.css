@@ -10,6 +10,10 @@ body {
     background-color: #f4f4f4;
     color: #333;
     line-height: 1.6;
+    padding-top: 60px;
+    padding-bottom: 50px;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 .header {
@@ -265,29 +269,33 @@ body {
 }
 
 .mainMenu-container {
-    display: flex; /* Enables flexbox layout */
-    justify-content: center; /* Centers content horizontally */
-    align-items: center; /* Centers content vertically */
-    flex-direction: column; /* Stacks children vertically */
-    height: 100vh; /* Full viewport height */
-    padding: 20px; /* Padding around the content */
-    border: 2px solid blue; /* Blue border */
-    margin: auto; /* Aligns container in the center of the page if wider than content */
-    width: 80%; /* Adjust width as needed */
-    box-sizing: border-box; /* Includes padding and border in the width */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    margin-top: 30px; /* Adds space above the container */
+    margin-bottom: 30px; /* Adds space below the container */
+    border: 2px solid blue;
+    width: 80%;
+    box-sizing: border-box;
 }
 
-.articles-list {
-    width: 100%; /* Ensures the list takes up full width of the container */
+.article h3 a {
+    background-color: yellow; /* Highlight color */
+    padding: 2px 5px; /* Adds padding around the text */
+    text-decoration: none; /* Removes underline */
+    color: black; /* Sets text color, adjust as needed */
+    display: inline-block; /* Allows background color to fit the text */
 }
 
 .article h3 {
-    margin: 10px 0; /* Adds vertical spacing around each title */
-    text-align: center; /* Center aligns the titles */
+    margin: 10px 0; /* Adds vertical spacing */
+    text-align: center;
 }
 
 .article small {
-    display: block; /* Makes small tag a block to occupy the full width */
-    text-align: center; /* Center aligns the publication date */
-    margin-bottom: 10px; /* Adds space below each date */
+    display: block;
+    text-align: center;
+    margin-bottom: 10px;
 }
