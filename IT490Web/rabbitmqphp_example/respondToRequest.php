@@ -1,5 +1,7 @@
 <?php
+
 require 'databaseFunctions.php';
+
 session_start();
 
 if (isset($_POST['response'], $_POST['requester']) && isset($_SESSION['username'])) {
@@ -18,13 +20,23 @@ if (isset($_POST['response'], $_POST['requester']) && isset($_SESSION['username'
         exit;
     }
 
-    $status = $response === 'accept' ? 'accepted' : 'declined';
-    $result = updateFriendRequestStatus($conn, $requesterUsername, $receiverUsername, $status);
+    // Process the response
+    if ($response === 'accept') {
+        $result = updateFriendRequestStatus($conn, $requesterUsername, $receiverUsername, 'accepted');
+        $actionWord = "accepted";
+    } elseif ($response === 'reject') {
+        $result = rejectFriendRequest($conn, $requesterUsername, $receiverUsername);
+        $actionWord = "rejected";
+    } else {
+        $_SESSION['message'] = "Invalid response action.";
+        header('Location: accountPreferences.php');
+        exit;
+    }
 
     if ($result['success']) {
-        $_SESSION['message'] = "Friend request {$status}.";
+        $_SESSION['message'] = "Friend request {$actionWord}.";
     } else {
-        $_SESSION['message'] = "Error {$response}ing request: " . $result['message'];
+        $_SESSION['message'] = "Error {$actionWord}ing request: " . $result['message'];
     }
 
     header('Location: accountPreferences.php');
@@ -34,5 +46,6 @@ if (isset($_POST['response'], $_POST['requester']) && isset($_SESSION['username'
     header('Location: accountPreferences.php');
     exit;
 }
+
 ?>
 

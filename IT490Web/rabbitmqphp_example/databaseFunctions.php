@@ -160,26 +160,36 @@ function sendFriendRequest($conn, $username1, $username2) {
             return ['status' => false, 'message' => 'One or both users not found.'];
         }
 
-        // Check if an active or pending friend request already exists
-        $stmt = $conn->prepare("SELECT * FROM friends WHERE ((user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)) AND status IN ('pending', 'accepted')");
-        $stmt->execute([$user_id1, $user_id2, $user_id2, $user_id1]);
-        if ($stmt->fetch()) {
-            return ['status' => false, 'message' => 'A friend request already exists or has already been processed.'];
+        // Ensure user_id1 is always the smaller ID to maintain consistency
+        if ($user_id1 > $user_id2) {
+            $temp = $user_id1;
+            $user_id1 = $user_id2;
+            $user_id2 = $temp;
         }
 
-        // Insert the friend request since it does not exist
+        // Check if any friend request exists regardless of status
+        $stmt = $conn->prepare("SELECT * FROM friends WHERE user_id1 = ? AND user_id2 = ?");
+        $stmt->execute([$user_id1, $user_id2]);
+        $existingRequest = $stmt->fetch();
+
+        if ($existingRequest) {
+            // Handle existing request logic, possibly updating status or notifying users
+            return ['status' => false, 'message' => 'A friend request already exists or has been processed.'];
+        }
+
+        // Insert the new friend request
         $stmt = $conn->prepare("INSERT INTO friends (user_id1, user_id2, status, action_user_id) VALUES (?, ?, 'pending', ?)");
         $stmt->execute([$user_id1, $user_id2, $user_id1]);
+
         if ($stmt->rowCount() > 0) {
             return ['status' => true, 'message' => 'Friend request sent successfully.'];
         } else {
             return ['status' => false, 'message' => 'Failed to send friend request.'];
         }
-    } catch (Exception $e) {
-        return ['status' => false, 'message' => 'Error: ' . $e->getMessage()];
+    } catch (PDOException $e) {
+        return ['status' => false, 'message' => 'Database error: ' . $e->getMessage()];
     }
 }
-
 
 
 function fetchReceivedFriendRequests($conn, $username) {
@@ -282,6 +292,31 @@ function acceptFriendRequest($conn, $requester_id, $receiver_username) {
         }
     } catch (PDOException $e) {
         $conn->rollback(); // Ensure rollback on error
+        return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+}
+function rejectFriendRequest($conn, $requesterUsername, $receiverUsername) {
+    try {
+        // Fetch user IDs
+        $requester_id = getUserIdByUsername($conn, $requesterUsername);
+        $receiver_id = getUserIdByUsername($conn, $receiverUsername);
+
+        // Ensure both user IDs are found
+        if (!$requester_id || !$receiver_id) {
+            return ['success' => false, 'message' => 'One or both users not found.'];
+        }
+
+        // SQL to delete the friend request
+        $sql = "DELETE FROM friends WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$requester_id, $receiver_id, $receiver_id, $requester_id]);
+
+        if ($stmt->rowCount() > 0) {
+            return ['success' => true, 'message' => 'Friend request rejected successfully.'];
+        } else {
+            return ['success' => false, 'message' => 'No friend request to reject.'];
+        }
+    } catch (PDOException $e) {
         return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
     }
 }
