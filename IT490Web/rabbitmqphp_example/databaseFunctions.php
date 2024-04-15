@@ -147,6 +147,21 @@ function fetchFriendsByUsername($conn, $username) {
     }
 }
 
+function updateEBPoints($username, $amount) {
+    $conn = getDatabaseConnection();  // Make sure this function is also defined and working
+    try {
+        $sql = "UPDATE users SET EBP = EBP + :amount WHERE username = :username";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':amount', $amount);
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+
+        return ['status' => true, 'message' => "EB Points updated successfully"];
+    } catch (PDOException $e) {
+        return ['status' => false, 'message' => "Error updating EB Points: " . $e->getMessage()];
+    }
+}
+
 function fetchAllUsernames($currentUsername) {
     $conn = getDatabaseConnection(); // Reuse the existing database connection function
 

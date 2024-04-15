@@ -28,17 +28,30 @@ function purchaseItem($username, $itemId) {
     foreach ($items as $item) {
         if ($item['id'] == $itemId) {
             $cost = $item['cost'];
-            $updateResult = updateEBPoints($username, -$cost);
-            if ($updateResult['status']) {
-                echo "<p>Purchase successful!</p>";
+            $currentEBP = fetchUserEBP($username);
+            if ($currentEBP >= $cost) {
+                $updatePointsResult = updateEBPoints($username, -$cost);
+                if ($updatePointsResult['status']) {
+                    if ($itemId == 1) {  // Assuming ID 1 is Dark Mode
+                        $conn = getDatabaseConnection();
+                        $sql = "UPDATE users SET has_dark_mode = true WHERE username = :username";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bindParam(':username', $username);
+                        $stmt->execute();
+                    }
+                    echo "<p>Purchase successful!</p>";
+                } else {
+                    echo "<p>" . $updatePointsResult['message'] . "</p>";
+                }
+                return;
             } else {
-                echo "<p>" . $updateResult['message'] . "</p>";
+                echo "<p>Insufficient EB Points.</p>";
             }
-            return;
         }
     }
     echo "<p>Item not found.</p>";
 }
+
 ?>
 
 <!DOCTYPE html>
