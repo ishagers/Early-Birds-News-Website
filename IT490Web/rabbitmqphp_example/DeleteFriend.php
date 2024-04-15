@@ -4,6 +4,7 @@ require 'databaseFunctions.php';
 session_start();
 
 if (!isset($_SESSION['username'])) {
+    // Redirect to the login page, adjust path if necessary
     header('Location: ../index.php');
     exit;
 }
@@ -18,10 +19,12 @@ if (isset($_POST['deleteFriendUsername'])) {
 
     if ($result['success']) {
         $_SESSION['message'] = "Friend deleted successfully: " . $result['message'];
-        header('Location: accountPreferences.php?friendsUpdated=true'); // Redirect to refresh friend list
+        // Make sure this path is correct and reachable
+        header('Location: accountPreferences.php?friendsUpdated=true');
     } else {
         $_SESSION['message'] = "Failed to delete friend: " . $result['message'];
-        header('Location: accountPreferences.php'); // Redirect without updating friend list
+        // Make sure this path is correct and reachable
+        header('Location: accountPreferences.php');
     }
     exit;
 }
