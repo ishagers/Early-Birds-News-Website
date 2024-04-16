@@ -441,6 +441,7 @@ function createArticle($title, $content, $author, $source = 'user', $url = null)
             if ($stmt->rowCount() > 0) {
                 $response['status'] = true;
                 $response['message'] = "Article created successfully";
+                $awardResponse = awardEBPForWritingArticles($author);
             } else {
                 $response['message'] = "Failed to create article";
             }
@@ -946,6 +947,68 @@ function fetchAvailableQuests($username)
         // Handle error
         error_log("Error fetching available quests: " . $e->getMessage());
         return [];
+    }
+}
+
+function awardEBPForWritingArticles($username)
+{
+    $pdo = getDatabaseConnection();
+
+    // Start by getting the user's ID from the username
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE username = :username");
+    $stmt->bindParam(':username', $username);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+        return ['status' => false, 'message' => "User not found."];
+    }
+
+    $userId = $user['id'];
+
+    // Begin transaction
+    $pdo->beginTransaction();
+
+    try {
+        // Check the number of articles the user has written
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM articles WHERE author_id = ?");
+        $stmt->execute([$userId]);
+        $articlesCount = $stmt->fetchColumn();
+
+        // Fetch all write article quests
+        $stmt = $pdo->prepare("SELECT id, name, reward FROM quests WHERE name LIKE 'Write % articles'");
+        $stmt->execute();
+        $quests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($quests as $quest) {
+            $numberNeeded = intval(str_replace(['Write ', ' articles'], '', $quest['name'])); // Extract the number from the quest name
+
+            // Check if the number of articles written meets or exceeds the number needed for the quest
+            if ($articlesCount >= $numberNeeded) {
+                // Check if this quest has already been rewarded
+                $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_quests WHERE user_username = :username AND quest_id = :questId");
+                $stmt->execute(['username' => $username, 'questId' => $quest['id']]);
+                $alreadyRewarded = $stmt->fetchColumn() > 0;
+
+                // If not already rewarded, award EBP and mark quest as completed
+                if (!$alreadyRewarded) {
+                    $response = addCurrencyToUserByUsername($username, $quest['reward']);
+                    if (!$response['status']) {
+                        throw new Exception('Failed to add EBP: ' . $response['message']);
+                    }
+
+                    // Insert into User_Quests to mark this quest as completed
+                    $stmt = $pdo->prepare("INSERT INTO user_quests (quest_id, user_username, is_completed, completion_date) VALUES (:questId, :username, 1, NOW())");
+                    $stmt->execute(['questId' => $quest['id'], 'username' => $username]);
+                }
+            }
+        }
+
+        $pdo->commit();
+        return ['status' => true, 'message' => "Quests checked and EBP awarded where appropriate."];
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return ['status' => false, 'message' => "Error checking and awarding quests: " . $e->getMessage()];
     }
 }
 
