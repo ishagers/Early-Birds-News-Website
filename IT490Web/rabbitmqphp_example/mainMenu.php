@@ -19,46 +19,47 @@ $quests = fetchAvailableQuests($username);
 <body>
 
     <?php require('nav.php'); ?>
-
-    <div class="mainMenu-container">
-        <div class="articles-list">
-            <?php if ($articleData['status']): ?>
+    <div class="content-container">
+        <div class="mainMenu-container">
+            <div class="articles-list">
+                <?php if ($articleData['status']): ?>
                 <?php foreach ($articleData['articles'] as $article): ?>
-                    <div class="article">
-                        <!-- Wrap the article title in an anchor tag -->
-                        <h3>
-                            <a href="getArticleDetails.php?id=<?php echo urlencode($article['id']); ?>">
-                                <?php echo htmlspecialchars($article['title']); ?>
-                            </a>
-                        </h3>
-                        <small>Published on: <?php echo date('F j, Y, g:i a', strtotime($article['publication_date'])); ?></small>
-                    </div>
+                <div class="article">
+                    <!-- Wrap the article title in an anchor tag -->
+                    <h3>
+                        <a href="getArticleDetails.php?id=<?php echo urlencode($article['id']); ?>">
+                            <?php echo htmlspecialchars($article['title']); ?>
+                        </a>
+                    </h3>
+                    <small>Published on: <?php echo date('F j, Y, g:i a', strtotime($article['publication_date'])); ?></small>
+                </div>
                 <?php endforeach; ?>
-            <?php else: ?>
+                <?php else: ?>
                 <p><?php echo $articleData['message']; ?></p>
-            <?php endif; ?>
+                <?php endif; ?>
+            </div>
+
         </div>
 
         <div class="quests-container">
             <h2>Available Quests</h2>
             <?php if (!empty($quests)): ?>
-                <ul class="quests-list">
-                    <?php foreach ($quests as $quest): ?>
-                        <li class="quest-item">
-                            <h3><?php echo htmlspecialchars($quest['name']); ?></h3>
-                            <p><?php echo htmlspecialchars($quest['description']); ?></p>
-                            <strong>Reward: <?php echo htmlspecialchars($quest['reward']); ?> EBP</strong>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
+            <ul class="quests-list">
+                <?php foreach ($quests as $quest): ?>
+                <li class="quest-item">
+                    <h3><?php echo htmlspecialchars($quest['name']); ?></h3>
+                    <p><?php echo htmlspecialchars($quest['description']); ?></p>
+                    <strong>Reward: <?php echo htmlspecialchars($quest['reward']); ?> EBP</strong>
+                </li>
+                <?php endforeach; ?>
+            </ul>
             <?php else: ?>
-                <p>No available quests at this moment. Check back later!</p>
+            <p>No available quests at this moment. Check back later!</p>
             <?php endif; ?>
         </div>
     </div>
-
-    <div class="logout-button">
-        <a href="logout.php">Logout</a>
-    </div>
+        <div class="logout-button">
+            <a href="logout.php">Logout</a>
+        </div>
 </body>
 </html>

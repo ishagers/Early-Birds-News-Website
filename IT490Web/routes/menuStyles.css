@@ -247,7 +247,7 @@ body {
     padding: 20px; 
     border: 2px solid blue; 
     margin: auto; 
-    width: 80%; 
+    width: 70%; 
     box-sizing: border-box; 
 }
 
@@ -322,4 +322,43 @@ body {
     border: 3px solid blue;
     width: 50%;
     box-sizing: border-box;
+}
+
+.content-container {
+    display: flex;
+    justify-content: space-between; /* This will put space between the menu and the quests */
+    padding: 20px;
+}
+
+/* Style for the quests container */
+.quests-container {
+    width: 20%; /* Adjust the width as necessary */
+    padding: 20px; /* Add padding inside the quests container */
+    margin-right: 20px; /* Add some margin to the right */
+    background-color: #ffffff; /* This is an example, change as needed */
+    border: 1px solid #ccc; /* This is an example, change as needed */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* This adds a subtle shadow, adjust as needed */
+    border-radius: 8px; /* This rounds the corners, adjust as needed */
+}
+
+.quests-list {
+    list-style-type: none; /* Removes default list styling */
+}
+
+.quest-item {
+    margin-bottom: 15px; /* Adds space between quest items */
+}
+
+/* You may also want to adjust the responsive layout */
+@media (max-width: 1024px) {
+    .content-container {
+        flex-direction: column; /* Stacks the containers on smaller screens */
+        align-items: center; /* Aligns them centrally */
+    }
+
+    .mainMenu-container,
+    .quests-container {
+        width: 90%; /* Takes full width on smaller screens */
+        margin-bottom: 20px; /* Adds space between them */
+    }
 }
