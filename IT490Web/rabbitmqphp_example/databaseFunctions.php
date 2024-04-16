@@ -934,8 +934,8 @@ function fetchAvailableQuests($username)
         $conn = getDatabaseConnection();
         $stmt = $conn->prepare("
             SELECT q.id, q.name, q.description, q.reward
-            FROM Quests q
-            LEFT JOIN User_Quests uq ON q.id = uq.quest_id AND uq.user_username = :username
+            FROM quests q
+            LEFT JOIN user_quests uq ON q.id = uq.quest_id AND uq.user_username = :username
             WHERE uq.is_completed IS NULL OR uq.is_completed = 0
         ");
         $stmt->bindParam(':username', $username, PDO::PARAM_STR);
