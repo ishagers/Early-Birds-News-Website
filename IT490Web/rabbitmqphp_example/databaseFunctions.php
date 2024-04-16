@@ -172,7 +172,7 @@ function fetchAllUsernames($currentUsername) {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetches only the usernames
     } catch (PDOException $e) {
-        error_log("Database error: " . $e->getMessage()); 
+        error_log("Database error: " . $e->getMessage());
         return []; // Return an empty array on error
     }
 }
@@ -926,6 +926,27 @@ function addCurrencyToUserByUsername($username, $amount)
     }
 
     return $response;
+}
+
+function fetchAvailableQuests($username)
+{
+    try {
+        $conn = getDatabaseConnection();
+        $stmt = $conn->prepare("
+            SELECT q.id, q.name, q.description, q.reward
+            FROM Quests q
+            LEFT JOIN User_Quests uq ON q.id = uq.quest_id AND uq.user_username = :username
+            WHERE uq.is_completed IS NULL OR uq.is_completed = 0
+        ");
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+        $stmt->execute();
+        $quests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $quests;
+    } catch (PDOException $e) {
+        // Handle error
+        error_log("Error fetching available quests: " . $e->getMessage());
+        return [];
+    }
 }
 
 

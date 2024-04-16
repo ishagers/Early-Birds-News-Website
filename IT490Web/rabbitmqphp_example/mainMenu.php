@@ -7,6 +7,7 @@ error_reporting(E_ALL);
 
 $username = $_SESSION['username'];
 $articleData = fetchArticles(15, 'public', 'user');
+$quests = fetchAvailableQuests($username);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,7 +21,6 @@ $articleData = fetchArticles(15, 'public', 'user');
     <?php require('nav.php'); ?>
 
     <div class="mainMenu-container">
-        <!-- Article Titles -->
         <div class="articles-list">
             <?php if ($articleData['status']): ?>
                 <?php foreach ($articleData['articles'] as $article): ?>
@@ -39,6 +39,22 @@ $articleData = fetchArticles(15, 'public', 'user');
             <?php endif; ?>
         </div>
 
+        <div class="quests-container">
+            <h2>Available Quests</h2>
+            <?php if (!empty($quests)): ?>
+                <ul class="quests-list">
+                    <?php foreach ($quests as $quest): ?>
+                        <li class="quest-item">
+                            <h3><?php echo htmlspecialchars($quest['name']); ?></h3>
+                            <p><?php echo htmlspecialchars($quest['description']); ?></p>
+                            <strong>Reward: <?php echo htmlspecialchars($quest['reward']); ?> EBP</strong>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <p>No available quests at this moment. Check back later!</p>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="logout-button">
