@@ -971,8 +971,9 @@ function awardEBPForWritingArticles($username)
 
     try {
         // Check the number of articles the user has written
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM articles WHERE author_id = ?");
-        $stmt->execute([$userId]);
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM articles WHERE author_id = :authorId");
+        $stmt->bindParam(':authorId', $userId);
+        $stmt->execute();
         $articlesCount = $stmt->fetchColumn();
 
         // Fetch all write article quests
@@ -981,13 +982,17 @@ function awardEBPForWritingArticles($username)
         $quests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($quests as $quest) {
-            $numberNeeded = intval(str_replace(['Write ', ' articles'], '', $quest['name'])); // Extract the number from the quest name
+            // Extract the number from the quest name
+            preg_match('/Write (\d+) articles/', $quest['name'], $matches);
+            $numberNeeded = $matches[1] ?? 0;
 
             // Check if the number of articles written meets or exceeds the number needed for the quest
             if ($articlesCount >= $numberNeeded) {
                 // Check if this quest has already been rewarded
                 $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_quests WHERE user_username = :username AND quest_id = :questId");
-                $stmt->execute(['username' => $username, 'questId' => $quest['id']]);
+                $stmt->bindParam(':username', $username);
+                $stmt->bindParam(':questId', $quest['id']);
+                $stmt->execute();
                 $alreadyRewarded = $stmt->fetchColumn() > 0;
 
                 // If not already rewarded, award EBP and mark quest as completed
@@ -998,8 +1003,10 @@ function awardEBPForWritingArticles($username)
                     }
 
                     // Insert into User_Quests to mark this quest as completed
-                    $stmt = $pdo->prepare("INSERT INTO user_quests (quest_id, user_username, is_completed, completion_date) VALUES (:questId, :username, 1, NOW())");
-                    $stmt->execute(['questId' => $quest['id'], 'username' => $username]);
+                    $stmt = $pdo->prepare("INSERT INTO user_quests (quest_id, user_username, is_completed, completion_date) VALUES (:questId, :username, 1, NOW()) ON DUPLICATE KEY UPDATE is_completed=1, completion_date=NOW()");
+                    $stmt->bindParam(':questId', $quest['id']);
+                    $stmt->bindParam(':username', $username);
+                    $stmt->execute();
                 }
             }
         }
