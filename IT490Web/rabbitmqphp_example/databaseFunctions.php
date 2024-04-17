@@ -977,13 +977,13 @@ function awardEBPForWritingArticles($username)
         $articlesCount = $stmt->fetchColumn();
 
         // Fetch all write article quests
-        $stmt = $pdo->prepare("SELECT id, name, reward FROM quests WHERE name LIKE 'Write % articles'");
+        $stmt = $pdo->prepare("SELECT id, name, reward FROM quests WHERE condition_text LIKE 'user publishes % article'");
         $stmt->execute();
         $quests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($quests as $quest) {
             // Extract the number from the quest name
-            preg_match('/Write (\d+) articles/', $quest['name'], $matches);
+            preg_match('/user publishes (\d+) article/', $quest['condition_text'], $matches);
             $numberNeeded = $matches[1] ?? 0;
 
             // Check if the number of articles written meets or exceeds the number needed for the quest
