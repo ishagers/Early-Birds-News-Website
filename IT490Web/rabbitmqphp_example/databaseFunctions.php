@@ -1019,8 +1019,7 @@ function awardEBPForWritingArticles($username)
     }
 }
 
-function awardEBPForCommentingArticles($username)
-{
+function awardEBPForCommentingArticles($username) {
     $pdo = getDatabaseConnection();
 
     // Get the user's ID
@@ -1050,11 +1049,16 @@ function awardEBPForCommentingArticles($username)
         $stmt->execute();
         $quests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    foreach ($quests as $quest) {
-        if (isset($quest['condition_text'])) {
-        // Now we check the condition text
-            if (preg_match('/user comments on (\d+) article/', $quest['condition_text'], $matches)) {
-             $numberNeeded = $matches[1] ?? 0;
+foreach ($quests as $quest) {
+            if (isset($quest['condition_text'])) {
+                // Now we check the condition text
+                if (preg_match('/user comments on (\d+) article/', $quest['condition_text'], $matches)) {
+                    $numberNeeded = $matches[1] ?? 0;
+                    // ... [rest of your code for this loop]
+                }
+            } else {
+                error_log('Condition text not found for quest ID: ' . $quest['id']);
+            }
 
             // Check if the number of comments meets or exceeds the number needed for the quest
             if ($commentsCount >= $numberNeeded) {
