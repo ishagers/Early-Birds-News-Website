@@ -1,43 +1,34 @@
 <?php
-session_start();  // Start the session at the very beginning
-
-require('rabbitmqphp_example/session.php');  // Assuming this includes session-related utility functions
-
+session_start(); 
+require('rabbitmqphp_example/session.php');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);  // Good for debugging, consider turning off in production
+error_reporting(E_ALL);
 
-require('rabbitmqphp_example/SQLPublish.php');  // Assuming this handles communication with your RabbitMQ server
 
-// Processing login only if the correct POST variables are received
+require('rabbitmqphp_example/SQLPublish.php');
+
 if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $queryValues = [
         'type' => 'login',
         'username' => $_POST['username'],
-        'password' => $_POST['password'], // Comment about HTTPS suggests this should be secure
+        'password' => $_POST['password'], // Ensure this data is sent over HTTPS
     ];
 
     $result = publisher($queryValues);
-    error_log("Publisher result: " . print_r($result, true));  // Good for debugging
 
-    // Ensure the response contains 'returnCode' and 'user_id'
-    if ($result && $result['returnCode'] == '0' && isset($result['user_id'])) {
+    if ($result && $result['returnCode'] == '0') {
+        // Login successful
+        echo "Great, we found you: " . htmlspecialchars($result['message']);
         $_SESSION['username'] = $_POST['username'];
-        $_SESSION['user_id'] = $result['user_id'];
+        $_SESSION['user_id'] = $result['user_id']; // Ensure 'user_id' is correctly provided by the response
 
-        // Redirect to main menu if headers not already sent
-        if (!headers_sent()) {
-            error_log("Redirecting to mainMenu.php");
-            header("Location: rabbitmqphp_example/mainMenu.php");
-            exit();
-        } else {
-            error_log("Failed to redirect because headers were already sent.");
-            die('Error: Headers already sent, cannot redirect');  // Better error handling
-        }
+        header("Location: rabbitmqphp_example/mainMenu.php"); // Redirect to the home page or dashboard
+        exit();
     } else {
+        // Login failed or result is not properly formatted
         $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
-        error_log("Login failed or no user ID: " . print_r($result, true));  // Debugging log
-        echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";  // Show error to user
+        echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
     }
 }
 ?>
@@ -70,4 +61,5 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
     </div>
 </body>
 </html>
+
 
