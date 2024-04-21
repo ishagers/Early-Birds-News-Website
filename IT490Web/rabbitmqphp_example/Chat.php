@@ -85,11 +85,13 @@ function toggleChat() {
 }
 
 function fetchMessages() {
+    console.log("Fetching messages...");
     $.ajax({
         url: '../backend/getMessages.php',
         type: 'GET',
-        dataType: 'json',  // Ensures jQuery treats the response as JSON.
+        dataType: 'json',
         success: function(messages) {
+            console.log("Messages fetched:", messages);
             var chatBox = $('#chatBox');
             chatBox.html(''); // Clear previous messages
             $.each(messages, function(i, message) {
@@ -98,18 +100,21 @@ function fetchMessages() {
         },
         error: function(xhr, status, error) {
             console.error('Error fetching messages:', error);
+            console.error('Detailed error:', xhr.responseText);
         }
     });
 }
 
 function sendMessage() {
-    var userId = '<?php echo $_SESSION['user_id']; ?>';  // Inject the user's ID into the script
+    var userId = '<?php echo $_SESSION['user_id']; ?>';  // Assuming session is always set correctly
     var message = $('#message').val();
+    console.log("Sending message:", message); // Debug: Output message to console
     $.post('../backend/sendMessage.php', { user_id: userId, message: message }, function(response) {
+        console.log("Response received:", response); // Debug: Output response to console
         $('#message').val(''); // Clear the message input box
-        fetchMessages(); // Fetch messages to update the chat
-    }).fail(function(error) {
-        console.error('Error sending message:', error);
+        fetchMessages(); // Refresh messages to include the new one
+    }).fail(function(xhr) {
+        console.error('Error sending message:', xhr.responseText);
     });
 }
 
