@@ -1,15 +1,26 @@
 <?php
 require_once '../rabbitmqphp_example/databaseFunctions.php';
 
+// Start session management
 session_start();
+
+// Check if user is authenticated
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'User not authenticated']);
     exit;
 }
 
+// Setup error handling and logging
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+ini_set('log_errors', 1);
+ini_set('error_log', '/path/to/your/error.log'); // Adjust the path accordingly
+
+// Establish database connection
 $db = getDatabaseConnection();
 
-$userId = $_SESSION['user_id'];  // Assuming the user's ID is stored in the session.
+// Fetch user ID from session
+$userId = $_SESSION['user_id'];
 
 // Prepare a statement to fetch messages with user information
 $stmt = $db->prepare("
@@ -23,11 +34,27 @@ $stmt = $db->prepare("
 $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
 $stmt->execute();
 
+// Fetch messages
 $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Encode the array to JSON and output it
-echo json_encode($messages);
+// Check and handle if no messages are found
+if (empty($messages)) {
+    echo json_encode(['message' => 'No messages found']);
+    exit;
+}
 
-$db = null;  // Close the connection
+// Encode the messages array to JSON
+$json = json_encode($messages);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    error_log('JSON encode error: ' . json_last_error_msg());
+    echo json_encode(['error' => 'An error occurred while encoding JSON.']);
+    exit;
+}
+
+// Output JSON encoded messages
+echo $json;
+
+// Close the database connection
+$db = null;
 ?>
 

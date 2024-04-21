@@ -1,18 +1,3 @@
-<?php
-
-require_once 'databaseFunctions.php';
-
-// Check if the session is not started yet
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Check if the username is set in the session to customize the greeting
-$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
-$ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) : 0;
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,7 +45,16 @@ $ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) 
     </style>
 </head>
 <body>
-<?php include 'nav.php'; ?>
+
+<?php
+require_once 'databaseFunctions.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
+$ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) : 0;
+include 'nav.php';
+?>
 
 <div class="header">
     <h1>Chat with Early Bird Community</h1>
@@ -93,44 +87,38 @@ function toggleChat() {
     var chatWidget = document.getElementById('chatContainer');
     chatWidget.style.display = (chatWidget.style.display === 'none' ? 'block' : 'none');
 }
-
 function sendPublicMessage() {
     var message = $('#publicMessage').val();
     if (message.trim() === '') {
         alert('Please enter a message');
-        return; // Prevent sending an empty message
+        return;
     }
-
     $.ajax({
-        url: '../backend/sendPublicMessages.php', // Adjust the path as necessary
+        url: '../backend/sendPublicMessages.php',
         type: 'POST',
         data: {message: message},
         success: function(response) {
-            console.log("Response received:", response);
-            $('#publicMessage').val(''); // Clear the input field
-            fetchPublicMessages(); // Refresh the message list if necessary
+            $('#publicMessage').val('');
+            fetchPublicMessages();
         },
         error: function(xhr, status, error) {
             console.error('Error sending public message:', error);
         }
     });
 }
-
 function sendPrivateMessage() {
     var message = $('#message').val();
     if (message.trim() === '') {
         alert('Please enter a message');
-        return; // Prevent sending an empty message
+        return;
     }
-
     $.ajax({
-        url: '../backend/sendMessage.php', // Adjust the path as necessary
+        url: '../backend/sendMessage.php',
         type: 'POST',
         data: {message: message},
         success: function(response) {
-            console.log("Response received:", response);
-            $('#message').val(''); // Clear the input field
-            fetchPrivateMessages(); // Refresh the message list if necessary
+            $('#message').val('');
+            fetchPrivateMessages();
         },
         error: function(xhr, status, error) {
             console.error('Error sending private message:', error);
@@ -139,16 +127,16 @@ function sendPrivateMessage() {
 }
 function fetchPublicMessages() {
     $.ajax({
-        url: '../backend/getPublicMessages.php', // Ensure the URL is correct
+        url: '../backend/getPublicMessages.php',
         type: 'GET',
         dataType: 'json',
         success: function(messages) {
             var chatBox = $('#publicChatBox');
-            chatBox.html(''); // Clear the chat box before appending new messages
+            chatBox.html('');
             messages.forEach(function(message) {
                 chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
             });
-            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
+            chatBox.scrollTop(chatBox.prop("scrollHeight"));
         },
         error: function(xhr, status, error) {
             console.error('Error fetching public messages:', error);
@@ -157,31 +145,30 @@ function fetchPublicMessages() {
 }
 function fetchPrivateMessages() {
     $.ajax({
-        url: '../backend/getMessages.php', // Ensure the URL is correct
+        url: '../backend/getMessages.php',
         type: 'GET',
         dataType: 'json',
         success: function(messages) {
             var chatBox = $('#chatBox');
-            chatBox.html(''); // Clear the chat box before appending new messages
+            chatBox.html('');
             messages.forEach(function(message) {
                 chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
             });
-            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
+            chatBox.scrollTop(chatBox.prop("scrollHeight"));
         },
         error: function(xhr, status, error) {
             console.error('Error fetching private messages:', error);
         }
     });
 }
-
-setInterval(fetchPublicMessages, 2000);  // Polling public messages every 2 seconds
-setInterval(fetchPrivateMessages, 2000);  // Polling private messages every 2 seconds
-
+setInterval(fetchPublicMessages, 2000);
+setInterval(fetchPrivateMessages, 2000);
 $(document).ready(function() {
-    fetchPublicMessages(); // Initial fetch on page load
-    fetchPrivateMessages(); // Initial fetch on page load
+    fetchPublicMessages();
+    fetchPrivateMessages();
 });
 </script>
+
 </body>
 </html>
 
