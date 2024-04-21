@@ -1050,10 +1050,11 @@ function awardEBPForCommentingArticles($username)
         $stmt->execute();
         $quests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($quests as $quest) {
-            // Extract the number from the quest's condition_text
-            preg_match('/user comments on (\d+) article/', $quest['condition_text'], $matches);
-            $numberNeeded = $matches[1] ?? 0;
+    foreach ($quests as $quest) {
+        if (isset($quest['condition_text'])) {
+        // Now we check the condition text
+            if (preg_match('/user comments on (\d+) article/', $quest['condition_text'], $matches)) {
+             $numberNeeded = $matches[1] ?? 0;
 
             // Check if the number of comments meets or exceeds the number needed for the quest
             if ($commentsCount >= $numberNeeded) {
