@@ -881,48 +881,30 @@ function SendArticle($recipientEmail, $articleTitle, $articleContent, $articleUr
 
 function addCurrencyToUserByUsername($username, $amount)
 {
-    $response = array('status' => false, 'message' => '');
+    $response = ['status' => false, 'message' => ''];
 
     try {
-        $conn = getDatabaseConnection(); // Reuse the database connection function
+        $conn = getDatabaseConnection(); // Assume this returns your PDO connection
 
-        // Begin transaction
-        $conn->beginTransaction();
+        // SQL statement to add currency to the user's EBP
+        $sql = "UPDATE users SET EBP = EBP + :amount WHERE username = :username";
 
-        // First, get the user's id
-        $userSql = "SELECT id FROM users WHERE username = :username LIMIT 1";
-        $userStmt = $conn->prepare($userSql);
-        $userStmt->bindParam(':username', $username);
-        $userStmt->execute();
-        $user = $userStmt->fetch(PDO::FETCH_ASSOC);
+        // Prepare and bind parameters
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':amount', $amount, PDO::PARAM_INT);
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
 
-        if ($user) {
-            // SQL statement to add currency to the user's EBP
-            $sql = "UPDATE users SET EBP = EBP + :amount WHERE id = :id";
+        // Execute the statement
+        $stmt->execute();
 
-            // Prepare and bind parameters
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':amount', $amount, PDO::PARAM_INT);
-            $stmt->bindParam(':id', $user['id'], PDO::PARAM_INT);
-
-            // Execute the statement
-            $stmt->execute();
-
-            // Check if the update was successful
-            if ($stmt->rowCount() > 0) {
-                $response['status'] = true;
-                $response['message'] = "EBP added successfully";
-                $conn->commit(); // Commit the transaction
-            } else {
-                $conn->rollBack(); // Rollback the transaction on failure
-                $response['message'] = "No EBP was added. User not found or amount is zero.";
-            }
+        // Check if the update was successful
+        if ($stmt->rowCount() > 0) {
+            $response['status'] = true;
+            $response['message'] = "EBP added successfully.";
         } else {
-            $conn->rollBack(); // Rollback the transaction if user not found
-            $response['message'] = "User not found.";
+            $response['message'] = "No EBP was added. User not found or amount is zero.";
         }
     } catch (PDOException $e) {
-        $conn->rollBack(); // Rollback the transaction on error
         $response['message'] = "Database error: " . $e->getMessage();
     }
 
