@@ -137,8 +137,49 @@ function sendPrivateMessage() {
         }
     });
 }
+function fetchPublicMessages() {
+    $.ajax({
+        url: '../backend/getPublicMessages.php', // Ensure the URL is correct
+        type: 'GET',
+        dataType: 'json',
+        success: function(messages) {
+            var chatBox = $('#publicChatBox');
+            chatBox.html(''); // Clear the chat box before appending new messages
+            messages.forEach(function(message) {
+                chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
+            });
+            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching public messages:', error);
+        }
+    });
+}
+function fetchPrivateMessages() {
+    $.ajax({
+        url: '../backend/getMessages.php', // Ensure the URL is correct
+        type: 'GET',
+        dataType: 'json',
+        success: function(messages) {
+            var chatBox = $('#chatBox');
+            chatBox.html(''); // Clear the chat box before appending new messages
+            messages.forEach(function(message) {
+                chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
+            });
+            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching private messages:', error);
+        }
+    });
+}
 
-setInterval(fetchMessages, 2000);  // Polling every 2 seconds
+setInterval(fetchPublicMessages, 2000);  // Polling public messages every 2 seconds
+setInterval(fetchPrivateMessages, 2000);  // Polling private messages every 2 seconds
+$(document).ready(function() {
+    fetchPublicMessages(); // Initial fetch on page load
+    fetchPrivateMessages(); // Initial fetch on page load
+});
 
 </script>
 </body>
