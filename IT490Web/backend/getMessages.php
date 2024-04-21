@@ -2,7 +2,7 @@
 
 require_once '../rabbitmqphp_example/databaseFunctions.php';
 
-// Disable error display, log errors instead
+// Enable error reporting for debugging (turn off error reporting in production)
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ini_set('log_errors', 1);
@@ -28,7 +28,9 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 
 echo $json;
 
-$stmt->close();
-$db = null; // Close the connection by setting it to null in PDO
+// Properly releasing the resources
+$stmt = null; // This effectively closes the statement
+$db = null; // This closes the connection
+
 ?>
 
