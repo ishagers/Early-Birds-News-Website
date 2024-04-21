@@ -1,8 +1,5 @@
 <?php
 require_once '../rabbitmqphp_example/databaseFunctions.php';
-echo session_save_path();
-session_save_path('IT490-Project/IT490Web/backend/sessions');
-
 session_start();  // Ensure session is started
 
 $db = getDatabaseConnection();
