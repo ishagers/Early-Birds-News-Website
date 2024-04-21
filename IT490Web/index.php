@@ -21,6 +21,9 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
 	    // Login successful
 	    $_SESSION['username'] = $_POST['username'];
 	    $_SESSION['user_id'] = $result['user_id'];
+	    if (headers_sent()) {
+		    die('Headers already sent');
+		}
 	    header("Location: rabbitmqphp_example/mainMenu.php");
 	    exit();
 	} else {
