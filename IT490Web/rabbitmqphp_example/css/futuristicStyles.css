@@ -10,11 +10,11 @@ body, html {
     font-family: 'Arial', sans-serif;
     background-color: #121212;
     color: #ffffff;
-    height: 100vh; /* Full viewport height */
+    height: 100%;
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column; /* Stack vertically */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -22,7 +22,7 @@ body, html {
 .header {
     text-align: center;
     width: 100%;
-    margin-bottom: 20px; /* Space between header and items */
+    margin-bottom: 20px;
 }
 
 .store-items {
@@ -30,8 +30,8 @@ body, html {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
-    width: 100%; /* Use 100% of the container's width */
-    max-width: 1200px; /* Maximum width for the container */
+    width: 100%;
+    max-width: 1200px;
     align-items: center;
 }
 
@@ -40,8 +40,8 @@ body, html {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    width: calc(33.333% - 20px); /* Three items per row, minus gap */
-    max-width: 200px; /* Maximum item width */
+    width: calc(33.333% - 20px);
+    max-width: 300px;
     text-align: center;
 }
 
@@ -70,18 +70,15 @@ button:hover {
 }
 
 /* Responsive Adjustments */
-@media (max-width: 800px) {
+@media (max-width: 1024px) {
     .item {
-        width: 50%; /* Two items per row in smaller screens */
+        width: calc(50% - 20px);
     }
 }
 
-@media (max-width: 600px) {
-    .store-items {
-        flex-direction: column;
-    }
+@media (max-width: 768px) {
     .item {
-        width: 100%; /* Full width for very small screens */
+        width: 100%;
         max-width: none;
     }
 }
@@ -102,7 +99,6 @@ button:hover {
         box-shadow: none;
     }
     button {
-        display: none; /* Hide buttons on print */
+        display: none;
     }
 }
-
