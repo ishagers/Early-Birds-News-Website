@@ -176,11 +176,11 @@ function fetchPrivateMessages() {
 
 setInterval(fetchPublicMessages, 2000);  // Polling public messages every 2 seconds
 setInterval(fetchPrivateMessages, 2000);  // Polling private messages every 2 seconds
+
 $(document).ready(function() {
     fetchPublicMessages(); // Initial fetch on page load
     fetchPrivateMessages(); // Initial fetch on page load
 });
-
 </script>
 </body>
 </html>
