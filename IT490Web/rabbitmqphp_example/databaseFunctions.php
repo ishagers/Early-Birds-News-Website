@@ -1065,9 +1065,10 @@ function awardEBPForCommentingArticles($username)
                 $stmt->bindParam(':questId', $quest['id']);
                 $stmt->execute();
                 $alreadyRewarded = $stmt->fetchColumn() > 0;
-
+                echo "<script>console.log('past first if');</script>";
                 // If not already rewarded, award EBP and mark quest as completed
                 if (!$alreadyRewarded) {
+                    echo "<script>console.log('second if');</script>";
                     $response = addCurrencyToUserByUsername($username, $quest['reward']);
                     if (!$response['status']) {
                         $pdo->rollBack(); // Rollback the transaction on failure
