@@ -195,10 +195,10 @@ function fetchPublicMessages() {
         success: function(messages) {
             var chatBox = $('#publicChatBox');
             chatBox.html(''); // Clear the chat box before appending new messages
-            // Reverse the messages array to display newest messages at the top
-            messages.reverse().forEach(function(message) {
-                chatBox.prepend(`<p><strong>${message.username}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
+            messages.forEach(function(message) { // No need to reverse if we want newest at the bottom
+                chatBox.append(`<p><strong>${message.username}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
             });
+            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
         },
         error: function(xhr, status, error) {
             console.error('Error fetching public messages:', error);
