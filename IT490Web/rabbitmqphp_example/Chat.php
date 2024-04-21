@@ -128,14 +128,6 @@ include 'nav.php';
 <button onclick="toggleChat()" style="position: fixed; bottom: 10px; right: 10px; z-index: 1100;">Toggle Chat</button>
 
 <script>
-var fetchInterval; // Global variable to hold the interval ID
-var isFetchingActive = true; // This flag will control whether messages should be fetched
-var lastMessageId = 0; // Initialize with zero to fetch all messages initially
-
-$(document).ready(function() {
-    fetchFriends(); // Fetch friends list on page load
-    startFetchingMessages(); // Start fetching messages immediately on page load
-});
 
 function toggleChat() {
     var chatWidget = document.getElementById('chatContainer');
@@ -151,55 +143,34 @@ function sendPublicMessage() {
     $.ajax({
         url: '../backend/sendPublicMessages.php',
         type: 'POST',
-        data: {message: message},
+        data: { message: message },
         success: function(response) {
+            console.log("Response received:", response);
             $('#publicMessage').val('');
-            if (isFetchingActive) {
-                fetchPublicMessages(); // Fetch messages only if fetching is active
-            }
+            fetchPublicMessages();
         },
         error: function(xhr, status, error) {
             console.error('Error sending public message:', error);
         }
     });
 }
-
 function fetchPublicMessages() {
-    if (!isFetchingActive) return; // Prevent fetching when not active
-
     $.ajax({
-        url: '../backend/getPublicMessages.php',
+        url: '../backend/getPublicMessages.php', // Ensure the URL is correct
         type: 'GET',
-        data: { lastMessageId: lastMessageId },
         dataType: 'json',
-        success: function(response) {
+        success: function(messages) {
             var chatBox = $('#publicChatBox');
-
-            // Check if the response contains an array under a key, e.g., response.messages
-            if (response.messages && Array.isArray(response.messages)) {
-                response.messages.forEach(function(message) {
-                    chatBox.append(`<p><strong>${message.user_id}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
-                    lastMessageId = message.id; // Update lastMessageId with the latest fetched message's ID
-                });
-                chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
-            } else {
-                console.error('Received data is not an array:', response);
-            }
+            chatBox.html(''); // Clear the chat box before appending new messages
+            messages.forEach(function(message) {
+                chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
+            });
+            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
         },
         error: function(xhr, status, error) {
             console.error('Error fetching public messages:', error);
         }
     });
-}
-
-function startFetchingMessages() {
-    if (fetchInterval) clearInterval(fetchInterval); // Clear any existing interval
-    fetchInterval = setInterval(fetchPublicMessages, 2000); // Fetch messages every 2 seconds
-}
-
-function stopFetchingMessages() {
-    clearInterval(fetchInterval); // Stop the interval
-    fetchInterval = null; // Clear the interval ID
 }
 
 function clearPublicChat() {
@@ -208,11 +179,6 @@ function clearPublicChat() {
     isFetchingActive = false; // Optionally stop fetching
 }
 
-function resumeFetching() {
-    isFetchingActive = true; // Re-enable fetching
-    fetchPublicMessages(); // Immediately fetch messages
-    startFetchingMessages(); // Restart the interval
-}
 function fetchFriends() {
     $.ajax({
         url: '../backend/getFriendsList.php',
@@ -247,11 +213,13 @@ function sendPrivateMessage() {
         alert('Please enter a message');
         return;
     }
+
     $.ajax({
         url: '../backend/sendMessage.php',
         type: 'POST',
-        data: {message: message},
+        data: { message: message },
         success: function(response) {
+            console.log("Response received:", response);
             $('#message').val('');
             fetchPrivateMessages();
         },
@@ -278,7 +246,12 @@ function fetchPrivateMessages() {
         }
     });
 }
-
+setInterval(fetchPublicMessages, 2000);  // Polling public messages every 2 seconds
+setInterval(fetchPrivateMessages, 2000);  // Polling private messages every 2 seconds
+$(document).ready(function() {
+    fetchPublicMessages(); // Initial fetch on page load
+    fetchPrivateMessages(); // Initial fetch on page load
+});
 </script>
 </body>
 </html>
