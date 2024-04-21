@@ -1010,85 +1010,76 @@ function awardEBPForCommentingArticles($username)
     $stmt->bindParam(':username', $username);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
     if (!$user) {
         return ['status' => false, 'message' => "User not found."];
     }
+
     $userId = $user['id'];
 
     // Begin transaction
     $pdo->beginTransaction();
 
     try {
-        // Fetch all commenting quests and check which ones have been rewarded already
-        $stmt = $pdo->prepare("SELECT id, name, reward FROM quests WHERE condition_text LIKE 'user comments on % article'");
-        $stmt->execute();
-        $allQuests = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Fetch all completed commenting quests for the user
-        $stmt = $pdo->prepare("SELECT quest_id FROM user_quests WHERE user_username = :username AND is_completed = 1");
-        $stmt->bindParam(':username', $username);
-        $stmt->execute();
-        $completedQuestIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-        // Filter out completed quests
-        $quests = array_filter($allQuests, function ($quest) use ($completedQuestIds) {
-            return !in_array($quest['id'], $completedQuestIds);
-        });
-
         // Count all comments made by the user
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM comments WHERE user_id = :userId");
         $stmt->bindParam(':userId', $userId);
         $stmt->execute();
         $commentsCount = $stmt->fetchColumn();
 
-foreach ($quests as $quest) {
-        if (isset($quest['condition_text']) && preg_match('/user comments on (\d+) article/', $quest['condition_text'], $matches)) {
-            $numberNeeded = (int) $matches[1];
+        // Fetch all commenting quests in the order of comments required
+        $stmt = $pdo->prepare("
+            SELECT id, condition_text, reward
+            FROM quests
+            WHERE condition_text LIKE 'user comments on % article'
+            ORDER BY CHAR_LENGTH(condition_text), condition_text ASC
+        ");
+        $stmt->execute();
+        $quests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Get the last comment count at the time of the last reward
-            $stmt = $pdo->prepare("
-                SELECT last_comment_count FROM user_quests
-                WHERE user_username = :username AND quest_id = :questId
-            ");
-            $stmt->bindParam(':username', $username);
-            $stmt->bindParam(':questId', $quest['id']);
-            $stmt->execute();
-            $lastCommentCount = $stmt->fetchColumn() ?: 0;
+        foreach ($quests as $quest) {
+            // Extract the number of comments required from the quest's condition_text
+            if (preg_match('/user comments on (\d+) article/', $quest['condition_text'], $matches)) {
+                $numberNeeded = (int) $matches[1];
 
-            // Calculate the new comments since the last reward
-            $newCommentsCount = $commentsCount - $lastCommentCount;
-
-            // Check if the number of comments meets or exceeds the number needed for the quest
-            if ($newCommentsCount >= $numberNeeded) {
-                $response = addCurrencyToUserByUsername($username, $quest['reward']);
-                if (!$response['status']) {
-                    $pdo->rollBack(); // Rollback the transaction on failure
-                    throw new Exception('Failed to add EBP: ' . $response['message']);
-                }
-
-                // Insert into User_Quests to mark this quest as completed
-                $stmt = $pdo->prepare("
-                    UPDATE user_quests SET last_comment_count = :newLastCommentCount
-                    WHERE user_username = :username AND quest_id = :questId
-                ");
-                $newLastCommentCount = $commentsCount;
-                $stmt->bindParam(':newLastCommentCount', $newLastCommentCount, PDO::PARAM_INT);
+                // Find if the user has already completed this quest
+                $stmt = $pdo->prepare("SELECT 1 FROM user_quests WHERE user_username = :username AND quest_id = :questId");
                 $stmt->bindParam(':username', $username);
                 $stmt->bindParam(':questId', $quest['id']);
                 $stmt->execute();
+                $alreadyCompleted = $stmt->fetchColumn();
 
-                // Break out of the loop after awarding a quest to prevent fulfilling all at once
-                break;
+                if (!$alreadyCompleted && $commentsCount >= $numberNeeded) {
+                    // Award EBP
+                    $response = addCurrencyToUserByUsername($username, $quest['reward']);
+                    if (!$response['status']) {
+                        $pdo->rollBack();
+                        return ['status' => false, 'message' => 'Failed to add EBP: ' . $response['message']];
+                    }
+
+                    // Mark quest as completed
+                    $stmt = $pdo->prepare("
+                        INSERT INTO user_quests (user_username, quest_id, is_completed, completion_date)
+                        VALUES (:username, :questId, 1, NOW())
+                    ");
+                    $stmt->bindParam(':username', $username);
+                    $stmt->bindParam(':questId', $quest['id']);
+                    $stmt->execute();
+
+                    // Stop after awarding one quest
+                    break;
+                }
             }
         }
 
         $pdo->commit();
         return ['status' => true, 'message' => "Quests checked and EBP awarded where appropriate."];
     } catch (Exception $e) {
-        $pdo->rollBack(); // Rollback the transaction on error
+        $pdo->rollBack();
         return ['status' => false, 'message' => "Error checking and awarding quests: " . $e->getMessage()];
     }
 }
+
 
 
 
