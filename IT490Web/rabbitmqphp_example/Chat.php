@@ -110,7 +110,9 @@ include 'nav.php';
     <div id="publicChatBox" class="chat-messages"></div>
     <textarea id="publicMessage" class="chat-input" placeholder="Type your message here..."></textarea>
     <button onclick="sendPublicMessage()">Send</button>
+    <button onclick="clearPublicChat()">Clear Chat</button> <!-- New button to clear chat -->
 </div>
+
 <!-- Side Panel for Friends List -->
 <div id="friendsList" class="friends-panel">
     <h3>My Friends</h3>
@@ -154,6 +156,10 @@ function sendPublicMessage() {
         }
     });
 }
+function clearPublicChat() {
+    $('#publicChatBox').empty(); // This will remove all content from the chat box
+}
+
 function fetchFriends() {
     $.ajax({
         url: '../backend/getFriendsList.php',
@@ -237,12 +243,12 @@ function fetchPrivateMessages() {
         }
     });
 }
-setInterval(fetchPublicMessages, 2000);
-setInterval(fetchPrivateMessages, 2000);
 $(document).ready(function() {
     fetchPublicMessages();
     fetchPrivateMessages();
 });
+setInterval(fetchPublicMessages, 2000);
+setInterval(fetchPrivateMessages, 2000);
 </script>
 
 </body>
