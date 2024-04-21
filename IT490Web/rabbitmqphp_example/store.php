@@ -1,6 +1,8 @@
 <?php
-require_once 'nav.php';
+
 require_once 'databaseFunctions.php';
+
+session_start();
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
     echo "<p>You need to log in to access the store.</p>";
@@ -62,6 +64,8 @@ function purchaseItem($username, $itemId) {
 </head>
 <body>
 
+
+    <?php require_once 'nav.php'; ?> <!-- Navigation bar at the very top -->
     <div class="header">
         <h1>Store</h1>
         <p>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></p>

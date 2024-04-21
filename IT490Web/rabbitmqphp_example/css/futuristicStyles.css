@@ -10,13 +10,20 @@ body, html {
     font-family: 'Arial', sans-serif;
     background-color: #121212;
     color: #ffffff;
-    height: 100vh; /* Full viewport height */
+    height: 100%;
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column; /* Stack vertically */
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    flex-grow: 1; /* Allows this div to take up the rest of the screen */
 }
 
 .header {
