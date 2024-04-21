@@ -1,5 +1,5 @@
 <?php
-require_once 'databaseFunctions.php';
+require_once '../rabbitmqphp_example/databaseFunctions.php';
 
 $db = getDatabaseConnection();
 
