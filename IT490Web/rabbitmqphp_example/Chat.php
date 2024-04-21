@@ -248,6 +248,12 @@ function fetchPrivateMessages() {
 function startFetchingMessages() {
     fetchInterval = setInterval(fetchPublicMessages, 2000); // Start fetching messages every 2 seconds
 }
+function resumeFetching() {
+    isFetchingActive = true; // Re-enable fetching
+    fetchPublicMessages(); // Immediately fetch messages
+    startFetchingMessages(); // Restart the interval
+}
+
 function clearPublicChat() {
     isFetchingActive = false; // Stop fetching when clearing chat
     $('#publicChatBox').empty(); // Clears the chat box
@@ -255,8 +261,8 @@ function clearPublicChat() {
 
 
 $(document).ready(function() {
-    fetchPublicMessages();
-    fetchPrivateMessages();
+    startFetchingMessages(); // Start auto-fetching on page load
+
 });
 
 </script>
