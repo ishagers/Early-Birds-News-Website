@@ -178,17 +178,14 @@ function fetchAllUsernames($currentUsername) {
 }
 function sendFriendRequest($conn, $username1, $username2) {
     try {
-        // Check if the usernames are the same
-        if ($username1 === $username2) {
-            return ['status' => false, 'message' => 'You cannot send a friend request to yourself.'];
-        }
-
         $user_id1 = getUserIdByUsername($conn, $username1);
         $user_id2 = getUserIdByUsername($conn, $username2);
 
         if (!$user_id1 || !$user_id2) {
             return ['status' => false, 'message' => 'One or both users not found.'];
         }
+
+        // Log initial user IDs for debugging
         error_log("Initial IDs: User1: $user_id1, User2: $user_id2, Action User: $username1");
 
         // Ensure user_id1 is always the smaller ID to maintain consistency
@@ -538,44 +535,74 @@ function fetchArticles($limit = 15, $filter = 'public', $sourceFilter = 'user')
 }
 
 function getArticleById($articleId) {
+
     $response = array('status' => false, 'message' => '', 'article' => null);
 
+
+
     try {
+
         $conn = getDatabaseConnection(); // Reuse the database connection function
 
-        // Ensure that the SQL query correctly matches your database schema and field names
-        $sql = "SELECT a.id, a.title, a.content, a.publication_date, a.source, a.url, u.username AS author
+
+
+        // Adjusted SQL statement to also select the 'source' column
+
+        $sql = "SELECT a.id, a.title, a.content, a.publication_date, u.username AS author, a.source
+
                 FROM articles a
-                LEFT JOIN users u ON a.author_id = u.id
+
+                LEFT JOIN users u ON a.author_id = u.id  -- Use LEFT JOIN to handle articles without an associated user
+
                 WHERE a.id = :articleId";
 
+
+
+        // Prepare and bind parameters
+
         $stmt = $conn->prepare($sql);
+
         $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
+
+
+
+        // Execute the statement
+
         $stmt->execute();
 
-        // Debug: Output the number of rows found
-        error_log("Rows Found: " . $stmt->rowCount());
+
+
+        // Check if the article exists
 
         if ($stmt->rowCount() == 1) {
+
             $article = $stmt->fetch(PDO::FETCH_ASSOC);
+
             $response['status'] = true;
+
             $response['message'] = "Article fetched successfully";
+
             $response['article'] = $article;
+
         } else {
+
             $response['message'] = "Article not found";
-            // Debug: Log the article ID attempted
-            error_log("Article ID not found: " . $articleId);
+
         }
+
     } catch (PDOException $e) {
+
+        // Update response message on error
+
         $response['message'] = "Database error: " . $e->getMessage();
-        // Debug: Log database error
-        error_log("Database error: " . $e->getMessage());
+
     }
 
+
+
     return $response;
+
 }
-
-
 
 function getCommentsByArticleId($articleId) {
     $response = array('status' => false, 'message' => '', 'comments' => array());
