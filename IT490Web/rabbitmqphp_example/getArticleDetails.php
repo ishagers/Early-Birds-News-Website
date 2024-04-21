@@ -8,12 +8,13 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 checkLogin();
-
 $username = $_SESSION['username'];
 $articleId = isset($_GET['id']) ? $_GET['id'] : null;
-$article = $articleId ? getArticleById($articleId) : null;
+$articleResponse = $articleId ? getArticleById($articleId) : null;
 
-$isFromApi = $article && isset($article['source']) && $article['source'] === 'API';
+// Check the response and fetch the article details if successful
+$article = $articleResponse['status'] ? $articleResponse['article'] : null;
+$isFromApi = $article && $article['source'] === 'API';
 
 if ($_POST) {
     if (isset($_POST['submitShare']) && !empty($_POST['shareEmail']) && $article) {
@@ -24,7 +25,6 @@ if ($_POST) {
         $commentResponse = submitComment($articleId, $_POST['comment'], $username);
     }
 }
-
 ?>
 
 <!DOCTYPE html>
