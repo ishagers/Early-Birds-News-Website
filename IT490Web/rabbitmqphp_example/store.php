@@ -1,5 +1,6 @@
 <?php
 require_once 'databaseFunctions.php';
+require_once 'nav.php'; 
 session_start();
 
 // Check if the user is logged in
