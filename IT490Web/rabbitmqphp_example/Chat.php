@@ -166,18 +166,25 @@ function sendPublicMessage() {
 
 function fetchPublicMessages() {
     if (!isFetchingActive) return; // Prevent fetching when not active
+
     $.ajax({
         url: '../backend/getPublicMessages.php',
         type: 'GET',
-        data: {lastMessageId: lastMessageId},
+        data: { lastMessageId: lastMessageId },
         dataType: 'json',
-        success: function(messages) {
+        success: function(response) {
             var chatBox = $('#publicChatBox');
-            messages.forEach(function(message) {
-                chatBox.append(`<p><strong>${message.user_id}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
-                lastMessageId = message.id; // Update lastMessageId with the latest fetched message's ID
-            });
-            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
+
+            // Check if the response contains an array under a key, e.g., response.messages
+            if (response.messages && Array.isArray(response.messages)) {
+                response.messages.forEach(function(message) {
+                    chatBox.append(`<p><strong>${message.user_id}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
+                    lastMessageId = message.id; // Update lastMessageId with the latest fetched message's ID
+                });
+                chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
+            } else {
+                console.error('Received data is not an array:', response);
+            }
         },
         error: function(xhr, status, error) {
             console.error('Error fetching public messages:', error);
