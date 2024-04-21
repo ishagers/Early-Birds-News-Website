@@ -8,8 +8,8 @@
 <body>
 
     <?php
-    require('nav.php');
-    require('session.php');
+    require_once('nav.php');
+    require_once('session.php');
     require_once('databaseFunctions.php');
 
     ini_set('display_errors', 1);
