@@ -94,7 +94,8 @@ function fetchMessages() {
             console.log("Messages fetched:", messages);
             var chatBox = $('#chatBox');
             chatBox.html(''); // Clear previous messages
-            $.each(messages, function(i, message) {
+            // Reverse the order of messages before appending them
+            messages.reverse().forEach(function(message) {
                 chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
             });
         },
