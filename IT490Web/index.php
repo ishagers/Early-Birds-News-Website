@@ -16,21 +16,19 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
     ];
 
     $result = publisher($queryValues);
-
-    if ($result && $result['returnCode'] == '0') {
-        // Login successful
-        echo "Great, we found you: " . htmlspecialchars($result['message']);
-        $_SESSION['username'] = $_POST['username'];
-        $_SESSION['user_id'] = $result['user_id']; // Ensure 'user_id' is correctly provided by the response
-	error_log("Logged in user: " . $_SESSION['username'] . " with ID: " . $_SESSION['user_id']);
-
-        header("Location: rabbitmqphp_example/mainMenu.php"); // Redirect to the home page or dashboard
-        exit();
-    } else {
-        // Login failed or result is not properly formatted
-        $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
-        echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
-    }
+    error_log("Publisher result: " . print_r($result, true));
+	if ($result && $result['returnCode'] == '0' && isset($result['user_id'])) {
+	    // Login successful
+	    $_SESSION['username'] = $_POST['username'];
+	    $_SESSION['user_id'] = $result['user_id'];
+	    header("Location: rabbitmqphp_example/mainMenu.php");
+	    exit();
+	} else {
+	    // Login failed or user ID not set in response
+	    $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
+	    error_log("Login failed or no user ID: " . print_r($result, true));
+	    echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
+	}
 }
 ?>
 
