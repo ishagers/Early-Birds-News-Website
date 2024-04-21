@@ -543,20 +543,17 @@ function getArticleById($articleId) {
     try {
         $conn = getDatabaseConnection(); // Reuse the database connection function
 
-        // Adjusted SQL statement to also select the 'source' column
-        $sql = "SELECT a.id, a.title, a.content, a.publication_date, u.username AS author, a.source
+        // Adjusted SQL statement to also select the 'source' and URL for API articles
+        $sql = "SELECT a.id, a.title, a.content, a.publication_date, a.source, a.url,
+                       u.username AS author
                 FROM articles a
-                LEFT JOIN users u ON a.author_id = u.id  -- Use LEFT JOIN to handle articles without an associated user
+                LEFT JOIN users u ON a.author_id = u.id  // Use LEFT JOIN to handle articles without an associated user
                 WHERE a.id = :articleId";
 
-        // Prepare and bind parameters
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
-
-        // Execute the statement
         $stmt->execute();
 
-        // Check if the article exists
         if ($stmt->rowCount() == 1) {
             $article = $stmt->fetch(PDO::FETCH_ASSOC);
             $response['status'] = true;
@@ -566,12 +563,12 @@ function getArticleById($articleId) {
             $response['message'] = "Article not found";
         }
     } catch (PDOException $e) {
-        // Update response message on error
         $response['message'] = "Database error: " . $e->getMessage();
     }
 
     return $response;
 }
+
 
 
 function getCommentsByArticleId($articleId) {

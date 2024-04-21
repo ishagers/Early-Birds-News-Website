@@ -8,24 +8,21 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 checkLogin();
-$username = $_SESSION['username'];
+
 $articleId = isset($_GET['id']) ? $_GET['id'] : null;
-$articleResponse = $articleId ? getArticleById($articleId) : null;
+$articleResponse = getArticleById($articleId);
 
-// Check the response and fetch the article details if successful
-$article = $articleResponse['status'] ? $articleResponse['article'] : null;
-$isFromApi = $article && $article['source'] === 'API';
-
-if ($_POST) {
-    if (isset($_POST['submitShare']) && !empty($_POST['shareEmail']) && $article) {
-        $emailResponse = sendArticle($_POST['shareEmail'], $article['title'], $article['content'], $article['url']);
-    }
-
-    if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article) {
-        $commentResponse = submitComment($articleId, $_POST['comment'], $username);
-    }
+if ($articleResponse['status']) {
+    $article = $articleResponse['article'];
+    $isFromApi = ($article['source'] === 'api');
+    $authorName = $isFromApi ? 'API Source' : $article['author'];
+} else {
+    $article = null;
+    $isFromApi = false;
+    $authorName = '';
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
