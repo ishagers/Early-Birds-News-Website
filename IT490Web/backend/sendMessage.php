@@ -1,11 +1,13 @@
 <?php
-require_once '../rabbitmqphp_example/databaseFunctions.php';  // Updated path to databaseFunctions.php
+require_once '../rabbitmqphp_example/databaseFunctions.php';  // Correct path as needed
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// Enable error reporting for debugging (disable in production)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+ini_set('log_errors', 1);
 
 $db = getDatabaseConnection();  // Get the PDO connection
+
 // Check if both user_id and message are provided
 if (isset($_POST['user_id']) && isset($_POST['message'])) {
     $user_id = $_POST['user_id'];
@@ -13,19 +15,21 @@ if (isset($_POST['user_id']) && isset($_POST['message'])) {
 
     // Prepare a statement to insert data
     $stmt = $db->prepare("INSERT INTO chat_messages (user_id, message) VALUES (?, ?)");
-    $stmt->bind_param("is", $user_id, $message);
+    // Bind parameters
+    $stmt->bindParam(1, $user_id, PDO::PARAM_INT);
+    $stmt->bindParam(2, $message, PDO::PARAM_STR);
+
     if ($stmt->execute()) {
         echo "Message sent successfully";
     } else {
-        echo "Error: " . $stmt->error;
-        error_log('Insert message failed: ' . $stmt->error); // Log error to server log
+        echo "Error: " . $stmt->errorInfo()[2];  // Get errorInfo from the PDO statement
     }
-    $stmt = null;  // Close the statement
 
+    $stmt = null;  // Close the statement
 } else {
     echo "User ID or message not provided";
-    error_log('User ID or message not provided in sendMessage.php');
 }
-$db = null;  // Close the connection
 
+$db = null;  // Close the connection
 ?>
+
