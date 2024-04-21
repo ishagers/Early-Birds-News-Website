@@ -11,19 +11,17 @@ $db = getDatabaseConnection();
 
 // Prepare a statement to fetch messages with user information
 $stmt = $db->prepare("SELECT u.username, m.message, m.timestamp FROM chat_messages m INNER JOIN users u ON m.user_id = u.id ORDER BY m.id DESC LIMIT 20");
-$stmt->execute();
-$result = $stmt->get_result();
 
-$messages = array();
-while ($row = $result->fetch_assoc()) {
-    $messages[] = $row;
-}
+$stmt->execute();
+
+// Fetch the results directly from the $stmt object using fetchAll()
+$messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Encode the array to JSON and output it
 $json = json_encode($messages);
+
 if (json_last_error() !== JSON_ERROR_NONE) {
     error_log('JSON encode error: ' . json_last_error_msg());
-    // Provide a generic error message or handle the error appropriately
     echo json_encode(["error" => "An error occurred while encoding JSON."]);
     exit;
 }
@@ -31,6 +29,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 echo $json;
 
 $stmt->close();
-$db->close();
+$db = null; // Close the connection by setting it to null in PDO
 ?>
 
