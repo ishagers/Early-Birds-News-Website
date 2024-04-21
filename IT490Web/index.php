@@ -1,12 +1,11 @@
 <?php
-session_start(); 
+session_start();  // Start session at the very top of the script
 require('rabbitmqphp_example/session.php');
+require('rabbitmqphp_example/SQLPublish.php');
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
-
-require('rabbitmqphp_example/SQLPublish.php');
 
 if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $queryValues = [
@@ -21,18 +20,20 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         // Login successful
         echo "Great, we found you: " . htmlspecialchars($result['message']);
         $_SESSION['username'] = $_POST['username'];
-        $_SESSION['user_id'] = $result['user_id']; // Ensure 'user_id' is correctly provided by the response
+        $_SESSION['user_id'] = $result['user_id']; // Confirms that 'user_id' is correctly provided by the response
 
         header("Location: rabbitmqphp_example/mainMenu.php"); // Redirect to the home page or dashboard
-        exit();
+        exit(); // Ensure no further processing after redirect
     } else {
         // Login failed or result is not properly formatted
         $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
         echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
     }
+} else {
+    // Handle the case where one or both fields are empty
+    echo "<script>alert('Both username and password are required.');</script>";
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
