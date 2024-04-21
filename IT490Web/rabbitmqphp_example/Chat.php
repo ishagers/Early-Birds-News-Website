@@ -128,6 +128,7 @@ include 'nav.php';
 <button onclick="toggleChat()" style="position: fixed; bottom: 10px; right: 10px; z-index: 1100;">Toggle Chat</button>
 
 <script>
+var lastMessageId = 0; // Initialize with zero to fetch all messages initially
 
 function toggleChat() {
     var chatWidget = document.getElementById('chatContainer');
@@ -158,25 +159,25 @@ function fetchPublicMessages() {
     $.ajax({
         url: '../backend/getPublicMessages.php',
         type: 'GET',
+        data: { lastMessageId: lastMessageId },
         dataType: 'json',
         success: function(messages) {
             var chatBox = $('#publicChatBox');
-            var currentHTML = chatBox.html(); // Get the current HTML content
 
-            var newMessages = '';
             messages.forEach(function(message) {
-                newMessages += `<p><strong>${message.username}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`;
+                if (message.id > lastMessageId) { // Check if the message ID is greater than the last known ID
+                    chatBox.append(`<p><strong>${message.username}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
+                    lastMessageId = message.id; // Update lastMessageId to the current message's ID
+                }
             });
 
-            chatBox.html(currentHTML + newMessages); // Append the new messages to the existing content
-            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Scroll to the bottom
+            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
         },
         error: function(xhr, status, error) {
             console.error('Error fetching public messages:', xhr.responseText);
         }
     });
 }
-
 function clearPublicChat() {
   $('#publicChatBox').empty(); // Clears the chat box display for the user
     console.log("Chat cleared"); // Optional: for debugging
