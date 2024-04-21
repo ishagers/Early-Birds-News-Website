@@ -1,14 +1,9 @@
 <?php
 require_once '../rabbitmqphp_example/databaseFunctions.php';
-
-session_save_path('/sessions');
+echo session_save_path();
+session_save_path('IT490-Project/IT490Web/backend/sessions');
 
 session_start();  // Ensure session is started
-
-if (!isset($_SESSION['user_id'])) {
-    echo "User not logged in";
-    exit;
-}
 
 $db = getDatabaseConnection();
 
