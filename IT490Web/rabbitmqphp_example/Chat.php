@@ -130,6 +130,7 @@ include 'nav.php';
 <script>
 
 var fetchInterval; // Global variable to hold the interval ID
+var isFetchingActive = true; // This flag will control whether messages should be fetched
 
 function stopFetchingMessages() {
     clearInterval(fetchInterval); // Stop the interval
@@ -150,13 +151,16 @@ function sendPublicMessage() {
         data: {message: message},
         success: function(response) {
             $('#publicMessage').val('');
-            fetchPublicMessages();
+            if (isFetchingActive) {
+                fetchPublicMessages(); // Fetch messages only if fetching is active
+            }
         },
         error: function(xhr, status, error) {
             console.error('Error sending public message:', error);
         }
     });
 }
+
 
 function fetchFriends() {
     $.ajax({
@@ -205,7 +209,7 @@ function sendPrivateMessage() {
 }
 function fetchPublicMessages() {
     $.ajax({
-        url: '../backend/getPublicMessages.php', // Ensure the URL is correct
+        url: '../backend/getPublicMessages.php', 
         type: 'GET',
         dataType: 'json',
         success: function(messages) {
@@ -245,9 +249,10 @@ function startFetchingMessages() {
     fetchInterval = setInterval(fetchPublicMessages, 2000); // Start fetching messages every 2 seconds
 }
 function clearPublicChat() {
-    stopFetchingMessages(); // Stop fetching messages when clearing chat
+    isFetchingActive = false; // Stop fetching when clearing chat
     $('#publicChatBox').empty(); // Clears the chat box
 }
+
 
 $(document).ready(function() {
     fetchPublicMessages();
