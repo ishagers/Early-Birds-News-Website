@@ -10,20 +10,13 @@ body, html {
     font-family: 'Arial', sans-serif;
     background-color: #121212;
     color: #ffffff;
-    height: 100%;
+    height: 100vh; /* Full viewport height */
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.main-content {
-    display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Stack vertically */
     justify-content: center;
-    width: 100%;
-    flex-grow: 1; /* Allows this div to take up the rest of the screen */
+    align-items: center;
 }
 
 .header {
@@ -112,3 +105,4 @@ button:hover {
         display: none; /* Hide buttons on print */
     }
 }
+
