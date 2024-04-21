@@ -10,30 +10,19 @@ error_reporting(E_ALL);
 checkLogin();
 
 $username = $_SESSION['username'];
-$articleId = $userId = null;
-$article = null;
-$emailResponse = '';
-$commentResponse = '';
+$articleId = isset($_GET['id']) ? $_GET['id'] : null;
+$article = $articleId ? getArticleById($articleId) : null;
 
-// Check if an article ID is provided and fetch the article
-if (isset($_GET['id'])) {
-    $articleId = $_GET['id'];
-    $article = getArticleById($articleId); // Assume this function returns the article array with a 'status' key
-}
+$isFromApi = $article && isset($article['source']) && $article['source'] === 'API';
 
-// Handle the share request
-if (isset($_POST['submitShare']) && !empty($_POST['shareEmail']) && $article && $article['status']) {
-    $recipientEmail = sanitizeInput($_POST['shareEmail']);
-    $articleTitle = htmlspecialchars($article['article']['title']);
-    $articleContent = nl2br(htmlspecialchars($article['article']['content']));
-    $articleUrl = "";
+if ($_POST) {
+    if (isset($_POST['submitShare']) && !empty($_POST['shareEmail']) && $article) {
+        $emailResponse = sendArticle($_POST['shareEmail'], $article['title'], $article['content'], $article['url']);
+    }
 
-    $emailResponse = SendArticle($recipientEmail, $articleTitle, $articleContent, $articleUrl);
-}
-
-// Handle comment submission
-if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article && $article['status']) {
-    $commentResponse = submitComment($articleId, sanitizeInput($_POST['comment']), $username);
+    if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article) {
+        $commentResponse = submitComment($articleId, $_POST['comment'], $username);
+    }
 }
 
 ?>
