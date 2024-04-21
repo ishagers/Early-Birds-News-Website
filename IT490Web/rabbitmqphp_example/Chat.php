@@ -72,7 +72,11 @@ include 'nav.php';
     <textarea id="publicMessage" class="chat-input" placeholder="Type your message here..."></textarea>
     <button onclick="sendPublicMessage()">Send</button>
 </div>
-
+<!-- Side Panel for Friends List -->
+<div id="friendsList" class="friends-panel">
+    <h3>My Friends</h3>
+    <ul id="friends"></ul>
+</div>
 <!-- Private Chat Widget -->
 <button onclick="toggleChat()" style="position: fixed; bottom: 50px; right: 20px; z-index: 1100;">Toggle Private Chat</button>
 <div id="chatContainer" class="chat-widget" style="display: none;">
