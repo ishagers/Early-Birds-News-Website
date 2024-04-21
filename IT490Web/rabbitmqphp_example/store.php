@@ -1,6 +1,6 @@
 <?php
 require_once 'databaseFunctions.php';
-require_once 'nav.php'; 
+
 
 
 // Check if the user is logged in
@@ -63,6 +63,9 @@ function purchaseItem($username, $itemId) {
     <link rel="stylesheet" href="css/futuristicStyles.css">
 </head>
 <body>
+	<?php
+	require_once 'nav.php'; 
+	?>
     <div class="header">
         <h1>Store</h1>
         <p>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></p>
