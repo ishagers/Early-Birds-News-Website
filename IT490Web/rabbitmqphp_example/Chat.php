@@ -176,9 +176,8 @@ function fetchPublicMessages() {
 
 
 function clearPublicChat() {
-    stopFetchingMessages(); // Stop fetching when clearing chat
-    $('#publicChatBox').empty(); // Clears the chat box
-    isFetchingActive = false; // Optionally stop fetching
+  $('#publicChatBox').empty(); // Clears the chat box display for the user
+    console.log("Chat cleared"); // Optional: for debugging
 }
 
 function fetchFriends() {
