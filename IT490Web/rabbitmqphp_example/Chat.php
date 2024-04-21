@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
 $ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) : 0;
-include 'nav.php';
+
 ?>
 
 <!DOCTYPE html>
