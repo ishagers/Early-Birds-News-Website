@@ -242,19 +242,25 @@ function fetchReceivedFriendRequests($conn, $username) {
 
 function getUserIdByUsername($conn, $username) {
     try {
-        $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+        // Log the provided username
+        error_log("Getting user ID for username: '{$username}'");
+
+        $stmt = $conn->prepare("SELECT id, username FROM users WHERE username = ?");
         $stmt->execute([$username]);
-        $userId = $stmt->fetchColumn();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Log what ID is fetched for which username
-        error_log("Fetched user ID: {$userId} for username: '{$username}'");
+        if ($result) {
+            $userId = $result['id'];
+            $dbUsername = $result['username'];
 
-        if ($userId) {
+            // Log the retrieved user ID and username from the database
+            error_log("Retrieved user ID: {$userId} for username: '{$dbUsername}' from the database");
+
             return $userId;
         } else {
-            // Log and handle the case where no user is found
-            error_log("User not found for username: '{$username}'");
-            return null; // Return null if no user ID found
+            // Log that no user was found
+            error_log("No user found for username: '{$username}'");
+            return null;
         }
     } catch (PDOException $e) {
         // Log database errors
@@ -280,9 +286,11 @@ function updateFriendRequestStatus($conn, $requesterUsername, $receiverUsername,
 	error_log("Updating status for requester ID: {$requester_id}, receiver ID: {$receiver_id}");
 
         // Update the status of the friend request
-        $sql = "UPDATE friends SET status = ? WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)";
+              $sql = "UPDATE friends SET status = ? WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)";
+
         $stmt = $conn->prepare($sql);
         $stmt->execute([$status, $requester_id, $receiver_id, $receiver_id, $requester_id]);
+
 
         if ($stmt->rowCount() > 0) {
             return ['success' => true, 'message' => 'Friend request status updated successfully.'];
