@@ -1019,17 +1019,21 @@ function awardEBPForCommentingArticles($username)
     $pdo->beginTransaction();
 
     try {
-        // Fetch all commenting quests that have not been rewarded yet
-        $stmt = $pdo->prepare("
-            SELECT q.id, q.name, q.reward
-            FROM quests q
-            LEFT JOIN user_quests uq ON q.id = uq.quest_id AND uq.user_username = :username AND uq.is_completed = 1
-            WHERE q.condition_text LIKE 'user comments on % article'
-            AND uq.quest_id IS NULL
-        ");
+        // Fetch all commenting quests and check which ones have been rewarded already
+        $stmt = $pdo->prepare("SELECT id, name, reward FROM quests WHERE condition_text LIKE 'user comments on % article'");
+        $stmt->execute();
+        $allQuests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Fetch all completed commenting quests for the user
+        $stmt = $pdo->prepare("SELECT quest_id FROM user_quests WHERE user_username = :username AND is_completed = 1");
         $stmt->bindParam(':username', $username);
         $stmt->execute();
-        $quests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $completedQuestIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        // Filter out completed quests
+        $quests = array_filter($allQuests, function ($quest) use ($completedQuestIds) {
+            return !in_array($quest['id'], $completedQuestIds);
+        });
 
         // Count all comments made by the user
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM comments WHERE user_id = :userId");
@@ -1039,6 +1043,7 @@ function awardEBPForCommentingArticles($username)
 
         foreach ($quests as $quest) {
             $numberNeeded = 0; // Default value
+
             if (isset($quest['condition_text']) && preg_match('/user comments on (\d+) article/', $quest['condition_text'], $matches)) {
                 $numberNeeded = (int) $matches[1];
             }
@@ -1058,6 +1063,9 @@ function awardEBPForCommentingArticles($username)
                 $stmt->bindParam(':questId', $quest['id']);
                 $stmt->bindParam(':username', $username);
                 $stmt->execute();
+
+                // Break out of the loop after awarding a quest to prevent fulfilling all at once
+                break;
             }
         }
 
@@ -1068,6 +1076,7 @@ function awardEBPForCommentingArticles($username)
         return ['status' => false, 'message' => "Error checking and awarding quests: " . $e->getMessage()];
     }
 }
+
 
 
 
