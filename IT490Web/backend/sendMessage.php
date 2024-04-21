@@ -5,6 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+$db = getDatabaseConnection();  // Get the PDO connection
 // Check if both user_id and message are provided
 if (isset($_POST['user_id']) && isset($_POST['message'])) {
     $user_id = $_POST['user_id'];
@@ -19,10 +20,12 @@ if (isset($_POST['user_id']) && isset($_POST['message'])) {
         echo "Error: " . $stmt->error;
         error_log('Insert message failed: ' . $stmt->error); // Log error to server log
     }
-    $stmt->close();
+    $stmt = null;  // Close the statement
+
 } else {
     echo "User ID or message not provided";
     error_log('User ID or message not provided in sendMessage.php');
 }
-$db->close();
+$db = null;  // Close the connection
+
 ?>
