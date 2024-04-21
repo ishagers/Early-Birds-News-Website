@@ -129,20 +129,21 @@ function fetchPublicMessages() {
     $.ajax({
         url: '../backend/getPublicMessages.php',
         type: 'GET',
-        dataType: 'json',
+        dataType: 'json', // Ensures jQuery expects and processes JSON
         success: function(messages) {
             var chatBox = $('#publicChatBox');
             chatBox.html('');
-            messages.forEach(function(message) {
-                chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
+            messages.forEach(function(message) { // Make sure 'messages' is indeed an array
+                chatBox.append(`<p><strong>${message.username}</strong>: ${message.message}</p>`);
             });
             chatBox.scrollTop(chatBox.prop("scrollHeight"));
         },
-        error: function(xhr, status, error) {
-            console.error('Error fetching public messages:', error);
+        error: function(xhr) {
+            console.error('Error fetching public messages:', xhr.responseText);
         }
     });
 }
+
 function fetchPrivateMessages() {
     $.ajax({
         url: '../backend/getMessages.php',
