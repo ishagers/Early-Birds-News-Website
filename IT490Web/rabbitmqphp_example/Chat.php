@@ -133,6 +133,12 @@ include 'nav.php';
 <button onclick="toggleChat()" style="position: fixed; bottom: 10px; right: 10px; z-index: 1100;">Toggle Chat</button>
 
 <script>
+
+var fetchInterval; // Global variable to hold the interval ID
+
+function stopFetchingMessages() {
+    clearInterval(fetchInterval); // Stop the interval
+}
 function toggleChat() {
     var chatWidget = document.getElementById('chatContainer');
     chatWidget.style.display = (chatWidget.style.display === 'none' ? 'block' : 'none');
@@ -155,9 +161,6 @@ function sendPublicMessage() {
             console.error('Error sending public message:', error);
         }
     });
-}
-function clearPublicChat() {
-    $('#publicChatBox').empty(); // This will remove all content from the chat box
 }
 
 function fetchFriends() {
@@ -243,12 +246,19 @@ function fetchPrivateMessages() {
         }
     });
 }
+function startFetchingMessages() {
+    fetchInterval = setInterval(fetchPublicMessages, 2000); // Start fetching messages every 2 seconds
+}
+function clearPublicChat() {
+    stopFetchingMessages(); // Stop fetching messages when clearing chat
+    $('#publicChatBox').empty(); // Clears the chat box
+}
+
 $(document).ready(function() {
     fetchPublicMessages();
     fetchPrivateMessages();
 });
-setInterval(fetchPublicMessages, 2000);
-setInterval(fetchPrivateMessages, 2000);
+
 </script>
 
 </body>
