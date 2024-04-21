@@ -1,13 +1,3 @@
-<?php
-require_once 'databaseFunctions.php';
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
-$ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) : 0;
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,8 +6,54 @@ $ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) 
     <link rel="stylesheet" href="../routes/menuStyles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
-        /* Additional styles for chat widget and friends list */
-        .chat-widget {
+	  .friends-panel {
+	    width: 200px;
+	    position: fixed;
+	    left: 0;
+	    top: 0;
+	    height: 100%;
+	    overflow-y: auto;
+	    background-color: #f9f9f9;
+	    border-right: 1px solid #ccc;
+	}
+
+	.friends-panel h3 {
+	    padding: 10px;
+	    background-color: #eee;
+	    margin: 0;
+	}
+
+	.friends-panel ul {
+	    list-style: none;
+	    padding: 0;
+	    margin: 0;
+	}
+
+	.friends-panel ul li {
+	    padding: 10px;
+	    cursor: pointer;
+	}
+
+	.friends-panel ul li:hover {
+	    background-color: #ddd;
+	}
+
+        .chat-widget, .public-chat-widget {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+        .public-chat-widget {
+            position: relative;
+            width: 80%;
+            margin: 20px auto;
+            height: 400px;
+            overflow: hidden;
+        }
+       .chat-widget {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -33,40 +69,31 @@ $ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) 
             padding: 10px;
         }
 
-        .chat-messages, .friends-list {
+        .chat-messages {
             flex-grow: 1;
             overflow-y: auto;
             margin-bottom: 10px;
         }
-
-        .chat-input, .friends-list input {
+        .chat-input {
             width: calc(100% - 20px);
             margin-bottom: 5px;
         }
-
-        .friends-list {
-            margin-top: 10px;
-        }
-
-        .friends-list ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .friends-list ul li {
-            padding: 5px 10px;
-            cursor: pointer;
-            border-bottom: 1px solid #ccc;
-        }
-
-        .friends-list ul li:hover {
-            background-color: #f0f0f0;
+        button {
+            align-self: center;
         }
     </style>
 </head>
 <body>
-<?php include 'nav.php'; ?>
+
+<?php
+require_once 'databaseFunctions.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
+$ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) : 0;
+include 'nav.php';
+?>
 
 <div class="header">
     <h1>Chat with Early Bird Community</h1>
@@ -77,6 +104,18 @@ $ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) 
     </div>
 </div>
 
+<!-- Public Chat Section -->
+<div class="public-chat-widget">
+    <h2>Public Chat</h2>
+    <div id="publicChatBox" class="chat-messages"></div>
+    <textarea id="publicMessage" class="chat-input" placeholder="Type your message here..."></textarea>
+    <button onclick="sendPublicMessage()">Send</button>
+</div>
+<!-- Side Panel for Friends List -->
+<div id="friendsList" class="friends-panel">
+    <h3>My Friends</h3>
+    <ul id="friends"></ul>
+</div>
 <!-- Private Chat Widget with Friends List -->
 <div id="chatContainer" class="chat-widget" style="display: none;">
     <h2>Private Chat</h2>
@@ -168,7 +207,7 @@ function fetchPublicMessages() {
         success: function(messages) {
             var chatBox = $('#publicChatBox');
             chatBox.html(''); // Clear the chat box before appending new messages
-            messages.forEach(function(message) { // No need to reverse if we want newest at the bottom
+            messages.forEach(function(message) {
                 chatBox.append(`<p><strong>${message.username}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
             });
             chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
