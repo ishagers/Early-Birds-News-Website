@@ -1041,15 +1041,25 @@ function awardEBPForCommentingArticles($username)
         $stmt->execute();
         $commentsCount = $stmt->fetchColumn();
 
-        foreach ($quests as $quest) {
-            $numberNeeded = 0; // Default value
+foreach ($quests as $quest) {
+        if (isset($quest['condition_text']) && preg_match('/user comments on (\d+) article/', $quest['condition_text'], $matches)) {
+            $numberNeeded = (int) $matches[1];
 
-            if (isset($quest['condition_text']) && preg_match('/user comments on (\d+) article/', $quest['condition_text'], $matches)) {
-                $numberNeeded = (int) $matches[1];
-            }
+            // Get the last comment count at the time of the last reward
+            $stmt = $pdo->prepare("
+                SELECT last_comment_count FROM user_quests
+                WHERE user_username = :username AND quest_id = :questId
+            ");
+            $stmt->bindParam(':username', $username);
+            $stmt->bindParam(':questId', $quest['id']);
+            $stmt->execute();
+            $lastCommentCount = $stmt->fetchColumn() ?: 0;
+
+            // Calculate the new comments since the last reward
+            $newCommentsCount = $commentsCount - $lastCommentCount;
 
             // Check if the number of comments meets or exceeds the number needed for the quest
-            if ($commentsCount >= $numberNeeded) {
+            if ($newCommentsCount >= $numberNeeded) {
                 $response = addCurrencyToUserByUsername($username, $quest['reward']);
                 if (!$response['status']) {
                     $pdo->rollBack(); // Rollback the transaction on failure
@@ -1057,11 +1067,14 @@ function awardEBPForCommentingArticles($username)
                 }
 
                 // Insert into User_Quests to mark this quest as completed
-                $stmt = $pdo->prepare("INSERT INTO user_quests (quest_id, user_username, is_completed, completion_date)
-                                        VALUES (:questId, :username, 1, NOW())
-                                        ON DUPLICATE KEY UPDATE is_completed = 1, completion_date = NOW()");
-                $stmt->bindParam(':questId', $quest['id']);
+                $stmt = $pdo->prepare("
+                    UPDATE user_quests SET last_comment_count = :newLastCommentCount
+                    WHERE user_username = :username AND quest_id = :questId
+                ");
+                $newLastCommentCount = $commentsCount;
+                $stmt->bindParam(':newLastCommentCount', $newLastCommentCount, PDO::PARAM_INT);
                 $stmt->bindParam(':username', $username);
+                $stmt->bindParam(':questId', $quest['id']);
                 $stmt->execute();
 
                 // Break out of the loop after awarding a quest to prevent fulfilling all at once
