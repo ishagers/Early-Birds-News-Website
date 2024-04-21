@@ -1,36 +1,33 @@
 <?php
-
 require_once '../rabbitmqphp_example/databaseFunctions.php';
 
-// Enable error reporting for debugging (turn off error reporting in production)
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-ini_set('log_errors', 1);
-
-$db = getDatabaseConnection();
-
-// Prepare a statement to fetch messages with user information
-$stmt = $db->prepare("SELECT u.username, m.message, m.timestamp FROM chat_messages m INNER JOIN users u ON m.user_id = u.id ORDER BY m.id DESC LIMIT 20");
-
-$stmt->execute();
-
-// Fetch the results directly from the $stmt object using fetchAll()
-$messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Encode the array to JSON and output it
-$json = json_encode($messages);
-
-if (json_last_error() !== JSON_ERROR_NONE) {
-    error_log('JSON encode error: ' . json_last_error_msg());
-    echo json_encode(["error" => "An error occurred while encoding JSON."]);
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['error' => 'User not authenticated']);
     exit;
 }
 
-echo $json;
+$db = getDatabaseConnection();
 
-// Properly releasing the resources
-$stmt = null; // This effectively closes the statement
-$db = null; // This closes the connection
+$userId = $_SESSION['user_id'];  // Assuming the user's ID is stored in the session.
 
+// Prepare a statement to fetch messages with user information
+$stmt = $db->prepare("
+    SELECT pm.message, pm.created_at, u.username
+    FROM private_messages pm
+    JOIN users u ON u.id = pm.sender_id
+    WHERE pm.receiver_id = :user_id OR pm.sender_id = :user_id
+    ORDER BY pm.created_at DESC
+    LIMIT 50
+");
+$stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+$stmt->execute();
+
+$messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Encode the array to JSON and output it
+echo json_encode($messages);
+
+$db = null;  // Close the connection
 ?>
 

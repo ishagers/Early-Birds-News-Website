@@ -21,41 +21,45 @@ $ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) 
     <link rel="stylesheet" href="../routes/menuStyles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
+        .chat-widget, .public-chat-widget {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+        .public-chat-widget {
+            position: relative;
+            width: 80%;
+            margin: 20px auto;
+            height: 400px;
+            overflow: hidden;
+        }
         .chat-widget {
             position: fixed;
             bottom: 20px;
             right: 20px;
             width: 300px;
             height: 400px;
-            overflow: hidden; /* ensure internal scrolling behaves */
-            background-color: white;
-            box-shadow: 0 0 5px rgba(0,0,0,0.2);
-            border-radius: 8px;
+            overflow: hidden;
             z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            display: flex; /* Initially hidden */
         }
-
         .chat-messages {
             flex-grow: 1;
             overflow-y: auto;
             margin-bottom: 10px;
         }
-
         .chat-input {
-            width: calc(100% - 20px); /* accounting for padding */
+            width: calc(100% - 20px);
             margin-bottom: 5px;
         }
-
         button {
             align-self: center;
         }
     </style>
 </head>
 <body>
-
 <?php include 'nav.php'; ?>
 
 <div class="header">
@@ -63,19 +67,25 @@ $ebpPoints = isset($_SESSION['username']) ? fetchUserEBP($_SESSION['username']) 
     <div class="user-info">
         Logged in as: <strong><?php echo htmlspecialchars($username); ?></strong>
         <span class="eb-points-label">EB Points:</span>
-        <span id="ebpPoints" class="eb-points"><?php echo $ebpPoints; ?></span>
+        <span class="eb-points"><?php echo $ebpPoints; ?></span>
     </div>
 </div>
 
-<!-- Chat Toggle Button -->
-<button onclick="toggleChat()" style="position: fixed; bottom: 10px; right: 10px; z-index: 1100;">Toggle Chat</button>
+<!-- Public Chat Section -->
+<div class="public-chat-widget">
+    <h2>Public Chat</h2>
+    <div id="publicChatBox" class="chat-messages"></div>
+    <textarea id="publicMessage" class="chat-input" placeholder="Type your message here..."></textarea>
+    <button onclick="sendPublicMessage()">Send</button>
+</div>
 
-<!-- Chat Container -->
-<div id="chatContainer" class="chat-widget">
-    <h2>Chat</h2>
+<!-- Private Chat Widget -->
+<button onclick="toggleChat()" style="position: fixed; bottom: 50px; right: 20px; z-index: 1100;">Toggle Private Chat</button>
+<div id="chatContainer" class="chat-widget" style="display: none;">
+    <h2>Private Chat</h2>
     <div id="chatBox" class="chat-messages"></div>
     <textarea id="message" class="chat-input" placeholder="Type your message here..."></textarea>
-    <button onclick="sendMessage()">Send</button>
+    <button onclick="sendPrivateMessage()">Send</button>
 </div>
 
 <script>
@@ -84,43 +94,53 @@ function toggleChat() {
     chatWidget.style.display = (chatWidget.style.display === 'none' ? 'block' : 'none');
 }
 
-function fetchMessages() {
-    console.log("Fetching messages...");
+function sendPublicMessage() {
+    var message = $('#publicMessage').val();
+    if (message.trim() === '') {
+        alert('Please enter a message');
+        return; // Prevent sending an empty message
+    }
+
     $.ajax({
-        url: '../backend/getMessages.php',
-        type: 'GET',
-        dataType: 'json',
-        success: function(messages) {
-            console.log("Messages fetched:", messages);
-            var chatBox = $('#chatBox');
-            chatBox.html(''); // Clear previous messages
-            // Reverse the order of messages before appending them
-            messages.reverse().forEach(function(message) {
-                chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
-            });
+        url: '../backend/sendPublicMessages.php', // Adjust the path as necessary
+        type: 'POST',
+        data: {message: message},
+        success: function(response) {
+            console.log("Response received:", response);
+            $('#publicMessage').val(''); // Clear the input field
+            fetchPublicMessages(); // Refresh the message list if necessary
         },
         error: function(xhr, status, error) {
-            console.error('Error fetching messages:', error);
-            console.error('Detailed error:', xhr.responseText);
+            console.error('Error sending public message:', error);
         }
     });
 }
 
-function sendMessage() {
-    var username = '<?php echo $_SESSION['username']; ?>'; // Use username for identification
+function sendPrivateMessage() {
     var message = $('#message').val();
-    console.log("Sending message:", message); // Debug: Output message to console
-    $.post('../backend/sendMessage.php', { username: username, message: message }, function(response) {
-        console.log("Response received:", response); // Debug: Output response to console
-        $('#message').val(''); // Clear the message input box
-        fetchMessages(); // Refresh messages to include the new one
-    }).fail(function(xhr) {
-        console.error('Error sending message:', xhr.responseText);
+    if (message.trim() === '') {
+        alert('Please enter a message');
+        return; // Prevent sending an empty message
+    }
+
+    $.ajax({
+        url: '../backend/sendMessage.php', // Adjust the path as necessary
+        type: 'POST',
+        data: {message: message},
+        success: function(response) {
+            console.log("Response received:", response);
+            $('#message').val(''); // Clear the input field
+            fetchPrivateMessages(); // Refresh the message list if necessary
+        },
+        error: function(xhr, status, error) {
+            console.error('Error sending private message:', error);
+        }
     });
 }
 
 setInterval(fetchMessages, 2000);  // Polling every 2 seconds
-</script>
 
+</script>
 </body>
 </html>
+
