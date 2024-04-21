@@ -131,6 +131,7 @@ include 'nav.php';
 
 var fetchInterval; // Global variable to hold the interval ID
 var isFetchingActive = true; // This flag will control whether messages should be fetched
+var lastMessageId = 0; // Initialize with zero to fetch all messages initially
 
 function stopFetchingMessages() {
     clearInterval(fetchInterval); // Stop the interval
@@ -209,14 +210,15 @@ function sendPrivateMessage() {
 }
 function fetchPublicMessages() {
     $.ajax({
-        url: '../backend/getPublicMessages.php', 
+        url: '../backend/getPublicMessages.php',
         type: 'GET',
+        data: {lastMessageId: lastMessageId},
         dataType: 'json',
         success: function(messages) {
             var chatBox = $('#publicChatBox');
-            chatBox.html(''); // Clear the chat box before appending new messages
             messages.forEach(function(message) {
-                chatBox.append(`<p><strong>${message.username}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
+                chatBox.append(`<p><strong>${message.user_id}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
+                lastMessageId = message.id; // Update lastMessageId with the latest fetched message's ID
             });
             chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
         },
@@ -261,8 +263,8 @@ function clearPublicChat() {
 
 
 $(document).ready(function() {
-    startFetchingMessages(); // Start auto-fetching on page load
-
+    fetchPublicMessages(); // Initial fetch on page load
+    setInterval(fetchPublicMessages, 2000); // Polling new messages every 2 seconds
 });
 
 </script>
