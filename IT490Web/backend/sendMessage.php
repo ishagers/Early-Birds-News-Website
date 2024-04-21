@@ -11,7 +11,6 @@ if (isset($_POST['user_id']) && isset($_POST['message'])) {
     $user_id = $_POST['user_id'];
     $message = $_POST['message'];
 
-    // Check if user_id exists in the users table
     $userCheck = $db->prepare("SELECT id FROM users WHERE id = ?");
     $userCheck->bindParam(1, $user_id, PDO::PARAM_INT);
     $userCheck->execute();
@@ -24,9 +23,11 @@ if (isset($_POST['user_id']) && isset($_POST['message'])) {
         if ($stmt->execute()) {
             echo "Message sent successfully";
         } else {
+            error_log("Error sending message: " . $stmt->errorInfo()[2]);
             echo "Error sending message: " . $stmt->errorInfo()[2];
         }
     } else {
+        error_log("Error: User ID does not exist - " . $user_id);
         echo "Error: User ID does not exist.";
     }
 
@@ -36,6 +37,9 @@ if (isset($_POST['user_id']) && isset($_POST['message'])) {
 }
 
 $db = null;
+
+
+
 
 ?>
 
