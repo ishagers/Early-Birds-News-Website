@@ -1068,13 +1068,16 @@ function awardEBPForCommentingArticles($username)
                 echo "<script>console.log('past first if');</script>";
                 // If not already rewarded, award EBP and mark quest as completed
                 if (!$alreadyRewarded) {
-                    echo "<script>console.log('second if');</script>";
+                    echo "<script>console.log('Attempting to award EBP for quest ID: {$quest['id']}');</script>";
                     $response = addCurrencyToUserByUsername($username, $quest['reward']);
+
+                    // Log the response from addCurrencyToUserByUsername to see what it returns
+                    echo "<script>console.log('addCurrencyToUserByUsername response: " . json_encode($response) . "');</script>";
                     if (!$response['status']) {
                         $pdo->rollBack(); // Rollback the transaction on failure
                         throw new Exception('Failed to add EBP: ' . $response['message']);
                     }
-
+                    echo "<script>console.log('EBP awarded, now updating user_quests table');</script>";
                     // Insert into User_Quests to mark this quest as completed
                     $stmt = $pdo->prepare("INSERT INTO user_quests (quest_id, user_username, is_completed, completion_date)
                                             VALUES (:questId, :username, 1, NOW())
