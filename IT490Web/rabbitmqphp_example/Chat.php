@@ -189,14 +189,14 @@ function fetchFriends() {
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            if (response.status === "success" && Array.isArray(response.data)) {
+            if (response.status === "success") {
                 var friendsList = $('#friends');
                 friendsList.empty(); // Clear existing entries
                 response.data.forEach(function(friend) {
                     friendsList.append(`<li onclick="startChatWith('${friend.id}')">${friend.username}</li>`);
                 });
             } else {
-                console.error('Received data is not an array:', response);
+                console.error('Error fetching friends:', response.message);
             }
         },
         error: function(xhr, status, error) {

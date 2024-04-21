@@ -2,7 +2,8 @@
 require_once '../rabbitmqphp_example/databaseFunctions.php';
 
 // Start session management
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 
 // Check if user is authenticated
 if (!isset($_SESSION['user_id'])) {

@@ -1,31 +1,22 @@
 <?php
-
-require_once '../rabbitmqphp_example/databaseFunctions.php';
-
-// Start session management
+require_once 'databaseFunctions.php'; // Ensure this file has the necessary functions and a proper DB connection setup.
 session_start();
 
-// Check if user is authenticated
 if (!isset($_SESSION['username'])) {
-    http_response_code(403); // Forbidden
-    echo json_encode(['error' => 'User not logged in']);
+    // Return an error if the user is not logged in
+    echo json_encode(['status' => 'error', 'message' => 'User not authenticated']);
     exit;
 }
 
 $username = $_SESSION['username'];
-$db = getDatabaseConnection();
+$conn = getDatabaseConnection(); // Make sure this function properly initializes and returns a PDO connection.
 
 try {
-    $friends = fetchFriendsByUsername($db, $username);
-
-    header('Content-Type: application/json');
-    echo json_encode($friends);
+    $friends = fetchFriendsByUsername($conn, $username);
+    echo json_encode(['status' => 'success', 'data' => $friends]);
 } catch (Exception $e) {
-    http_response_code(500); // Internal Server Error
-    echo json_encode(['error' => $e->getMessage()]);
+    // Handle exception by sending a JSON error message
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
-
-$db = null;
-
 ?>
 
