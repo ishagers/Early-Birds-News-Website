@@ -5,6 +5,17 @@ checkLogin();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+// Debugging: Log session data
+error_log("Session Data: " . print_r($_SESSION, true));
+
+$username = $_SESSION['username'];
+
+// Additional debugging: Confirm that username is set
+if (!isset($username)) {
+    error_log("Username is not set in the session.");
+    die("Error: Session data is missing. Please log in again.");
+}
+
 $username = $_SESSION['username'];
 $articleData = fetchArticles(15, 'public', 'user');
 $quests = fetchAvailableQuests($username);

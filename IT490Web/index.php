@@ -27,9 +27,11 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
 
         // Redirect to main menu if headers not already sent
         if (!headers_sent()) {
+            error_log("Redirecting to mainMenu.php");
             header("Location: rabbitmqphp_example/mainMenu.php");
             exit();
         } else {
+            error_log("Failed to redirect because headers were already sent.");
             die('Error: Headers already sent, cannot redirect');  // Better error handling
         }
     } else {
