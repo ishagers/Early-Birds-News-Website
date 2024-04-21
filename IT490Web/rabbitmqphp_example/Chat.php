@@ -128,18 +128,20 @@ include 'nav.php';
 <button onclick="toggleChat()" style="position: fixed; bottom: 10px; right: 10px; z-index: 1100;">Toggle Chat</button>
 
 <script>
-
 var fetchInterval; // Global variable to hold the interval ID
 var isFetchingActive = true; // This flag will control whether messages should be fetched
 var lastMessageId = 0; // Initialize with zero to fetch all messages initially
 
-function stopFetchingMessages() {
-    clearInterval(fetchInterval); // Stop the interval
-}
+$(document).ready(function() {
+    fetchFriends(); // Fetch friends list on page load
+    startFetchingMessages(); // Start fetching messages immediately on page load
+});
+
 function toggleChat() {
     var chatWidget = document.getElementById('chatContainer');
     chatWidget.style.display = (chatWidget.style.display === 'none' ? 'block' : 'none');
 }
+
 function sendPublicMessage() {
     var message = $('#publicMessage').val();
     if (message.trim() === '') {
@@ -162,7 +164,48 @@ function sendPublicMessage() {
     });
 }
 
+function fetchPublicMessages() {
+    if (!isFetchingActive) return; // Prevent fetching when not active
+    $.ajax({
+        url: '../backend/getPublicMessages.php',
+        type: 'GET',
+        data: {lastMessageId: lastMessageId},
+        dataType: 'json',
+        success: function(messages) {
+            var chatBox = $('#publicChatBox');
+            messages.forEach(function(message) {
+                chatBox.append(`<p><strong>${message.user_id}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
+                lastMessageId = message.id; // Update lastMessageId with the latest fetched message's ID
+            });
+            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching public messages:', error);
+        }
+    });
+}
 
+function startFetchingMessages() {
+    if (fetchInterval) clearInterval(fetchInterval); // Clear any existing interval
+    fetchInterval = setInterval(fetchPublicMessages, 2000); // Fetch messages every 2 seconds
+}
+
+function stopFetchingMessages() {
+    clearInterval(fetchInterval); // Stop the interval
+    fetchInterval = null; // Clear the interval ID
+}
+
+function clearPublicChat() {
+    stopFetchingMessages(); // Stop fetching when clearing chat
+    $('#publicChatBox').empty(); // Clears the chat box
+    isFetchingActive = false; // Optionally stop fetching
+}
+
+function resumeFetching() {
+    isFetchingActive = true; // Re-enable fetching
+    fetchPublicMessages(); // Immediately fetch messages
+    startFetchingMessages(); // Restart the interval
+}
 function fetchFriends() {
     $.ajax({
         url: '../backend/getFriendsList.php',
@@ -186,9 +229,6 @@ function startChatWith(friendId) {
     // Further code to open or focus the chat window with this friend
 }
 
-$(document).ready(function() {
-    fetchFriends(); // Fetch friends list on page load
-});
 function sendPrivateMessage() {
     var message = $('#message').val();
     if (message.trim() === '') {
@@ -208,27 +248,6 @@ function sendPrivateMessage() {
         }
     });
 }
-function fetchPublicMessages() {
-    $.ajax({
-        url: '../backend/getPublicMessages.php',
-        type: 'GET',
-        data: {lastMessageId: lastMessageId},
-        dataType: 'json',
-        success: function(messages) {
-            var chatBox = $('#publicChatBox');
-            messages.forEach(function(message) {
-                chatBox.append(`<p><strong>${message.user_id}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
-                lastMessageId = message.id; // Update lastMessageId with the latest fetched message's ID
-            });
-            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
-        },
-        error: function(xhr, status, error) {
-            console.error('Error fetching public messages:', error);
-        }
-    });
-}
-
-
 function fetchPrivateMessages() {
     $.ajax({
         url: '../backend/getMessages.php',
@@ -247,25 +266,6 @@ function fetchPrivateMessages() {
         }
     });
 }
-function startFetchingMessages() {
-    fetchInterval = setInterval(fetchPublicMessages, 2000); // Start fetching messages every 2 seconds
-}
-function resumeFetching() {
-    isFetchingActive = true; // Re-enable fetching
-    fetchPublicMessages(); // Immediately fetch messages
-    startFetchingMessages(); // Restart the interval
-}
-
-function clearPublicChat() {
-    isFetchingActive = false; // Stop fetching when clearing chat
-    $('#publicChatBox').empty(); // Clears the chat box
-}
-
-
-$(document).ready(function() {
-    fetchPublicMessages(); // Initial fetch on page load
-    setInterval(fetchPublicMessages, 2000); // Polling new messages every 2 seconds
-});
 
 </script>
 
