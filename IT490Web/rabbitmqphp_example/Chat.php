@@ -106,6 +106,32 @@ function sendPublicMessage() {
         }
     });
 }
+function fetchFriends() {
+    $.ajax({
+        url: '../backend/getFriendsList.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function(friends) {
+            var friendsList = $('#friends');
+            friendsList.empty(); // Clear existing entries
+            friends.forEach(function(friend) {
+                friendsList.append(`<li onclick="startChatWith('${friend.id}')">${friend.username}</li>`);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching friends:', error);
+        }
+    });
+}
+
+function startChatWith(friendId) {
+    console.log("Starting chat with", friendId);
+    // Further code to open or focus the chat window with this friend
+}
+
+$(document).ready(function() {
+    fetchFriends(); // Fetch friends list on page load
+});
 function sendPrivateMessage() {
     var message = $('#message').val();
     if (message.trim() === '') {
