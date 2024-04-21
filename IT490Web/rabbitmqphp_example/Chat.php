@@ -113,11 +113,6 @@ include 'nav.php';
     <button onclick="clearPublicChat()">Clear Chat</button> <!-- New button to clear chat -->
 </div>
 
-<!-- Side Panel for Friends List -->
-<div id="friendsList" class="friends-panel">
-    <h3>My Friends</h3>
-    <ul id="friends"></ul>
-</div>
 <!-- Private Chat Widget with Friends List -->
 <div id="chatContainer" class="chat-widget" style="display: none;">
     <h2>Private Chat</h2>
