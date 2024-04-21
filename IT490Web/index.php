@@ -17,7 +17,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
 
     $result = publisher($queryValues);
     error_log("Publisher result: " . print_r($result, true));
-	if ($result && $result['returnCode'] == '0' && isset($result['user_id'])) {
+	if ($result && $result['returnCode'] == '0') {
 	    // Login successful
 	    $_SESSION['username'] = $_POST['username'];
 	    $_SESSION['user_id'] = $result['user_id'];
