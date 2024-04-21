@@ -17,11 +17,12 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
 
     $result = publisher($queryValues);
 
-    if ($result && $result['returnCode'] == '0') {
+    if ($result && $result['returnCode'] == '0' && isset($result['user_id'])) {
         // Login successful
         echo "Great, we found you: " . htmlspecialchars($result['message']);
         $_SESSION['username'] = $_POST['username'];
         $_SESSION['user_id'] = $result['user_id']; // Ensure 'user_id' is correctly provided by the response
+	error_log("Logged in user: " . $_SESSION['username'] . " with ID: " . $_SESSION['user_id']);
 
         header("Location: rabbitmqphp_example/mainMenu.php"); // Redirect to the home page or dashboard
         exit();
