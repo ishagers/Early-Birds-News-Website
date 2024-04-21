@@ -1,6 +1,8 @@
 <?php
 require_once '../rabbitmqphp_example/databaseFunctions.php';
 
+session_save_path('/sessions');
+
 session_start();  // Ensure session is started
 
 if (!isset($_SESSION['user_id'])) {
