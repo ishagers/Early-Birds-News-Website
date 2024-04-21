@@ -1,11 +1,17 @@
 <?php
+
 require_once '../rabbitmqphp_example/databaseFunctions.php';
+
 session_start();  // Ensure session is started
 
 $db = getDatabaseConnection();
 
 if (isset($_POST['message'])) {
     $user_id = $_SESSION['user_id'];  // Retrieve user ID from session
+
+    // Debug statement to display the user ID
+    echo "Session User ID: " . (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : "Not set") . "<br>";
+
     $message = $_POST['message'];
 
     // First, validate that the user_id exists in the users table
@@ -32,5 +38,6 @@ if (isset($_POST['message'])) {
 }
 
 $db = null;  // Close the connection by setting it to null
+
 ?>
 
