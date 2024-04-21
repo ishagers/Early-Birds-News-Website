@@ -178,14 +178,17 @@ function fetchAllUsernames($currentUsername) {
 }
 function sendFriendRequest($conn, $username1, $username2) {
     try {
+        // Check if the usernames are the same
+        if ($username1 === $username2) {
+            return ['status' => false, 'message' => 'You cannot send a friend request to yourself.'];
+        }
+
         $user_id1 = getUserIdByUsername($conn, $username1);
         $user_id2 = getUserIdByUsername($conn, $username2);
 
         if (!$user_id1 || !$user_id2) {
             return ['status' => false, 'message' => 'One or both users not found.'];
         }
-
-        // Log initial user IDs for debugging
         error_log("Initial IDs: User1: $user_id1, User2: $user_id2, Action User: $username1");
 
         // Ensure user_id1 is always the smaller ID to maintain consistency

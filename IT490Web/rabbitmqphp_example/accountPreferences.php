@@ -60,7 +60,6 @@ if (isset($_SESSION['message'])) {
 		    <li>
 		        <?php
 		        $requesterUsername = htmlspecialchars($request['username'] ?? 'Unknown');
-		        $requesterId = htmlspecialchars($request['user_id1'] ?? '0'); 
 		        ?>
 		        <?= $requesterUsername ?>
 				<form action="respondToRequest.php" method="post">
