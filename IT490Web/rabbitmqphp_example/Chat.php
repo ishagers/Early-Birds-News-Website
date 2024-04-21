@@ -218,18 +218,23 @@ function fetchFriends() {
         url: '../backend/getFriendsList.php',
         type: 'GET',
         dataType: 'json',
-        success: function(friends) {
-            var friendsList = $('#friends');
-            friendsList.empty(); // Clear existing entries
-            friends.forEach(function(friend) {
-                friendsList.append(`<li onclick="startChatWith('${friend.id}')">${friend.username}</li>`);
-            });
+        success: function(response) {
+            if (response.status === "success" && Array.isArray(response.data)) {
+                var friendsList = $('#friends');
+                friendsList.empty(); // Clear existing entries
+                response.data.forEach(function(friend) {
+                    friendsList.append(`<li onclick="startChatWith('${friend.id}')">${friend.username}</li>`);
+                });
+            } else {
+                console.error('Received data is not an array:', response);
+            }
         },
         error: function(xhr, status, error) {
             console.error('Error fetching friends:', error);
         }
     });
 }
+
 
 function startChatWith(friendId) {
     console.log("Starting chat with", friendId);

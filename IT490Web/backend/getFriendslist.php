@@ -1,15 +1,16 @@
 <?php
 require_once '../rabbitmqphp_example/databaseFunctions.php';
-
+$db = getDatabaseConnection();
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode([]);
+    http_response_code(403); // Forbidden
+    echo json_encode(['error' => 'User not logged in']);
     exit;
 }
 
 $user_id = $_SESSION['user_id'];
-$db = getDatabaseConnection();
+
 
 $stmt = $db->prepare("
     SELECT u.id, u.username 
