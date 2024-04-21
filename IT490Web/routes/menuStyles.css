@@ -31,12 +31,13 @@ body {
     .nav-bar ul {
         list-style-type: none;
         display: flex;
-        justify-content: flex-end; /* Align items to the right */
+        justify-content: center; /* Align items to the right */
         margin-right: 20px; /* Add right margin for some spacing from the edge */
+        flex-wrap: wrap;
     }
 
         .nav-bar ul li {
-            margin: 0 15px;
+            margin: 0 10px;
         }
 
             .nav-bar ul li a {
@@ -86,12 +87,12 @@ body {
     font-size: 1.2em;
 }
 .user-info {
-    position: absolute; /* Position relative to the header */
-    right: 20px; /* Distance from the right edge of the header */
-    top: 50%; /* Align vertically at the center */
-    transform: translateY(-50%); /* Adjust vertical alignment */
+    text-align: center; /* Center the user info */
+    margin-top: 10px; /* Add some space above the user info */
     display: flex;
+    justify-content: center;
     align-items: center;
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
 }
 
 
@@ -99,11 +100,17 @@ body {
 @media (max-width: 768px) {
     .nav-bar ul {
         flex-direction: column;
+        align-items: center; /* Center the navigation items on smaller screens */
     }
 
-        .nav-bar ul li {
-            margin: 10px 0;
-        }
+    .nav-bar ul li {
+        margin: 5px 0;
+    }
+
+    .user-info {
+        flex-direction: column; /* Stack user info items vertically on smaller screens */
+        text-align: center;
+    }
 }
 .article-form {
     max-width: 600px;
