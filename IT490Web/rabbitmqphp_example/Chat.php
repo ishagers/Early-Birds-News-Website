@@ -161,19 +161,21 @@ function fetchPublicMessages() {
         dataType: 'json',
         success: function(messages) {
             var chatBox = $('#publicChatBox');
-            chatBox.html('');
+            var currentHTML = chatBox.html(); // Get the current HTML content
+
+            var newMessages = '';
             messages.forEach(function(message) {
-                // Adjust the display formatting if necessary
-                chatBox.append(`<p><strong>${message.username}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
+                newMessages += `<p><strong>${message.username}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`;
             });
-            chatBox.scrollTop(chatBox.prop("scrollHeight"));
+
+            chatBox.html(currentHTML + newMessages); // Append the new messages to the existing content
+            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Scroll to the bottom
         },
         error: function(xhr, status, error) {
             console.error('Error fetching public messages:', xhr.responseText);
         }
     });
 }
-
 
 function clearPublicChat() {
   $('#publicChatBox').empty(); // Clears the chat box display for the user
