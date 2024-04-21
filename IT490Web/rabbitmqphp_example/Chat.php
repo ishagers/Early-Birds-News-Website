@@ -106,10 +106,10 @@ function fetchMessages() {
 }
 
 function sendMessage() {
-    var userId = '<?php echo $_SESSION['user_id']; ?>';  // Assuming session is always set correctly
+    var username = '<?php echo $_SESSION['username']; ?>'; // Use username for identification
     var message = $('#message').val();
     console.log("Sending message:", message); // Debug: Output message to console
-    $.post('../backend/sendMessage.php', { user_id: userId, message: message }, function(response) {
+    $.post('../backend/sendMessage.php', { username: username, message: message }, function(response) {
         console.log("Response received:", response); // Debug: Output response to console
         $('#message').val(''); // Clear the message input box
         fetchMessages(); // Refresh messages to include the new one
