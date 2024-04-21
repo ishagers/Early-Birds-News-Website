@@ -10,7 +10,7 @@
     <?php
     require('nav.php');
     require('session.php');
-    require('databaseFunctions.php');
+    require_once('databaseFunctions.php');
 
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
