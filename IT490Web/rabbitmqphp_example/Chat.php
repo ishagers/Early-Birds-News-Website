@@ -6,6 +6,38 @@
     <link rel="stylesheet" href="../routes/menuStyles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
+	  .friends-panel {
+	    width: 200px;
+	    position: fixed;
+	    left: 0;
+	    top: 0;
+	    height: 100%;
+	    overflow-y: auto;
+	    background-color: #f9f9f9;
+	    border-right: 1px solid #ccc;
+	}
+
+	.friends-panel h3 {
+	    padding: 10px;
+	    background-color: #eee;
+	    margin: 0;
+	}
+
+	.friends-panel ul {
+	    list-style: none;
+	    padding: 0;
+	    margin: 0;
+	}
+
+	.friends-panel ul li {
+	    padding: 10px;
+	    cursor: pointer;
+	}
+
+	.friends-panel ul li:hover {
+	    background-color: #ddd;
+	}
+
         .chat-widget, .public-chat-widget {
             background-color: white;
             border-radius: 8px;
