@@ -1,34 +1,22 @@
 <?php
-header('Content-Type: application/json');  // Set the header to return JSON
-
 require_once '../rabbitmqphp_example/databaseFunctions.php';
 
-try {
-    $db = getDatabaseConnection();  // Establish a database connection
+$db = getDatabaseConnection();
 
-    $lastMessageId = isset($_GET['lastMessageId']) ? intval($_GET['lastMessageId']) : 0;
+// Use the 'timestamp' column instead of 'created_at'
+$stmt = $db->prepare("
+    SELECT pm.message, pm.timestamp, u.username
+    FROM public_messages pm
+    JOIN users u ON u.id = pm.user_id
+    ORDER BY pm.timestamp DESC
+    LIMIT 50
+");
+$stmt->execute();
 
-    // Prepare the SQL statement using placeholders
-    $stmt = $db->prepare("SELECT id, user_id, message, timestamp FROM public_messages WHERE id > ? ORDER BY id ASC");
-    $stmt->bindParam(1, $lastMessageId, PDO::PARAM_INT);
-    $stmt->execute();
+$messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+header('Content-Type: application/json');
+echo json_encode($messages);
 
-    echo json_encode([
-        'status' => 'success',
-        'data' => $messages
-    ]);
-} catch (Exception $e) {
-    // Handle any exceptions/errors
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Error fetching messages: ' . $e->getMessage()
-    ]);
-} finally {
-    if ($db) {
-        $db = null;  // Close the database connection
-    }
-}
+$db = null;  // Close the connection
 ?>
-

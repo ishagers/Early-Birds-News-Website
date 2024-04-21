@@ -156,22 +156,24 @@ function sendPublicMessage() {
 }
 function fetchPublicMessages() {
     $.ajax({
-        url: '../backend/getPublicMessages.php', // Ensure the URL is correct
+        url: '../backend/getPublicMessages.php',
         type: 'GET',
         dataType: 'json',
         success: function(messages) {
             var chatBox = $('#publicChatBox');
-            chatBox.html(''); // Clear the chat box before appending new messages
+            chatBox.html('');
             messages.forEach(function(message) {
-                chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
+                // Adjust the display formatting if necessary
+                chatBox.append(`<p><strong>${message.username}</strong>: ${message.message} <span>at ${message.timestamp}</span></p>`);
             });
-            chatBox.scrollTop(chatBox.prop("scrollHeight")); // Auto-scroll to the bottom
+            chatBox.scrollTop(chatBox.prop("scrollHeight"));
         },
         error: function(xhr, status, error) {
-            console.error('Error fetching public messages:', error);
+            console.error('Error fetching public messages:', xhr.responseText);
         }
     });
 }
+
 
 function clearPublicChat() {
     stopFetchingMessages(); // Stop fetching when clearing chat
