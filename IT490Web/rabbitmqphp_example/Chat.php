@@ -236,13 +236,21 @@ function fetchPrivateMessages() {
         type: 'GET',
         dataType: 'json',
         success: function(messages) {
-            var chatBox = $('#chatBox');
-            chatBox.html('');
-            messages.forEach(function(message) {
-                chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
-            });
-            chatBox.scrollTop(chatBox.prop("scrollHeight"));
-        },
+    console.log(messages); // Check what the server returns
+    var chatBox = $('#chatBox');
+    chatBox.html('');
+
+    if(Array.isArray(messages)) { // Check if messages is an array
+        messages.forEach(function(message) {
+            chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
+        });
+    } else {
+        console.error("Received data is not an array:", messages);
+    }
+    
+    chatBox.scrollTop(chatBox.prop("scrollHeight"));
+}
+,
         error: function(xhr, status, error) {
             console.error('Error fetching private messages:', error);
         }
