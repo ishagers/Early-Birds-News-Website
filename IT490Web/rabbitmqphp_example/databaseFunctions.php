@@ -1028,7 +1028,7 @@ function awardEBPForCommentingArticles($username)
     $stmt->bindParam(':username', $username);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
+    echo "<script>console.log('Getting user ID');</script>";
     if (!$user) {
         return ['status' => false, 'message' => "User not found."];
     }
@@ -1056,7 +1056,7 @@ function awardEBPForCommentingArticles($username)
             if (isset($quest['condition_text']) && preg_match('/user comments on (\d+) article/', $quest['condition_text'], $matches)) {
                 $numberNeeded = (int) $matches[1];
             }
-
+            echo "<script>console.log('fetching all comment quests');</script>";
             // Check if the number of comments meets or exceeds the number needed for the quest
             if ($commentsCount >= $numberNeeded) {
                 // Check if this quest has already been rewarded
@@ -1081,6 +1081,7 @@ function awardEBPForCommentingArticles($username)
                     $stmt->bindParam(':questId', $quest['id']);
                     $stmt->bindParam(':username', $username);
                     $stmt->execute();
+                    echo "<script>console.log('Successfully got past function');</script>";
                 }
             }
         }
