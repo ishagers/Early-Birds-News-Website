@@ -52,7 +52,7 @@ function purchaseItem($username, $itemId) {
                         $stmt = $conn->prepare($sql);
                         $stmt->bindParam(':username', $username);
                         $stmt->execute();
-                        echo "<p>Purchase successful! You may now activate this feature in your profile settings.</p>";
+                        echo "<p>Purchase successful! You may now activate this feature by Clicking its toggle button!.</p>";
                     }
                     return;
                 } else {
