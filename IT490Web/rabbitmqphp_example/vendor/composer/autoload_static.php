@@ -7,41 +7,79 @@ namespace Composer\Autoload;
 class ComposerStaticInite7cf331f2dbe9384144c01a2a232045f
 {
     public static $files = array (
-        'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
+        'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        'p' => 
-        array (
-            'phpseclib3\\' => 11,
-        ),
         'R' => 
         array (
-            'Root\\It490web\\' => 14,
+            'React\\Stream\\' => 13,
+            'React\\Socket\\' => 13,
+            'React\\Promise\\' => 14,
+            'React\\Http\\' => 11,
+            'React\\EventLoop\\' => 16,
+            'React\\Dns\\' => 10,
+            'React\\Cache\\' => 12,
         ),
         'P' => 
         array (
+            'Psr\\Http\\Message\\' => 17,
             'PhpAmqpLib\\' => 11,
-            'ParagonIE\\ConstantTime\\' => 23,
+        ),
+        'F' => 
+        array (
+            'Fig\\Http\\Message\\' => 17,
+        ),
+        'E' => 
+        array (
+            'Evenement\\' => 10,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'phpseclib3\\' => 
+        'React\\Stream\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib',
+            0 => __DIR__ . '/..' . '/react/stream/src',
         ),
-        'Root\\It490web\\' => 
+        'React\\Socket\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src',
+            0 => __DIR__ . '/..' . '/react/socket/src',
+        ),
+        'React\\Promise\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/react/promise/src',
+        ),
+        'React\\Http\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/react/http/src',
+        ),
+        'React\\EventLoop\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/react/event-loop/src',
+        ),
+        'React\\Dns\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/react/dns/src',
+        ),
+        'React\\Cache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/react/cache/src',
+        ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'PhpAmqpLib\\' => 
         array (
-            0 => __DIR__ . '/..' . '/php-amqplib/php-amqplib/PhpAmqpLib',
+            0 => __DIR__ . '/..' . '/videlalvaro/php-amqplib/PhpAmqpLib',
         ),
-        'ParagonIE\\ConstantTime\\' => 
+        'Fig\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/paragonie/constant_time_encoding/src',
+            0 => __DIR__ . '/..' . '/fig/http-message-util/src',
+        ),
+        'Evenement\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/evenement/evenement/src',
         ),
     );
 

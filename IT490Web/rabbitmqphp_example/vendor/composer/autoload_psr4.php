@@ -6,8 +6,15 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'phpseclib3\\' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
-    'Root\\It490web\\' => array($baseDir . '/src'),
-    'PhpAmqpLib\\' => array($vendorDir . '/php-amqplib/php-amqplib/PhpAmqpLib'),
-    'ParagonIE\\ConstantTime\\' => array($vendorDir . '/paragonie/constant_time_encoding/src'),
+    'React\\Stream\\' => array($vendorDir . '/react/stream/src'),
+    'React\\Socket\\' => array($vendorDir . '/react/socket/src'),
+    'React\\Promise\\' => array($vendorDir . '/react/promise/src'),
+    'React\\Http\\' => array($vendorDir . '/react/http/src'),
+    'React\\EventLoop\\' => array($vendorDir . '/react/event-loop/src'),
+    'React\\Dns\\' => array($vendorDir . '/react/dns/src'),
+    'React\\Cache\\' => array($vendorDir . '/react/cache/src'),
+    'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
+    'PhpAmqpLib\\' => array($vendorDir . '/videlalvaro/php-amqplib/PhpAmqpLib'),
+    'Fig\\Http\\Message\\' => array($vendorDir . '/fig/http-message-util/src'),
+    'Evenement\\' => array($vendorDir . '/evenement/evenement/src'),
 );
