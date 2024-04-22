@@ -7,7 +7,6 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// Check if the feature parameter is set
 if (!isset($_POST['feature'])) {
     echo "Feature not specified.";
     exit;
@@ -16,13 +15,18 @@ if (!isset($_POST['feature'])) {
 $feature = $_POST['feature'];
 $username = $_SESSION['username'];
 
-// Toggle the feature
 function toggleFeature($username, $feature) {
     $conn = getDatabaseConnection();
-    $sql = "UPDATE users SET isActivated = JSON_SET(COALESCE(isActivated, '{}'), '$.$feature', NOT COALESCE(JSON_UNQUOTE(JSON_EXTRACT(isActivated, '$.$feature')), false)) WHERE username = :username";
+
+    // Map the feature to a JSON path dynamically and safely
+    $featurePath = '$.' . preg_replace('/[^a-zA-Z0-9_]+/', '_', $feature);  // Sanitize feature name for JSON path
+
+    // SQL to toggle the JSON attribute within isActivated
+    $sql = "UPDATE users SET isActivated = JSON_SET(COALESCE(isActivated, '{}'), :featurePath, NOT COALESCE(JSON_UNQUOTE(JSON_EXTRACT(isActivated, :featurePath)), false)) WHERE username = :username";
 
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':username', $username);
+    $stmt->bindValue(':featurePath', $featurePath);
 
     if ($stmt->execute()) {
         return "Feature toggled successfully.";

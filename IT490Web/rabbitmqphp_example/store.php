@@ -24,6 +24,7 @@ if (isset($_POST['purchase'])) {
 
 function purchaseItem($username, $itemId) {
     $items = fetchStoreItems();
+
     foreach ($items as $item) {
         if ($item['id'] == $itemId) {
             $cost = $item['cost'];
@@ -34,7 +35,8 @@ function purchaseItem($username, $itemId) {
 
                 if ($updatePointsResult['status']) {
                     $conn = getDatabaseConnection();
-                    
+
+                    // Update the specific feature based on the item ID
                     $sql = "";
                     switch ($itemId) {
                         case 1: // Dark Mode
@@ -52,9 +54,17 @@ function purchaseItem($username, $itemId) {
                         $stmt = $conn->prepare($sql);
                         $stmt->bindParam(':username', $username);
                         $stmt->execute();
-                        echo "<p>Purchase successful! You may now activate this feature by Clicking its toggle button!.</p>";
+                        echo "<p>Purchase successful! You may now activate this feature by clicking its toggle button.</p>";
+
+                        // Record the transaction
+                        $transactionSql = "INSERT INTO transactions (user_id, item_id) VALUES ((SELECT id FROM users WHERE username = :username), :item_id)";
+                        $transactionStmt = $conn->prepare($transactionSql);
+                        $transactionStmt->bindParam(':username', $username);
+                        $transactionStmt->bindParam(':item_id', $itemId);
+                        $transactionStmt->execute();
                     }
                     return;
+
                 } else {
                     echo "<p>" . $updatePointsResult['message'] . "</p>";
                     return;
@@ -67,6 +77,7 @@ function purchaseItem($username, $itemId) {
     }
     echo "<p>Item not found.</p>";
 }
+
 
 
 ?>
