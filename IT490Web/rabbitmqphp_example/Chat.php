@@ -120,13 +120,16 @@ function fetchFriends() {
         dataType: 'json',
         success: function(response) {
             var friendsList = $('#friends');
-            friendsList.empty();
-            if (response && Array.isArray(response)) {
-                response.forEach(function(friend) {
+            friendsList.empty();  // Clear the list before appending new data
+
+            // Check if the response includes the status 'success' and handle data accordingly
+            if (response.status === "success" && Array.isArray(response.data)) {
+                response.data.forEach(function(friend) {
+                    // Append each friend to the list. Make sure 'friend.id' and 'friend.username' are correct.
                     friendsList.append(`<li onclick="startChatWith('${friend.id}')">${friend.username}</li>`);
                 });
             } else {
-                console.error('Error fetching friends: No data received');
+                console.error('Error fetching friends:', response.message);
             }
         },
         error: function(xhr, status, error) {
