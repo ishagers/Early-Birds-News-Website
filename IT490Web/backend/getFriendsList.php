@@ -1,5 +1,5 @@
 <?php
-require_once 'databaseFunctions.php'; 
+require_once '../rabbitmqphp_example/databaseFunctions.php';
 header('Content-Type: application/json');  // Set correct content type
 
 session_start();

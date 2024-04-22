@@ -28,23 +28,40 @@ function purchaseItem($username, $itemId) {
         if ($item['id'] == $itemId) {
             $cost = $item['cost'];
             $currentEBP = fetchUserEBP($username);
+
             if ($currentEBP >= $cost) {
                 $updatePointsResult = updateEBPoints($username, -$cost);
+
                 if ($updatePointsResult['status']) {
-                    if ($itemId == 1) {  // Assuming ID 1 is Dark Mode
-                        $conn = getDatabaseConnection();
-                        $sql = "UPDATE users SET has_dark_mode = true WHERE username = :username";
+                    $conn = getDatabaseConnection();
+                    
+                    $sql = "";
+                    switch ($itemId) {
+                        case 1: // Dark Mode
+                            $sql = "UPDATE users SET has_dark_mode = 1 WHERE username = :username";
+                            break;
+                        case 2: // Custom Cursor
+                            $sql = "UPDATE users SET has_custom_cursor = 1 WHERE username = :username";
+                            break;
+                        case 3: // Alternative Theme
+                            $sql = "UPDATE users SET has_alternative_theme = 1 WHERE username = :username";
+                            break;
+                    }
+
+                    if (!empty($sql)) {
                         $stmt = $conn->prepare($sql);
                         $stmt->bindParam(':username', $username);
                         $stmt->execute();
+                        echo "<p>Purchase successful! You may now activate this feature in your profile settings.</p>";
                     }
-                    echo "<p>Purchase successful!</p>";
+                    return;
                 } else {
                     echo "<p>" . $updatePointsResult['message'] . "</p>";
+                    return;
                 }
-                return;
             } else {
                 echo "<p>Insufficient EB Points.</p>";
+                return;
             }
         }
     }
@@ -71,7 +88,7 @@ function purchaseItem($username, $itemId) {
     <div class="feature-buttons">
         <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
         <button onclick="toggleCustomCursor()">Toggle Custom Cursor</button>
-        <button onclick="purchaseAlternativeTheme()">Purchase Alternative Theme</button>
+        <button onclick="toggleAlternativeTheme()">Toggle Alternative Theme</button>
     </div>
 
     <div class="store-items">
@@ -90,42 +107,26 @@ function purchaseItem($username, $itemId) {
         ?>
     </div>
     <script>
-  function toggleDarkMode() {
-   var xhr = new XMLHttpRequest();
-   xhr.open('POST', 'toggle_dark_mode.php', true);
-   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-   xhr.onreadystatechange = function() {
-   if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-       alert(xhr.responseText);
-             }
-       };
-            xhr.send('username=<?php echo $_SESSION['username']; ?>');
- }
-
-function toggleCustomCursor() {
- var xhr = new XMLHttpRequest();
- xhr.open('POST', 'toggle_custom_cursor.php', true);
- xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
- xhr.onreadystatechange = function() {
- if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-      alert(xhr.responseText);
+<script>
+function toggleFeature(feature) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '../../backend/toggle_feature.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            alert(xhr.responseText);
         }
     };
-            xhr.send('username=<?php echo $_SESSION['username']; ?>');
+    xhr.send('username=' + encodeURIComponent('<?php echo $_SESSION['username']; ?>') + '&feature=' + encodeURIComponent(feature));
 }
 
-function purchaseAlternativeTheme() {
- var xhr = new XMLHttpRequest();
- xhr.open('POST', 'purchase_alternative_theme.php', true);
- xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
- xhr.onreadystatechange = function() {
- if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-     alert(xhr.responseText);
-     }
-  };
-            xhr.send('username=<?php echo $_SESSION['username']; ?>');
-}  
-    </script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('toggleDarkMode').addEventListener('click', function() { toggleFeature('dark_mode'); });
+    document.getElementById('toggleCustomCursor').addEventListener('click', function() { toggleFeature('custom_cursor'); });
+    document.getElementById('toggleAlternativeTheme').addEventListener('click', function() { toggleFeature('alternative_theme'); });
+});
+</script>
+
 </body>
 </html>
 
