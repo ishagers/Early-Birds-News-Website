@@ -225,7 +225,7 @@ function startChatWith(friendId) {
     // Make sure the chat box is visible
     $('#chatContainer').show();
 }
-}
+
 function sendPrivateMessage() {
     var message = $('#message').val();
     if (message.trim() === '') {
