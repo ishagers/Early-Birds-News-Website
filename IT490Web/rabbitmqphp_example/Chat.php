@@ -234,7 +234,7 @@ function sendPrivateMessage() {
     }
 
     // Get the recipient's ID or username from the selected friend
-    var recipientId = /* ... */;
+    var recipientId = friendId;
 
     $.ajax({
         url: '../backend/sendMessage.php',
@@ -252,7 +252,7 @@ function sendPrivateMessage() {
 }
 function fetchPrivateMessages() {
     // Get the recipient's ID or username from the selected friend
-    var recipientId = /* ... */;
+    var recipientId = friendId;
 
     $.ajax({
         url: '../backend/getMessages.php',
