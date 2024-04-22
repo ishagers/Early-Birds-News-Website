@@ -117,7 +117,6 @@ include 'nav.php';
 <div id="chatContainer" class="chat-widget" style="display: none;">
     <h2>Private Chat</h2>
     <div class="friends-list">
-        <input type="text" placeholder="Search friends..." oninput="filterFriends(this.value)">
         <ul id="friends"></ul>
     </div>
     <div id="chatBox" class="chat-messages"></div>
@@ -126,6 +125,7 @@ include 'nav.php';
 </div>
 
 <button onclick="toggleChat()" style="position: fixed; bottom: 10px; right: 10px; z-index: 1100;">Toggle Chat</button>
+
 
 <script>
 var lastMessageId = 0; // Initialize with zero to fetch all messages initially
