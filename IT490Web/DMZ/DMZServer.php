@@ -1,13 +1,13 @@
 #!/usr/bin/php
 <?php
-require_once __DIR__ . '/../rabbitmqphp_example/vendor/autoload.php';  // Make sure this path is correct
+require_once __DIR__ . '../rabbitmqphp_example/vendor/autoload.php';  // Make sure this path is correct
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
-require_once __DIR__ . '/../rabbitmqphp_example/path.inc';
-require_once __DIR__ . '/../rabbitmqphp_example/get_host_info.inc';
-require_once __DIR__ . '/../rabbitmqphp_example/rabbitMQLib.inc';
-require_once __DIR__ . '/../rabbitmqphp_example/databaseFunctions.php';
+require_once __DIR__ . '../rabbitmqphp_example/path.inc';
+require_once __DIR__ . '../rabbitmqphp_example/get_host_info.inc';
+require_once __DIR__ . '../rabbitmqphp_example/rabbitMQLib.inc';
+require_once __DIR__ . '../rabbitmqphp_example/databaseFunctions.php';
 use RabbitMQApp\rabbitMQClient;
 $iniFilePath = __DIR__ . '/DMZServer.ini'; // Ensure this path is correct
 
