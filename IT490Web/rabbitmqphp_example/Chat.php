@@ -189,14 +189,14 @@ function fetchFriends() {
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            if (response.status === "success") {
-                var friendsList = $('#friends');
-                friendsList.empty(); // Clear existing entries
-                response.data.forEach(function(friend) {
+            var friendsList = $('#friends');
+            friendsList.empty(); // Clear existing entries
+            if (response && Array.isArray(response)) {
+                response.forEach(function(friend) {
                     friendsList.append(`<li onclick="startChatWith('${friend.id}')">${friend.username}</li>`);
                 });
             } else {
-                console.error('Error fetching friends:', response.message);
+                console.error('Error fetching friends: No data received');
             }
         },
         error: function(xhr, status, error) {
@@ -204,6 +204,7 @@ function fetchFriends() {
         }
     });
 }
+
 
 
 function startChatWith(friendId) {
@@ -262,7 +263,7 @@ setInterval(fetchPublicMessages, 2000);  // Polling public messages every 2 seco
 setInterval(fetchPrivateMessages, 2000);  // Polling private messages every 2 seconds
 $(document).ready(function() {
     fetchPublicMessages(); // Initial fetch on page load
-    //fetchPrivateMessages(); // Initial fetch on page load
+    fetchFriends(); // Initial fetch on page load
 });
 </script>
 </body>
