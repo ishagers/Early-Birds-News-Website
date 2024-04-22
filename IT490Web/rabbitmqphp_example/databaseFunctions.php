@@ -827,6 +827,34 @@ function fetchUserPreferences($username)
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_COLUMN, 0); // Fetching as a simple array of topic IDs
 }
+function fetchUserSettings($username) {
+    $conn = getDatabaseConnection();
+
+    // Query to fetch the `isActivated` JSON object from the users table
+    $sql = "SELECT isActivated FROM users WHERE username = :username";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':username', $username);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Initialize default settings
+    $settings = [
+        'dark_mode' => false,
+        'custom_cursor' => false,
+        'alternative_theme' => false
+    ];
+
+    if ($result && $result['isActivated']) {
+        // Decode the JSON object into an associative array
+        $isActivated = json_decode($result['isActivated'], true);
+        // Map each feature from JSON to settings array, ensuring they exist
+        $settings['dark_mode'] = isset($isActivated['dark_mode']) ? $isActivated['dark_mode'] : false;
+        $settings['custom_cursor'] = isset($isActivated['custom_cursor']) ? $isActivated['custom_cursor'] : false;
+        $settings['alternative_theme'] = isset($isActivated['alternative_theme']) ? $isActivated['alternative_theme'] : false;
+    }
+
+    return $settings;
+}
 
 
 function setArticlePrivate($articleId, $username)
