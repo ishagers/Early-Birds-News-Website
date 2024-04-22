@@ -51,41 +51,7 @@ function purchaseItem($username, $itemId) {
     echo "<p>Item not found.</p>";
 }
 
-function toggleDarkMode() {
-   var xhr = new XMLHttpRequest();
-   xhr.open('POST', 'toggle_dark_mode.php', true);
-   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-   xhr.onreadystatechange = function() {
-   if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-       alert(xhr.responseText);
-             }
-       };
-            xhr.send('username=<?php echo $_SESSION['username']; ?>');
- }
 
-function toggleCustomCursor() {
- var xhr = new XMLHttpRequest();
- xhr.open('POST', 'toggle_custom_cursor.php', true);
- xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
- xhr.onreadystatechange = function() {
- if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-      alert(xhr.responseText);
-        }
-    };
-            xhr.send('username=<?php echo $_SESSION['username']; ?>');
-}
-
-function purchaseAlternativeTheme() {
- var xhr = new XMLHttpRequest();
- xhr.open('POST', 'purchase_alternative_theme.php', true);
- xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
- xhr.onreadystatechange = function() {
- if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-     alert(xhr.responseText);
-     }
-  };
-            xhr.send('username=<?php echo $_SESSION['username']; ?>');
-}
 ?>
 
 <!DOCTYPE html>
@@ -123,6 +89,43 @@ function purchaseAlternativeTheme() {
         }
         ?>
     </div>
+    <script>
+  function toggleDarkMode() {
+   var xhr = new XMLHttpRequest();
+   xhr.open('POST', 'toggle_dark_mode.php', true);
+   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+   xhr.onreadystatechange = function() {
+   if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+       alert(xhr.responseText);
+             }
+       };
+            xhr.send('username=<?php echo $_SESSION['username']; ?>');
+ }
+
+function toggleCustomCursor() {
+ var xhr = new XMLHttpRequest();
+ xhr.open('POST', 'toggle_custom_cursor.php', true);
+ xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+ xhr.onreadystatechange = function() {
+ if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+      alert(xhr.responseText);
+        }
+    };
+            xhr.send('username=<?php echo $_SESSION['username']; ?>');
+}
+
+function purchaseAlternativeTheme() {
+ var xhr = new XMLHttpRequest();
+ xhr.open('POST', 'purchase_alternative_theme.php', true);
+ xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+ xhr.onreadystatechange = function() {
+ if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+     alert(xhr.responseText);
+     }
+  };
+            xhr.send('username=<?php echo $_SESSION['username']; ?>');
+}  
+    </script>
 </body>
 </html>
 
