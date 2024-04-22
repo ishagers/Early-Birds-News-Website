@@ -54,6 +54,7 @@ try {
     echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
 }
 
+
 // Close the database connection
 $db = null;
 ?>
