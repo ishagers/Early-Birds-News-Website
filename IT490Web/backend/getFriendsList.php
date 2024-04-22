@@ -1,5 +1,5 @@
 <?php
-require_once 'databaseFunctions.php'; // Ensure this file has the necessary functions and a proper DB connection setup.
+require_once '../rabbitmqphp_example/databaseFunctions.php'; 
 session_start();
 
 if (!isset($_SESSION['username'])) {
