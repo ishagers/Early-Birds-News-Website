@@ -1,5 +1,4 @@
 <?php
-
 require_once '../rabbitmqphp_example/databaseFunctions.php';
 
 session_start();
@@ -69,6 +68,4 @@ function getUserIdByUsername($db, $username) {
 }
 
 $db = null;
-
 ?>
-

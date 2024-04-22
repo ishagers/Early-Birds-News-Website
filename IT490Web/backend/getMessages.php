@@ -1,5 +1,4 @@
 <?php
-
 require_once '../rabbitmqphp_example/databaseFunctions.php';
 
 header('Content-Type: application/json'); // Ensure the header is set for JSON output
@@ -24,23 +23,37 @@ $db = getDatabaseConnection();
 // Fetch user ID from session
 $userId = $_SESSION['user_id'];
 
-// Prepare a statement to fetch friends, excluding the current user from results directly in SQL
-$stmt = $db->prepare("
-    SELECT u.id, u.username, u.online_status
-    FROM friends f
-    JOIN users u ON (u.id = f.user_id1 OR u.id = f.user_id2) AND u.id != :user_id
-    WHERE (f.user_id1 = :user_id OR f.user_id2 = :user_id) AND f.status = 'accepted'
-");
-$stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
-$stmt->execute();
+// Get the recipient's ID from the request
+$recipientId = $_GET['recipient_id'] ?? null;
 
-$friends = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if (!$recipientId) {
+    echo json_encode(['error' => 'Recipient ID is required']);
+    exit;
+}
 
-// Output the friends JSON
-echo json_encode(['status' => 'success', 'data' => $friends]);
+try {
+    // Prepare a statement to fetch private messages between the user and the recipient
+    $stmt = $db->prepare("
+        SELECT u.username, pm.message
+        FROM private_messages pm
+        JOIN users u ON (pm.sender_id = u.id OR pm.receiver_id = u.id)
+        WHERE (pm.sender_id = :userId AND pm.receiver_id = :recipientId)
+           OR (pm.sender_id = :recipientId AND pm.receiver_id = :userId)
+        ORDER BY pm.id ASC
+    ");
+    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+    $stmt->bindParam(':recipientId', $recipientId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Output the messages as JSON
+    echo json_encode($messages);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+}
 
 // Close the database connection
 $db = null;
-
 ?>
-

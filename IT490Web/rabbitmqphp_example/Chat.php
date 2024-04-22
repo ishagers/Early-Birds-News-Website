@@ -119,9 +119,11 @@ include 'nav.php';
     <div class="friends-list">
         <ul id="friends"></ul>
     </div>
-    <div id="chatBox" class="chat-messages"></div>
-    <textarea id="message" class="chat-input" placeholder="Type your message here..."></textarea>
-    <button onclick="sendPrivateMessage()">Send</button>
+    <div class="chat-area">
+        <div id="chatBox" class="chat-messages"></div>
+        <textarea id="message" class="chat-input" placeholder="Type your message here..."></textarea>
+        <button onclick="sendPrivateMessage()">Send</button>
+    </div>
 </div>
 
 <button onclick="toggleChat()" style="position: fixed; bottom: 10px; right: 10px; z-index: 1100;">Toggle Chat</button>
@@ -209,9 +211,21 @@ function fetchFriends() {
 
 function startChatWith(friendId) {
     console.log("Starting chat with", friendId);
-    // Further code to open or focus the chat window with this friend
-}
+    // Clear existing chat
+    $('#chatBox').html('');
 
+    // Store the current friend's ID in a global variable or data attribute
+    $('#chatContainer').data('activeFriend', friendId);
+
+    // Update the chat window to indicate which friend the user is chatting with
+    $('#chatContainer').find('.chat-header').text('Chatting with ' + friendId);  
+    // Fetch previous messages with this friend if any
+    fetchPrivateMessages(friendId);
+
+    // Make sure the chat box is visible
+    $('#chatContainer').show();
+}
+}
 function sendPrivateMessage() {
     var message = $('#message').val();
     if (message.trim() === '') {
@@ -219,10 +233,13 @@ function sendPrivateMessage() {
         return;
     }
 
+    // Get the recipient's ID or username from the selected friend
+    var recipientId = /* ... */;
+
     $.ajax({
         url: '../backend/sendMessage.php',
         type: 'POST',
-        data: { message: message },
+        data: { message: message, receiver_id: recipientId },
         success: function(response) {
             console.log("Response received:", response);
             $('#message').val('');
@@ -234,26 +251,29 @@ function sendPrivateMessage() {
     });
 }
 function fetchPrivateMessages() {
+    // Get the recipient's ID or username from the selected friend
+    var recipientId = /* ... */;
+
     $.ajax({
         url: '../backend/getMessages.php',
         type: 'GET',
+        data: { recipient_id: recipientId },
         dataType: 'json',
         success: function(messages) {
-    console.log(messages); // Check what the server returns
-    var chatBox = $('#chatBox');
-    chatBox.html('');
+            console.log(messages); // Check what the server returns
+            var chatBox = $('#chatBox');
+            chatBox.html('');
 
-    if(Array.isArray(messages)) { // Check if messages is an array
-        messages.forEach(function(message) {
-            chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
-        });
-    } else {
-        console.error("Received data is not an array:", messages);
-    }
-    
-    chatBox.scrollTop(chatBox.prop("scrollHeight"));
-}
-,
+            if (Array.isArray(messages)) { // Check if messages is an array
+                messages.forEach(function(message) {
+                    chatBox.append('<p><strong>' + message.username + '</strong>: ' + message.message + '</p>');
+                });
+            } else {
+                console.error("Received data is not an array:", messages);
+            }
+
+            chatBox.scrollTop(chatBox.prop("scrollHeight"));
+        },
         error: function(xhr, status, error) {
             console.error('Error fetching private messages:', error);
         }
@@ -264,6 +284,8 @@ setInterval(fetchPrivateMessages, 2000);  // Polling private messages every 2 se
 $(document).ready(function() {
     fetchPublicMessages(); // Initial fetch on page load
     fetchFriends(); // Initial fetch on page load
+    setInterval(fetchPrivateMessages, 2000); // Fetch every 2 seconds
+
 });
 </script>
 </body>
