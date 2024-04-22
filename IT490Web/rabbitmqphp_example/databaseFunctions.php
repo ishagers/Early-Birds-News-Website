@@ -1051,7 +1051,74 @@ function awardEBPForWritingArticles($username)
         return ['status' => false, 'message' => "Error checking and awarding quests: " . $e->getMessage()];
     }
 }
+function updateActivatedFeature($username, $feature, $isActivated) {
+    $conn = getDatabaseConnection();
+    $sql = "UPDATE users SET isActivated = JSON_SET(COALESCE(isActivated, '{}'), '$.{$feature}', :isActivated) WHERE username = :username";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':isActivated', $isActivated);
+    $stmt->bindParam(':username', $username);
+    return $stmt->execute();
+}
+function toggleDarkMode($username) {
+    $conn = getDatabaseConnection();
+    $sql = "UPDATE users SET has_dark_mode = NOT has_dark_mode WHERE username = :username";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':username', $username);
+    $stmt->execute();
+    $success = $stmt->rowCount() > 0;
+    if ($success) {
+        $isActivated = $conn->query("SELECT has_dark_mode FROM users WHERE username = '$username'")->fetchColumn();
+        updateActivatedFeature($username, 'dark_mode', $isActivated);
+    }
+    return $success;
+}
 
+function toggleCustomCursor($username) {
+    $conn = getDatabaseConnection();
+    $sql = "UPDATE users SET has_custom_cursor = NOT has_custom_cursor WHERE username = :username";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':username', $username);
+    $stmt->execute();
+    $success = $stmt->rowCount() > 0;
+    if ($success) {
+        $isActivated = $conn->query("SELECT has_custom_cursor FROM users WHERE username = '$username'")->fetchColumn();
+        updateActivatedFeature($username, 'custom_cursor', $isActivated);
+    }
+    return $success;
+}
+
+function purchaseAlternativeTheme($username) {
+    $conn = getDatabaseConnection();
+    $sql = "SELECT id, cost FROM store_items WHERE name = 'Alternative Theme'";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+        $itemId = $result['id'];
+        $cost = $result['cost'];
+        $currentEBP = fetchUserEBP($username);
+
+        if ($currentEBP >= $cost) {
+            $updatePointsResult = updateEBPoints($username, -$cost);
+            if ($updatePointsResult['status']) {
+                $transactionSql = "INSERT INTO transactions (user_id, item_id) VALUES (:user_id, :item_id)";
+                $transactionStmt = $conn->prepare($transactionSql);
+                $userId = getUserIdByUsername($username);
+                $transactionStmt->bindParam(':user_id', $userId);
+                $transactionStmt->bindParam(':item_id', $itemId);
+                $transactionStmt->execute();
+                return true;
+            }
+        }
+    }
+
+    return false;
+    if ($success) {
+        updateActivatedFeature($username, 'alternative_theme', true);
+    }
+    return $success;
+}
 function awardEBPForCommentingArticles($username)
 {
     $pdo = getDatabaseConnection();

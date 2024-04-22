@@ -51,6 +51,41 @@ function purchaseItem($username, $itemId) {
     echo "<p>Item not found.</p>";
 }
 
+function toggleDarkMode() {
+   var xhr = new XMLHttpRequest();
+   xhr.open('POST', 'toggle_dark_mode.php', true);
+   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+   xhr.onreadystatechange = function() {
+   if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+       alert(xhr.responseText);
+             }
+       };
+            xhr.send('username=<?php echo $_SESSION['username']; ?>');
+ }
+
+function toggleCustomCursor() {
+ var xhr = new XMLHttpRequest();
+ xhr.open('POST', 'toggle_custom_cursor.php', true);
+ xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+ xhr.onreadystatechange = function() {
+ if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+      alert(xhr.responseText);
+        }
+    };
+            xhr.send('username=<?php echo $_SESSION['username']; ?>');
+}
+
+function purchaseAlternativeTheme() {
+ var xhr = new XMLHttpRequest();
+ xhr.open('POST', 'purchase_alternative_theme.php', true);
+ xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+ xhr.onreadystatechange = function() {
+ if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+     alert(xhr.responseText);
+     }
+  };
+            xhr.send('username=<?php echo $_SESSION['username']; ?>');
+}
 ?>
 
 <!DOCTYPE html>
@@ -66,6 +101,13 @@ function purchaseItem($username, $itemId) {
         <h1>Store</h1>
         <p>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></p>
     </div>
+
+    <div class="feature-buttons">
+        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+        <button onclick="toggleCustomCursor()">Toggle Custom Cursor</button>
+        <button onclick="purchaseAlternativeTheme()">Purchase Alternative Theme</button>
+    </div>
+
     <div class="store-items">
         <?php
         $items = fetchStoreItems();
