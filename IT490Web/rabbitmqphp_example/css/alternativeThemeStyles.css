@@ -393,6 +393,7 @@ body {
     width: 100%; /* Use 100% of the container's width */
     max-width: 1200px; /* Maximum width for the container */
     align-items: center;
+    color: #ffffff; /* Set text color to white for all text in .store-items */
 }
 
 .item {
@@ -403,4 +404,5 @@ body {
     width: calc(33.333% - 20px); /* Three items per row, minus gap */
     max-width: 200px; /* Maximum item width */
     text-align: center;
+    color: #ffffff; /* Set text color to white for all text in .item */
 }
