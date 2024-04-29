@@ -9,8 +9,7 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Assuming you're using databaseFunctions.php for database operations
-require_once('databaseFunctions.php');
+require('databaseFunctions.php');
 
 $username = $_SESSION['username'];
 

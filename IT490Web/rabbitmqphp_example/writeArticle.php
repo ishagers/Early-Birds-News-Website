@@ -3,6 +3,7 @@
 
 require('session.php'); // Adjust the path as necessary
 require('SQLPublish.php');
+require('databaseFunctions.php');
 checkLogin(); // Call the checkLogin function to ensure the user is logged in
 
 ini_set('display_errors', 1);
