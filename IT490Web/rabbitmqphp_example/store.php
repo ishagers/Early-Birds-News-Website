@@ -26,6 +26,7 @@ if ($userSettings['has_dark_mode']) {
 } elseif ($userSettings['has_alternative_theme']) {
     $themeStylePath = 'css/alternativeThemeStyles.css'; // Alternative theme style
 }
+$cursorImagePath = "css/custom-cursor/sharingan-cursor.png";
 ?>
 
 <!DOCTYPE html>
@@ -36,7 +37,7 @@ if ($userSettings['has_dark_mode']) {
     <link id="themeStyle" rel="stylesheet" href="<?php echo $themeStylePath; ?>" />
     <?php if ($userSettings['has_custom_cursor']): ?>
         <!-- Custom Cursor Style -->
-        <link rel="stylesheet" href="css/custom-cursor.css" />
+    <link rel="stylesheet" href="css/custom-cursor/sharingan-cursor.png" />
     <?php endif; ?>
 </head>
 <body>

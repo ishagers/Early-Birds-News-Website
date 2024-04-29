@@ -34,7 +34,7 @@ if (isset($_POST['add_ebp'])) {
         <div class="user-info">
             Logged in as: <strong><?php echo htmlspecialchars($username); ?></strong>
             <form method="post" action="">
-                <button type="submit" name="add_ebp">Add 5 EBP</button>
+                <button type="submit" name="add_ebp">Add 50 EBP </button>
             </form>
             <img src="../assets/EBP.png" alt="EB Points:" width="32" height="32" />
             <span class="eb-points-label">EB Points:</span>
