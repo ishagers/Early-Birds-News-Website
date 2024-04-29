@@ -22,7 +22,7 @@ if ($userSettings['has_dark_mode']) {
 }
 if ($userSettings['has_custom_cursor']) {
     // Specify the path to the custom cursor image file
-    $customCursorPath = "path/to/your/cursor/custom-cursor.png";
+    $customCursorPath = "css/custom-cursor/sharingan-cursor.png";
     echo "<style>body { cursor: url('$customCursorPath'), auto; }</style>";
 }
 ?>
