@@ -1,9 +1,32 @@
+<?php
+$username = $_SESSION['username'];
+$userSettings = fetchUserSettings($username);  // Ensure this function is implemented to fetch settings
+$themeStylePath = '../routes/menuStyles.css';
+if ($userSettings['has_dark_mode']) {
+    $themeStylePath = 'css/darkModeStyles.css'; // Dark mode style
+} elseif ($userSettings['has_alternative_theme']) {
+    $themeStylePath = 'css/alternativeThemeStyles.css'; // Alternative theme style
+}
+if ($userSettings['has_custom_cursor']) {
+    // Specify the path to the custom cursor image file
+    $customCursorPath = "css/custom-cursor/sharingan-cursor.png";
+    echo "<style>    body { cursor: url('$customCursorPath'), auto; }</style>";
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Search Articles</title>
-    <link rel="stylesheet" href="../routes/menuStyles.css">
+    <link id="themeStyle" rel="stylesheet" href="<?php echo $themeStylePath; ?>" />
+    <?php if ($userSettings['has_custom_cursor']): ?>
+        <style>
+            body {
+                cursor: url('<?php echo $customCursorPath; ?>'), auto;
+            }
+
+        </style>
+    <?php endif; ?>
 </head>
 <body>
 

@@ -10,6 +10,7 @@ $currentPreferences = fetchUserPreferences($_SESSION['username']);
 $friendsList = fetchFriendsByUsername(getDatabaseConnection(), $_SESSION['username']);
 $usernames = fetchAllUsernames($_SESSION['username']); // Fetching all other usernames
 $receivedRequests = fetchReceivedFriendRequests(getDatabaseConnection(), $_SESSION['username']);
+$username = $_SESSION['username'];
 
 if (isset($_POST['submitPreferences'])) {
     $selectedTopics = $_POST['topics'] ?? [];
