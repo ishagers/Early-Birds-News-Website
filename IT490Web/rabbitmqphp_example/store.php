@@ -1,5 +1,4 @@
 <?php
-require_once 'nav.php';
 require_once 'databaseFunctions.php';
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
@@ -87,15 +86,10 @@ function purchaseItem($username, $itemId) {
 <head>
     <meta charset="UTF-8">
     <title>Store</title>
-    <link rel="stylesheet" href="css/futuristicStyles.css">
+    <link rel="stylesheet" href="../routes/menuStyles.css">
 </head>
 <body>
-
-    <div class="header">
-        <h1>Store</h1>
-        <p>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></p>
-    </div>
-
+    <?php require('nav.php'); ?>
     <div class="feature-buttons">
         <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
         <button onclick="toggleCustomCursor()">Toggle Custom Cursor</button>
