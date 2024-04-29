@@ -13,6 +13,13 @@ $quests = fetchAvailableQuests($username);
 // Fetch user preferences from the database or session
 $userSettings = fetchUserSettings($username);  // Ensure this function is implemented to fetch settings
 $articleData = fetchArticles(15, 'public', 'user');
+
+$themeStylePath = '../routes/menuStyles.css';
+if ($userSettings['has_dark_mode']) {
+    $themeStylePath = 'css/darkModeStyles.css'; // Dark mode style
+} elseif ($userSettings['has_alternative_theme']) {
+    $themeStylePath = 'css/alternativeThemeStyles.css'; // Alternative theme style
+}
 ?>
 
 <!DOCTYPE html>
@@ -20,16 +27,12 @@ $articleData = fetchArticles(15, 'public', 'user');
 <head>
     <meta charset="UTF-8" />
     <title>Early Bird Articles - Main Menu</title>
-    <!-- Default Stylesheet -->
-    <link id="themeStyle" rel="stylesheet" href="../routes/menuStyles.css" />
-    <link id="themeStyle" rel="stylesheet" href="<?php echo $userSettings['dark_mode'] ? 'css/darkModeStyles.css' : ($userSettings['alternative_theme'] ? 'css/alternativeThemeStyles.css' : 'css/defaultThemeStyles.css'); ?>" />
-
-    <style>
-        /* Custom Cursor style if set */
-        <?php if (isset($userSettings['custom_cursor']) && $userSettings['custom_cursor']): ?>
-        body { cursor: url('css/custom-cursor/op-cursor.png'), auto; }
-        <?php endif; ?>
-    </style>
+    <!-- Corrected Stylesheet Link -->
+    <link id="themeStyle" rel="stylesheet" href="<?php echo $themeStylePath; ?>" />
+    <?php if ($userSettings['has_custom_cursor']): ?>
+        <!-- Custom Cursor Style -->
+        <link rel="stylesheet" href="css/custom-cursor.css" />
+    <?php endif; ?>
 </head>
 <body>
 
@@ -76,18 +79,6 @@ $articleData = fetchArticles(15, 'public', 'user');
     <div class="logout-button">
         <a href="logout.php">Logout</a>
     </div>
-
-    <script>
-        // Change stylesheet based on user settings
-        document.addEventListener('DOMContentLoaded', function() {
-            if (<?php echo $userSettings['dark_mode'] ? 'true' : 'false'; ?>) {
-                document.getElementById('themeStyle').setAttribute('href', 'css/darkModeStyles.css');
-            }
-            if (<?php echo $userSettings['alternative_theme'] ? 'true' : 'false'; ?>) {
-                document.getElementById('themeStyle').setAttribute('href', 'css/alternativeThemeStyles.css');
-            }
-        });
-    </script>
 </body>
 </html>
 
