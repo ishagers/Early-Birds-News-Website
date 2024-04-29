@@ -830,31 +830,28 @@ function fetchUserPreferences($username)
 function fetchUserSettings($username)
 {
     $conn = getDatabaseConnection();
-
-    // Query to fetch the `isActivated` JSON object from the users table
-    $sql = "SELECT isActivated FROM users WHERE username = :username";
+    $sql = "SELECT has_dark_mode, has_custom_cursor, has_alternative_theme FROM users WHERE username = :username";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':username', $username);
     $stmt->execute();
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Initialize default settings
-    $settings = [
+    // Check if the result is not false and has the keys you expect
+    if ($result && isset($result['has_dark_mode'], $result['has_custom_cursor'], $result['has_alternative_theme'])) {
+        // Cast the results to boolean because tinyint is fetched as string
+        return [
+            'has_dark_mode' => (bool) $result['has_dark_mode'],
+            'has_custom_cursor' => (bool) $result['has_custom_cursor'],
+            'has_alternative_theme' => (bool) $result['has_alternative_theme']
+        ];
+    }
+
+    // Default return value in case the username is not found or another error occurs
+    return [
         'has_dark_mode' => false,
         'has_custom_cursor' => false,
         'has_alternative_theme' => false
     ];
-
-    if ($result && $result['isActivated']) {
-        // Decode the JSON object into an associative array
-        $isActivated = json_decode($result['isActivated'], true);
-        // Map each feature from JSON to settings array, ensuring they exist
-        $settings['has_dark_mode'] = isset($isActivated['dark_mode']) ? $isActivated['dark_mode'] : false;
-        $settings['has_custom_cursor'] = isset($isActivated['custom_cursor']) ? $isActivated['custom_cursor'] : false;
-        $settings['has_alternative_theme'] = isset($isActivated['alternative_theme']) ? $isActivated['alternative_theme'] : false;
-    }
-
-    return $settings;
 }
 
 
