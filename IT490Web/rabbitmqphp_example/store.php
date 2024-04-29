@@ -1,10 +1,11 @@
 <?php
 require_once 'databaseFunctions.php';
-// Check if the user is logged in
-if (!isset($_SESSION['username'])) {
-    echo "<p>You need to log in to access the store.</p>";
-    exit;
-}
+
+checkLogin();
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+$username = $_SESSION['username'];
 
 function fetchStoreItems() {
     // Ideally, this function should fetch items from your database
