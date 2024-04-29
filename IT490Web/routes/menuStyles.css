@@ -369,3 +369,22 @@ body {
         margin-bottom: 20px; /* Adds space between them */
     }
 }
+.store-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    width: 100%; /* Use 100% of the container's width */
+    max-width: 1200px; /* Maximum width for the container */
+    align-items: center;
+}
+
+.item {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    width: calc(33.333% - 20px); /* Three items per row, minus gap */
+    max-width: 200px; /* Maximum item width */
+    text-align: center;
+}
