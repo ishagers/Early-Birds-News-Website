@@ -113,26 +113,36 @@ function purchaseItem($username, $itemId) {
         }
         ?>
     </div>
-    <script>
-<script>
-function toggleFeature(feature) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '../../backend/toggle_feature.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-            alert(xhr.responseText);
-        }
-    };
-    xhr.send('username=' + encodeURIComponent('<?php echo $_SESSION['username']; ?>') + '&feature=' + encodeURIComponent(feature));
-}
+    <div class="feature-buttons">
+        <!-- Assign unique IDs to each button -->
+        <button id="toggleDarkMode">Toggle Dark Mode</button>
+        <button id="toggleCustomCursor">Toggle Custom Cursor</button>
+        <button id="toggleAlternativeTheme">Toggle Alternative Theme</button>
+    </div>
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('toggleDarkMode').addEventListener('click', function() { toggleFeature('dark_mode'); });
-    document.getElementById('toggleCustomCursor').addEventListener('click', function() { toggleFeature('custom_cursor'); });
-    document.getElementById('toggleAlternativeTheme').addEventListener('click', function() { toggleFeature('alternative_theme'); });
-});
-</script>
+    <script>
+        // This function should be defined in a separate script file or inline as shown
+        function toggleFeature(feature) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'toggle_feature.php', true); // Path to your toggle_feature.php script
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    alert(xhr.responseText);
+                    // If you want to dynamically change the styles without page reload,
+                    // you need to handle that here.
+                }
+            };
+            xhr.send('username=' + encodeURIComponent('<?php echo $_SESSION['username']; ?>') + '&feature=' + feature);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ensure your button IDs match these event listeners
+            document.getElementById('toggleDarkMode').addEventListener('click', function() { toggleFeature('dark_mode'); });
+            document.getElementById('toggleCustomCursor').addEventListener('click', function() { toggleFeature('custom_cursor'); });
+            document.getElementById('toggleAlternativeTheme').addEventListener('click', function() { toggleFeature('alternative_theme'); });
+        });
+    </script>
 
 </body>
 </html>

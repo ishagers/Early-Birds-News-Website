@@ -1081,7 +1081,8 @@ function awardEBPForWritingArticles($username)
         return ['status' => false, 'message' => "Error checking and awarding quests: " . $e->getMessage()];
     }
 }
-function toggleFeature($username, $feature) {
+function toggleFeature($username, $feature)
+{
     $conn = getDatabaseConnection();
 
     // Mapping feature names to database column names
@@ -1097,25 +1098,39 @@ function toggleFeature($username, $feature) {
 
     $featureColumn = $featureMap[$feature];
 
-    // SQL to toggle the feature
-    $sql = "UPDATE users SET $featureColumn = NOT $featureColumn WHERE username = :username";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':username', $username);
-    $stmt->execute();
+    // Begin transaction to ensure atomicity
+    $conn->beginTransaction();
 
-    if ($stmt->rowCount() > 0) {
-        // After toggling, fetch the new state to update the isActivated JSON
-        $newStateSql = "SELECT $featureColumn FROM users WHERE username = :username";
-        $newStateStmt = $conn->prepare($newStateSql);
-        $newStateStmt->bindParam(':username', $username);
-        $newStateStmt->execute();
-        $newState = $newStateStmt->fetchColumn();
+    try {
+        // SQL to toggle the feature
+        $sql = "UPDATE users SET $featureColumn = NOT $featureColumn WHERE username = :username";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
 
-        // Update the isActivated JSON column
-        updateActivatedFeature($username, $feature, $newState);
-        return "Feature toggled successfully.";
-    } else {
-        return "Failed to toggle feature.";
+        if ($stmt->rowCount() > 0) {
+            // After toggling, fetch the new state to update the isActivated JSON
+            $newStateSql = "SELECT $featureColumn FROM users WHERE username = :username";
+            $newStateStmt = $conn->prepare($newStateSql);
+            $newStateStmt->bindParam(':username', $username);
+            $newStateStmt->execute();
+            $newState = (bool) $newStateStmt->fetchColumn();
+
+            // Update the isActivated JSON column
+            updateActivatedFeature($username, $feature, $newState);
+
+            // Commit transaction
+            $conn->commit();
+            return "Feature toggled successfully.";
+        } else {
+            // No rows updated, so rollback
+            $conn->rollback();
+            return "Failed to toggle feature. No changes were made.";
+        }
+    } catch (Exception $e) {
+        // An error occurred, rollback the transaction
+        $conn->rollback();
+        return "Error: " . $e->getMessage();
     }
 }
 
