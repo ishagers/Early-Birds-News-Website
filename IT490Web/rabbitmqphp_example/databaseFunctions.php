@@ -827,34 +827,33 @@ function fetchUserPreferences($username)
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_COLUMN, 0); // Fetching as a simple array of topic IDs
 }
-function fetchUserSettings($username) {
+function fetchUserSettings($username)
+{
     $conn = getDatabaseConnection();
-
-    // Query to fetch the `isActivated` JSON object from the users table
-    $sql = "SELECT isActivated FROM users WHERE username = :username";
+    $sql = "SELECT has_dark_mode, has_custom_cursor, has_alternative_theme FROM users WHERE username = :username";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':username', $username);
     $stmt->execute();
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Initialize default settings
-    $settings = [
-        'dark_mode' => false,
-        'custom_cursor' => false,
-        'alternative_theme' => false
-    ];
-
-    if ($result && $result['isActivated']) {
-        // Decode the JSON object into an associative array
-        $isActivated = json_decode($result['isActivated'], true);
-        // Map each feature from JSON to settings array, ensuring they exist
-        $settings['dark_mode'] = isset($isActivated['dark_mode']) ? $isActivated['dark_mode'] : false;
-        $settings['custom_cursor'] = isset($isActivated['custom_cursor']) ? $isActivated['custom_cursor'] : false;
-        $settings['alternative_theme'] = isset($isActivated['alternative_theme']) ? $isActivated['alternative_theme'] : false;
+    // Check if the result is not false and has the keys you expect
+    if ($result && isset($result['has_dark_mode'], $result['has_custom_cursor'], $result['has_alternative_theme'])) {
+        // Cast the results to boolean because tinyint is fetched as string
+        return [
+            'has_dark_mode' => (bool) $result['has_dark_mode'],
+            'has_custom_cursor' => (bool) $result['has_custom_cursor'],
+            'has_alternative_theme' => (bool) $result['has_alternative_theme']
+        ];
     }
 
-    return $settings;
+    // Default return value in case the username is not found or another error occurs
+    return [
+        'has_dark_mode' => false,
+        'has_custom_cursor' => false,
+        'has_alternative_theme' => false
+    ];
 }
+
 
 
 function setArticlePrivate($articleId, $username)
@@ -1079,7 +1078,8 @@ function awardEBPForWritingArticles($username)
         return ['status' => false, 'message' => "Error checking and awarding quests: " . $e->getMessage()];
     }
 }
-function toggleFeature($username, $feature) {
+function toggleFeature($username, $feature)
+{
     $conn = getDatabaseConnection();
 
     // Mapping feature names to database column names
@@ -1094,26 +1094,40 @@ function toggleFeature($username, $feature) {
     }
 
     $featureColumn = $featureMap[$feature];
-    
-    // SQL to toggle the feature
-    $sql = "UPDATE users SET $featureColumn = NOT $featureColumn WHERE username = :username";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':username', $username);
-    $stmt->execute();
 
-    if ($stmt->rowCount() > 0) {
-        // After toggling, fetch the new state to update the isActivated JSON
-        $newStateSql = "SELECT $featureColumn FROM users WHERE username = :username";
-        $newStateStmt = $conn->prepare($newStateSql);
-        $newStateStmt->bindParam(':username', $username);
-        $newStateStmt->execute();
-        $newState = $newStateStmt->fetchColumn();
+    // Begin transaction to ensure atomicity
+    $conn->beginTransaction();
 
-        // Update the isActivated JSON column
-        updateActivatedFeature($username, $feature, $newState);
-        return "Feature toggled successfully.";
-    } else {
-        return "Failed to toggle feature.";
+    try {
+        // SQL to toggle the feature
+        $sql = "UPDATE users SET $featureColumn = NOT $featureColumn WHERE username = :username";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            // After toggling, fetch the new state to update the isActivated JSON
+            $newStateSql = "SELECT $featureColumn FROM users WHERE username = :username";
+            $newStateStmt = $conn->prepare($newStateSql);
+            $newStateStmt->bindParam(':username', $username);
+            $newStateStmt->execute();
+            $newState = (bool) $newStateStmt->fetchColumn();
+
+            // Update the isActivated JSON column
+            updateActivatedFeature($username, $feature, $newState);
+
+            // Commit transaction
+            $conn->commit();
+            return "Feature toggled successfully.";
+        } else {
+            // No rows updated, so rollback
+            $conn->rollback();
+            return "Failed to toggle feature. No changes were made.";
+        }
+    } catch (Exception $e) {
+        // An error occurred, rollback the transaction
+        $conn->rollback();
+        return "Error: " . $e->getMessage();
     }
 }
 
@@ -1205,6 +1219,73 @@ function awardEBPForCommentingArticles($username)
         $pdo->rollBack();
         return ['status' => false, 'message' => "Error checking and awarding quests: " . $e->getMessage()];
     }
+}
+
+function purchaseItem($username, $itemId)
+{
+    $items = fetchStoreItems();
+
+    foreach ($items as $item) {
+        if ($item['id'] == $itemId) {
+            $cost = $item['cost'];
+            $currentEBP = fetchUserEBP($username);
+
+            if ($currentEBP >= $cost) {
+                $updatePointsResult = updateEBPoints($username, -$cost);
+
+                if ($updatePointsResult['status']) {
+                    $conn = getDatabaseConnection();
+
+                    // Update the specific feature based on the item ID
+                    $sql = "";
+                    switch ($itemId) {
+                        case 1: // Dark Mode
+                            $sql = "UPDATE users SET has_dark_mode = 1 WHERE username = :username";
+                            break;
+                        case 2: // Custom Cursor
+                            $sql = "UPDATE users SET has_custom_cursor = 1 WHERE username = :username";
+                            break;
+                        case 3: // Alternative Theme
+                            $sql = "UPDATE users SET has_alternative_theme = 1 WHERE username = :username";
+                            break;
+                    }
+
+                    if (!empty($sql)) {
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bindParam(':username', $username);
+                        $stmt->execute();
+                        echo "<p>Purchase successful! You may now activate this feature by clicking its toggle button.</p>";
+
+                        // Record the transaction
+                        $transactionSql = "INSERT INTO transactions (user_id, item_id) VALUES ((SELECT id FROM users WHERE username = :username), :item_id)";
+                        $transactionStmt = $conn->prepare($transactionSql);
+                        $transactionStmt->bindParam(':username', $username);
+                        $transactionStmt->bindParam(':item_id', $itemId);
+                        $transactionStmt->execute();
+                    }
+                    return;
+
+                } else {
+                    echo "<p>" . $updatePointsResult['message'] . "</p>";
+                    return;
+                }
+            } else {
+                echo "<p>Insufficient EB Points.</p>";
+                return;
+            }
+        }
+    }
+    echo "<p>Item not found.</p>";
+}
+
+function fetchStoreItems()
+{
+    // Ideally, this function should fetch items from your database
+    return [
+        ['id' => 1, 'name' => 'Dark Mode', 'cost' => 100],
+        ['id' => 2, 'name' => 'Custom Cursor', 'cost' => 150],
+        ['id' => 3, 'name' => 'Alternative Theme', 'cost' => 200]
+    ];
 }
 
 
