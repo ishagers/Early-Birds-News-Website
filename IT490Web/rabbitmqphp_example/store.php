@@ -36,8 +36,12 @@ $cursorImagePath = "css/custom-cursor/sharingan-cursor.png";
     <title>Store</title>
     <link id="themeStyle" rel="stylesheet" href="<?php echo $themeStylePath; ?>" />
     <?php if ($userSettings['has_custom_cursor']): ?>
-        <!-- Custom Cursor Style -->
-    <link rel="stylesheet" href="css/custom-cursor/sharingan-cursor.png" />
+        <style>
+            body {
+                cursor: url('<?php echo $customCursorPath; ?>'), auto;
+            }
+
+        </style>
     <?php endif; ?>
 </head>
 <body>

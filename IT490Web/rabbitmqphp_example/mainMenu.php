@@ -11,9 +11,10 @@ $username = $_SESSION['username'];
 $quests = fetchAvailableQuests($username);
 
 // Fetch user preferences from the database or session
-$userSettings = fetchUserSettings($username);  // Ensure this function is implemented to fetch settings
+
 $articleData = fetchArticles(15, 'public', 'user');
 
+$userSettings = fetchUserSettings($username);  // Ensure this function is implemented to fetch settings
 $themeStylePath = '../routes/menuStyles.css';
 if ($userSettings['has_dark_mode']) {
     $themeStylePath = 'css/darkModeStyles.css'; // Dark mode style
