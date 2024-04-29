@@ -22,7 +22,7 @@ $items = fetchStoreItems();
 $userSettings = fetchUserSettings($username);
 $themeStylePath = '../routes/menuStyles.css';
 if ($userSettings['has_dark_mode']) {
-    $themeStylePath = 'css/futuristicStyles.css'; // Dark mode style
+    $themeStylePath = 'css/darkModeStyles.css'; // Dark mode style
 } elseif ($userSettings['has_alternative_theme']) {
     $themeStylePath = 'css/alternativeThemeStyles.css'; // Alternative theme style
 }
@@ -53,12 +53,13 @@ if ($userSettings['has_dark_mode']) {
                 </form>
             </div>
         <?php endforeach; ?>
+        <div class="item">
+            <h3>Revert to Default Styles</h3>
+            <form action="" method="post">
+                <button type="submit" name="deactivateStyles">Revert Styles</button>
+            </form>
+        </div>
     </div>
-    <div class="item">
-        <h3>Revert to Default Styles</h3>
-        <form action="" method="post">
-            <button type="submit" name="deactivateStyles">Revert Styles</button>
-        </form>
-    </div>
+
 </body>
 </html>

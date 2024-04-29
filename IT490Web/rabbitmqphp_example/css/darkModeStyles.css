@@ -40,7 +40,6 @@ body {
 
 .header {
 	position: relative;
-	background-color: #005A9C;
 	color: #ffffff;
 	text-align: center;
 	padding: 20px 0;
@@ -371,7 +370,7 @@ body {
 	width: 20%; /* Adjust the width as necessary */
 	padding: 20px; /* Add padding inside the quests container */
 	margin-right: 20px; /* Add some margin to the right */
-	background-color: #ffffff; /* This is an example, change as needed */
+	background-color: #000000; /* This is an example, change as needed */
 	border: 1px solid #ccc; /* This is an example, change as needed */
 	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* This adds a subtle shadow, adjust as needed */
 	border-radius: 8px; /* This rounds the corners, adjust as needed */
