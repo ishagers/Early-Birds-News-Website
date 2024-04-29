@@ -13,6 +13,10 @@ if (isset($_POST['purchase'])) {
     $username = $_SESSION['username'];
     purchaseItem($username, $itemId);
 }
+if (isset($_POST['deactivateStyles'])) {
+    $username = $_SESSION['username'];
+    deactivateStyles($username);
+}
 
 $items = fetchStoreItems();
 $userSettings = fetchUserSettings($username);
@@ -48,6 +52,12 @@ if ($userSettings['has_dark_mode']) {
                     <button type="submit" name="purchase">Buy Now</button>
                 </form>
             </div>
+        <div class="item">
+            <h3>Revert to Default Styles</h3>
+            <form action="" method="post">
+                <button type="submit" name="deactivateStyles">Revert Styles</button>
+            </form>
+        </div>
         <?php endforeach; ?>
     </div>
 </body>

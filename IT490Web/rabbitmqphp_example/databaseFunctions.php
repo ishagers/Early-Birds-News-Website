@@ -854,6 +854,23 @@ function fetchUserSettings($username)
     ];
 }
 
+function deactivateStyles($username)
+{
+    $conn = getDatabaseConnection();
+
+    // Reset the specific features to their default state
+    $sql = "UPDATE users SET has_dark_mode = 0, has_custom_cursor = 0, has_alternative_theme = 0 WHERE username = :username";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':username', $username);
+    $stmt->execute();
+
+    if ($stmt->rowCount() > 0) {
+        echo "<p>Styles reverted to default successfully!</p>";
+    } else {
+        echo "<p>Failed to revert styles to default.</p>";
+    }
+}
+
 
 
 function setArticlePrivate($articleId, $username)
