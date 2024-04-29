@@ -1,4 +1,5 @@
 <?php
+require('session.php');
 require_once 'databaseFunctions.php';
 
 checkLogin();
