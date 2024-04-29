@@ -5,7 +5,7 @@ require('session.php'); // Adjust the path as necessary
 require('SQLPublish.php');
 require('databaseFunctions.php');
 checkLogin(); // Call the checkLogin function to ensure the user is logged in
-
+$username = $_SESSION['username'];
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
