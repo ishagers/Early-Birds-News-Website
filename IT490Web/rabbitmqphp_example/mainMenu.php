@@ -20,8 +20,12 @@ if ($userSettings['has_dark_mode']) {
 } elseif ($userSettings['has_alternative_theme']) {
     $themeStylePath = 'css/alternativeThemeStyles.css'; // Alternative theme style
 }
+if ($userSettings['has_custom_cursor']) {
+    // Specify the path to the custom cursor image file
+    $customCursorPath = "path/to/your/cursor/custom-cursor.png";
+    echo "<style>body { cursor: url('$customCursorPath'), auto; }</style>";
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,8 +34,12 @@ if ($userSettings['has_dark_mode']) {
     <!-- Corrected Stylesheet Link -->
     <link id="themeStyle" rel="stylesheet" href="<?php echo $themeStylePath; ?>" />
     <?php if ($userSettings['has_custom_cursor']): ?>
-        <!-- Custom Cursor Style -->
-    <link rel="stylesheet" href="css/custom-cursor/sharingan-cursor.png" />
+        <style>
+            body {
+                cursor: url('<?php echo $customCursorPath; ?>'), auto;
+            }
+
+        </style>
     <?php endif; ?>
 </head>
 <body>
