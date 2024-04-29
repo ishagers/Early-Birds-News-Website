@@ -16,7 +16,7 @@ $articleData = fetchArticles(15, 'public', 'user');
 
 $themeStylePath = '../routes/menuStyles.css';
 if ($userSettings['has_dark_mode']) {
-    $themeStylePath = 'css/futuristicStyles.css'; // Dark mode style
+    $themeStylePath = 'css/darkModeStyles.css'; // Dark mode style
 } elseif ($userSettings['has_alternative_theme']) {
     $themeStylePath = 'css/alternativeThemeStyles.css'; // Alternative theme style
 }
