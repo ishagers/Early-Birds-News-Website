@@ -15,7 +15,7 @@ if (isset($_POST['purchase'])) {
 }
 
 $items = fetchStoreItems();
-
+$userSettings = fetchUserSettings($username);
 $themeStylePath = '../routes/menuStyles.css';
 if ($userSettings['has_dark_mode']) {
     $themeStylePath = 'css/darkModeStyles.css'; // Dark mode style
