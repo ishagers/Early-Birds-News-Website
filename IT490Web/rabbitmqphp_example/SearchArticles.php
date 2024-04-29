@@ -1,4 +1,7 @@
 <?php
+require('session.php');
+require('databaseFunctions.php');
+
 $username = $_SESSION['username'];
 $userSettings = fetchUserSettings($username);  // Ensure this function is implemented to fetch settings
 $themeStylePath = '../routes/menuStyles.css';
