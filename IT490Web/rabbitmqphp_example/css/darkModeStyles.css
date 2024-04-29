@@ -43,10 +43,11 @@ body {
 	color: #ffffff;
 	text-align: center;
 	padding: 20px 0;
+	background: #000000;
 }
 
 .nav-bar {
-	background: #022f5b;
+	background: #000000;
 	color: #ffffff;
 	padding: 10px 0;
 }
@@ -372,8 +373,6 @@ body {
 	margin-right: 20px; /* Add some margin to the right */
 	background-color: #000000; /* This is an example, change as needed */
 	border: 1px solid #ccc; /* This is an example, change as needed */
-	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* This adds a subtle shadow, adjust as needed */
-	border-radius: 8px; /* This rounds the corners, adjust as needed */
 }
 
 .quests-list {
@@ -383,18 +382,25 @@ body {
 .quest-item {
 	margin-bottom: 15px; /* Adds space between quest items */
 }
+.header,
+.nav-bar {
+	border-color: #000000; /* Set border color to black */
+	/* other styles... */
+}
 
 /* You may also want to adjust the responsive layout */
 @media (max-width: 1024px) {
 	.content-container {
 		flex-direction: column; /* Stacks the containers on smaller screens */
 		align-items: center; /* Aligns them centrally */
+		background-color: #000000;
 	}
 
 	.mainMenu-container,
 	.quests-container {
 		width: 90%; /* Takes full width on smaller screens */
 		margin-bottom: 20px; /* Adds space between them */
+		background-color: #000000;
 	}
 }
 
