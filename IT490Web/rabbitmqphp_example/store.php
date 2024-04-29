@@ -52,13 +52,13 @@ if ($userSettings['has_dark_mode']) {
                     <button type="submit" name="purchase">Buy Now</button>
                 </form>
             </div>
-        <div class="item">
-            <h3>Revert to Default Styles</h3>
-            <form action="" method="post">
-                <button type="submit" name="deactivateStyles">Revert Styles</button>
-            </form>
-        </div>
         <?php endforeach; ?>
+    </div>
+    <div class="item">
+        <h3>Revert to Default Styles</h3>
+        <form action="" method="post">
+            <button type="submit" name="deactivateStyles">Revert Styles</button>
+        </form>
     </div>
 </body>
 </html>
