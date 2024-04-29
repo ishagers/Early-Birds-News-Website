@@ -64,9 +64,11 @@ if (isset($_POST['submitComment']) && !empty($_POST['comment']) && $article && $
                         <button type='submit' name='submitShare'>Share Article</button>
                     </form>
                     <?php if (!empty($emailResponse)) {
-                        echo "<p>$emailResponse</p>";
+                       echo "<p>" . htmlspecialchars($emailResponse['message']) . "</p>";
                     } ?>
                 </div>
+
+
 
                 <!-- Display Average Rating -->
                 <?php $averageRatingResponse = getAverageRatingByArticleId($articleId); ?>
