@@ -829,16 +829,15 @@ function fetchUserPreferences($username)
 }
 function fetchUserSettings($username)
 {
-    $conn = getDatabaseConnection();
+    $conn = getDatabaseConnection(); // Ensure this function exists and returns a PDO connection
     $sql = "SELECT has_dark_mode, has_custom_cursor, has_alternative_theme FROM users WHERE username = :username";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':username', $username);
     $stmt->execute();
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Check if the result is not false and has the keys you expect
-    if ($result && isset($result['has_dark_mode'], $result['has_custom_cursor'], $result['has_alternative_theme'])) {
-        // Cast the results to boolean because tinyint is fetched as string
+    if ($result) {
+        // Cast the results to boolean
         return [
             'has_dark_mode' => (bool) $result['has_dark_mode'],
             'has_custom_cursor' => (bool) $result['has_custom_cursor'],
@@ -846,7 +845,7 @@ function fetchUserSettings($username)
         ];
     }
 
-    // Default return value in case the username is not found or another error occurs
+    // Default return value if username not found or another error occurs
     return [
         'has_dark_mode' => false,
         'has_custom_cursor' => false,
