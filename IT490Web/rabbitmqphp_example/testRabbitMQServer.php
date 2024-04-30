@@ -64,7 +64,7 @@ function doStoreAndSendVerification($username)
     $userEmail = $userInfo['email'];
 
     // Store the verification code in the database
-    $storeResult = storeVerificationCode($username); // Ensure this function returns both 'status' and 'code'
+    $storeResult = storeVerificationCode($username);
 
     if (!$storeResult['status']) {
         return ["returnCode" => '1', 'message' => "Failed to store verification code"];
@@ -73,7 +73,7 @@ function doStoreAndSendVerification($username)
     $verificationCode = $storeResult['code']; // Get the verification code from the store result
 
     // Send the verification code to the user's email
-    $emailResult = sendVerificationEmail($userEmail, $verificationCode); // Ensure 'sendVerificationEmail' function is defined and included
+    $emailResult = sendVerificationEmail($userEmail, $verificationCode);
 
     if ($emailResult['status']) {
         return ["returnCode" => '0', 'message' => "Verification code sent to user's email"];
