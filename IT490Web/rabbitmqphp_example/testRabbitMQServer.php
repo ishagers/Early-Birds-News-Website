@@ -47,12 +47,14 @@ function doLogin($username, $password)
 
 function doStoreAndSendVerification($username)
 {
-    // Fetch the user's email from the database using the username
-    $userInfo = getUserInfoByUsername($username); // Make sure this function exists and is included from 'databaseFunctions.php'
+    $userInfoResponse = getUserInfoByUsername($username);
 
-    if (!$userInfo) {
-        return ["returnCode" => '1', 'message' => "User not found"];
+    if (!$userInfoResponse['status']) {
+        return ["returnCode" => '1', 'message' => $userInfoResponse['message']];
     }
+
+    // Now we extract the 'data' since we know the status was true
+    $userInfo = $userInfoResponse['data'];
 
     if (!isset($userInfo['email'])) {
         // Handle the error, maybe the user does not exist or the query failed

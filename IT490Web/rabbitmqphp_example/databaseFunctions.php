@@ -1365,17 +1365,17 @@ function getUserInfoByUsername($username)
 {
     $response = ['status' => false, 'message' => '', 'data' => []];
     try {
-        $conn = getDatabaseConnection(); // Make sure this function is correctly returning a PDO connection
-
-        $sql = "SELECT id, email, 2fa, 2faExpire FROM users WHERE username = :username LIMIT 1";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
-        $stmt->execute();
+        // ... existing database code ...
 
         if ($stmt->rowCount() > 0) {
-            $response['status'] = true;
-            $response['message'] = "User found";
-            $response['data'] = $stmt->fetch(PDO::FETCH_ASSOC);
+            $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($userData && isset($userData['email'])) {
+                $response['status'] = true;
+                $response['message'] = "User found";
+                $response['data'] = $userData;
+            } else {
+                $response['message'] = "User found but email is not set.";
+            }
         } else {
             $response['message'] = "No user found with the username: $username";
         }
