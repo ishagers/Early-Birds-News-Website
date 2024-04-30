@@ -96,10 +96,19 @@ function doCreateAccount($name, $email, $username, $hashedPassword)
 
 function doTwoFactorAuthCheck($username, $submittedCode)
 {
-    $userInfo = getUserInfoByUsername($username);
+    $userInfoResponse = getUserInfoByUsername($username);
 
-    if (!$userInfo) {
-        return ["returnCode" => '1', 'message' => "User not found"];
+    // Check the status of the response first
+    if (!$userInfoResponse['status']) {
+        return ["returnCode" => '1', 'message' => $userInfoResponse['message']];
+    }
+
+    // Now, extract the 'data' as it contains the user's information
+    $userInfo = $userInfoResponse['data'];
+
+    // Check if '2fa' and '2faExpire' keys are set before trying to use them
+    if (!isset($userInfo['2fa'], $userInfo['2faExpire'])) {
+        return ["returnCode" => '1', 'message' => "2FA details not found"];
     }
 
     $currentDateTime = new DateTime();
