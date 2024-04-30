@@ -7,7 +7,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-header("Location: verify.php");
 if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $queryValues = [
         'type' => 'login',
@@ -28,8 +27,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         ];
         $verificationResult = publisher($queryValues);
 
-        // Always redirect to verify.php, regardless of the outcome of store_and_send_verification
-        ob_end_clean();
+        // Only redirect to verify.php if the login and verification setup is successful
         if (headers_sent($file, $line)) {
             echo "Headers already sent in $file on line $line";
         } else {
