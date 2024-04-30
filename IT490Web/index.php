@@ -25,9 +25,9 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
             'username' => $_POST['username'],
         ];
         $verificationResult = publisher($queryValues);
-        
+
         if ($verificationResult && $verificationResult['returnCode'] == '0') {
-            header("Location: verify.php"); // Server-side redirection
+            echo "<script>alert('please verify!'); window.location.href = 'verify.php';</script>";
             exit();
         } else {
             $errorMessage = isset($verificationResult['message']) ? $verificationResult['message'] : "Verification process failed.";
