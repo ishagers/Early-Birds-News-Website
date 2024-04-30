@@ -26,7 +26,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         ];
         $verificationResult = publisher($queryValues);
         
-        if ($verificationResult == true) {
+        if ($verificationResult && $verificationResult['returnCode'] == '0') {
             header("Location: verify.php"); // Server-side redirection
             exit();
         } else {
