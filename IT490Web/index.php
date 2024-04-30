@@ -24,12 +24,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
             'username' => $_POST['username'],
         ];
         $verificationResult = publisher($queryValues);
-
-        if ($verificationResult['returnCode'] == '0') {
-            echo "<script>alert('Please Verify!'); window.location.href = 'verify.php';</script>";
-        } else {
-            echo "<script>alert('" . htmlspecialchars($verificationResult['message']) . "');</script>";
-        }
+        echo "<script>alert('Please Verify!'); window.location.href = 'verify.php';</script>";
         exit();
     } else {
         // Login failed or result is not properly formatted
