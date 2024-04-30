@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 require('rabbitmqphp_example/session.php');
 require('rabbitmqphp_example/SQLPublish.php');
@@ -6,6 +7,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+header("Location: verify.php");
 if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $queryValues = [
         'type' => 'login',
@@ -27,8 +29,13 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         $verificationResult = publisher($queryValues);
 
         // Always redirect to verify.php, regardless of the outcome of store_and_send_verification
-        header("Location: verify.php");
-        exit();
+        ob_end_clean();
+        if (headers_sent($file, $line)) {
+            echo "Headers already sent in $file on line $line";
+        } else {
+            header("Location: verify.php");
+            exit();
+        }
     } else {
         // Login failed or result not properly formatted
         $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
