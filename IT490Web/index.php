@@ -25,14 +25,9 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
             'username' => $_POST['username'],
         ];
         $verificationResult = publisher($queryValues);
+        header("Location: verify.php"); // Server-side redirection
+        exit();
 
-        if ($verificationResult && $verificationResult['returnCode'] == '0') {
-            header("Location: verify.php"); // Server-side redirection
-            exit();
-        } else {
-            $errorMessage = isset($verificationResult['message']) ? $verificationResult['message'] : "Verification process failed.";
-            echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
-        }
     } else {
         // Login failed or result is not properly formatted
         $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
