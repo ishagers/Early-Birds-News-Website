@@ -24,6 +24,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
             'type' => 'store_and_send_verification',
             'username' => $_POST['username'],
         ];
+        echo "<script>alert('please verify!'); window.location.href = 'verify.php';</script>";
         $verificationResult = publisher($queryValues);
 
         if ($verificationResult) {
