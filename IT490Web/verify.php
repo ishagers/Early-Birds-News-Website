@@ -7,16 +7,20 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+function redirectWithError($message, $redirect = 'verify.php')
+{
+    echo "<script>alert('" . htmlspecialchars($message) . "'); window.location.href = '$redirect';</script>";
+    exit();
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['2fa_code'])) {
     $submittedCode = trim($_POST['2fa_code']);
     $username = $_SESSION['username'] ?? ''; // Use null coalescing operator for better error handling
 
     // Simple server-side validation for the 2FA code format
     if (!preg_match('/^\d{3}$/', $submittedCode)) {
-        $errorMessage = "Invalid code format. Please try again.";
-        echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
+        redirectWithError("Invalid code format. Please try again.");
     } else {
-        // The rest of your existing code for RabbitMQ communication
         $queryValues = [
             'type' => '2fa_check',
             'username' => $username,
@@ -25,21 +29,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['2fa_code'])) {
 
         $result = publisher($queryValues);
 
-    // $result should contain user's 2fa and 2faExpire fields returned by the RabbitMQ consumer
-    if ($result) {
-        // Verify the code and expiration time
-        if ($submittedCode == $result['2fa'] && new DateTime() < new DateTime($result['2faExpire'])) {
-            // Correct code and not expired - proceed to secure area
-            echo "<script>alert('User Verified!'); window.location.href = 'rabbitmqphp_example/mainMenu.php';</script>";
-            exit();
+        if ($result && isset($result['2fa'], $result['2faExpire'])) {
+            $currentDateTime = new DateTime();
+            $expireDateTime = new DateTime($result['2faExpire']);
+
+            if ($submittedCode == $result['2fa'] && $currentDateTime < $expireDateTime) {
+                // Correct code and not expired - proceed to secure area
+                header("Location: rabbitmqphp_example/mainMenu.php");
+                exit();
+            } else {
+                redirectWithError("Invalid code or the code has expired. Please try again.");
+            }
         } else {
-            // Incorrect code or expired
-            $errorMessage = "Invalid code or the code has expired. Please try again.";
-            echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
+            // Handle the error if the query did not execute properly
+            redirectWithError("There was an error processing your request. Please try again.");
         }
-    } else {
-        // Handle the error if the query did not execute properly
-        echo "<script>alert('There was an error processing your request. Please try again.');</script>";
     }
 }
 ?>

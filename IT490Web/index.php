@@ -12,20 +12,27 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $queryValues = [
         'type' => 'login',
         'username' => $_POST['username'],
-        'password' => $_POST['password'], // Ensure this data is sent over HTTPS
+        'password' => $_POST['password'],
     ];
 
     $result = publisher($queryValues);
 
     if ($result && $result['returnCode'] == '0') {
         // Login successful
+        $_SESSION['username'] = $_POST['username'];  // Assuming you store username in session after successful login
         $queryValues = [
             'type' => 'store_and_send_verification',
             'username' => $_POST['username'],
         ];
         $verificationResult = publisher($queryValues);
-        echo "<script>alert('Please Verify!'); window.location.href = 'verify.php';</script>";
-        exit();
+
+        if ($verificationResult && $verificationResult['returnCode'] == '0') {
+            header("Location: verify.php"); // Server-side redirection
+            exit();
+        } else {
+            $errorMessage = isset($verificationResult['message']) ? $verificationResult['message'] : "Verification process failed.";
+            echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
+        }
     } else {
         // Login failed or result is not properly formatted
         $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
