@@ -1,36 +1,44 @@
 <?php
-session_start(); 
+session_start();
 require('rabbitmqphp_example/session.php');
+require('rabbitmqphp_example/SQLPublish.php');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
-
-require('rabbitmqphp_example/SQLPublish.php');
+ob_start();  // Start output buffering
 
 if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $queryValues = [
         'type' => 'login',
         'username' => $_POST['username'],
-        'password' => $_POST['password'], // Ensure this data is sent over HTTPS
+        'password' => $_POST['password'],
     ];
 
     $result = publisher($queryValues);
 
     if ($result && $result['returnCode'] == '0') {
-        // Login successful
-        echo "Great, we found you: " . htmlspecialchars($result['message']);
         $_SESSION['username'] = $_POST['username'];
-        $_SESSION['user_id'] = $result['user_id']; // Ensure 'user_id' is correctly provided by the response
 
-        header("Location: rabbitmqphp_example/mainMenu.php"); // Redirect to the home page or dashboard
-        exit();
+        $queryValues = [
+            'type' => 'store_and_send_verification',
+            'username' => $_POST['username'],
+        ];
+        $verificationResult = publisher($queryValues);
+
+        if ($verificationResult && $verificationResult['returnCode'] == '0') {
+            echo "<script>alert('Please verify!'); window.location.href = 'verify.php';</script>";
+            ob_flush();  // Flush output buffering
+            exit();  // Stop script execution after redirect
+        } else {
+            $errorMessage = isset($verificationResult['message']) ? $verificationResult['message'] : "Verification process failed.";
+            echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
+        }
     } else {
-        // Login failed or result is not properly formatted
         $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
         echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
     }
 }
+ob_end_flush();  // End output buffering
 ?>
 
 <!DOCTYPE html>
@@ -61,4 +69,5 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
     </div>
 </body>
 </html>
+
 
