@@ -5,7 +5,6 @@ require('rabbitmqphp_example/SQLPublish.php');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-ob_start();  // Start output buffering
 
 if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $queryValues = [
@@ -26,9 +25,9 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         $verificationResult = publisher($queryValues);
 
         if ($verificationResult && $verificationResult['returnCode'] == '0') {
-            echo "<script>alert('Please verify!'); window.location.href = 'verify.php';</script>";
-            ob_flush();  // Flush output buffering
-            exit();  // Stop script execution after redirect
+            // Use header to redirect to verify.php page
+            header('Location: verify.php');
+            exit();
         } else {
             $errorMessage = isset($verificationResult['message']) ? $verificationResult['message'] : "Verification process failed.";
             echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
@@ -38,9 +37,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
     }
 }
-ob_end_flush();  // End output buffering
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -69,5 +66,3 @@ ob_end_flush();  // End output buffering
     </div>
 </body>
 </html>
-
-
