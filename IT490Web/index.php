@@ -1,12 +1,11 @@
 <?php
 session_start();
 require('rabbitmqphp_example/session.php');
+require('rabbitmqphp_example/SQLPublish.php');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
-
-require('rabbitmqphp_example/SQLPublish.php');
+ob_start();  // Start output buffering
 
 if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $queryValues = [
@@ -18,27 +17,28 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $result = publisher($queryValues);
 
     if ($result && $result['returnCode'] == '0') {
-        // Login successful
-        $_SESSION['username'] = $_POST['username'];  // Assuming you store username in session after successful login
+        $_SESSION['username'] = $_POST['username'];
+
         $queryValues = [
             'type' => 'store_and_send_verification',
             'username' => $_POST['username'],
         ];
-        echo "<script>alert('please verify!'); window.location.href = 'verify.php';</script>";
         $verificationResult = publisher($queryValues);
 
-        if ($verificationResult) {
-            echo "<script>alert('please verify!'); window.location.href = 'verify.php';</script>";
+        if ($verificationResult && $verificationResult['returnCode'] == '0') {
+            echo "<script>alert('Please verify!'); window.location.href = 'verify.php';</script>";
+            ob_flush();  // Flush output buffering
+            exit();  // Stop script execution after redirect
         } else {
             $errorMessage = isset($verificationResult['message']) ? $verificationResult['message'] : "Verification process failed.";
             echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
         }
     } else {
-        // Login failed or result is not properly formatted
         $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
         echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
     }
 }
+ob_end_flush();  // End output buffering
 ?>
 
 <!DOCTYPE html>
