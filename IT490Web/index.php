@@ -26,7 +26,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         $verificationResult = publisher($queryValues);
 
         if ($verificationResult['returnCode'] == '0') {
-            header("Location: rabbitmqphp_example/verify.php"); // Redirect to verification page
+            header("Location: verify.php"); // Redirect to verification page
         } else {
             echo "<script>alert('" . htmlspecialchars($verificationResult['message']) . "');</script>";
         }
