@@ -54,6 +54,11 @@ function doStoreAndSendVerification($username)
         return ["returnCode" => '1', 'message' => "User not found"];
     }
 
+    if (!isset($userInfo['email'])) {
+        // Handle the error, maybe the user does not exist or the query failed
+        echo "Email key not found. Check the database query and result.";
+        return; // or continue depending on your logic
+    }
     $userEmail = $userInfo['email'];
 
     // Store the verification code in the database

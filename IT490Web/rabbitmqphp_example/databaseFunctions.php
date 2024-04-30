@@ -1343,7 +1343,8 @@ function storeVerificationCode($username)
         $sql = "UPDATE users SET 2fa = :code, 2faExpire = :expiry WHERE username = :username";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':code', $verificationCode, PDO::PARAM_INT);
-        $stmt->bindParam(':expiry', $expiryTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $expiryDateString = $expiryTime->format('Y-m-d H:i:s');
+        $stmt->bindParam(':expiry', $expiryDateString, PDO::PARAM_STR);
         $stmt->bindParam(':username', $username, PDO::PARAM_STR);
         $stmt->execute();
 
