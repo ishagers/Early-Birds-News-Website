@@ -17,7 +17,9 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
 
     if ($result && $result['returnCode'] == '0') {
         $_SESSION['username'] = $_POST['username'];
+        $_SESSION['user_id'] = $result['user_id']; // Assuming 'user_id' is provided by the response
 
+        // Proceed to send and store the 2FA verification code
         $queryValues = [
             'type' => 'store_and_send_verification',
             'username' => $_POST['username'],
@@ -25,19 +27,22 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         $verificationResult = publisher($queryValues);
 
         if ($verificationResult && $verificationResult['returnCode'] == '0') {
-            // Use header to redirect to verify.php page
-            header('Location: verify.php');
+            // Redirect to verify.php where user can input their verification code
+            header("Location: verify.php");
             exit();
         } else {
+            // Handling error in verification step
             $errorMessage = isset($verificationResult['message']) ? $verificationResult['message'] : "Verification process failed.";
             echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
         }
     } else {
+        // Login failed or result not properly formatted
         $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
         echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
