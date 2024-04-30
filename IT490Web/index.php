@@ -26,7 +26,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         $verificationResult = publisher($queryValues);
 
         if ($verificationResult['returnCode'] == '0') {
-            header("Location: verify.php"); // Redirect to verification page
+            echo "<script>alert('Please Verify!'); window.location.href = 'verify.php';</script>";
         } else {
             echo "<script>alert('" . htmlspecialchars($verificationResult['message']) . "');</script>";
         }

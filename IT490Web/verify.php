@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['2fa_code'])) {
         // Verify the code and expiration time
         if ($submittedCode == $result['2fa'] && new DateTime() < new DateTime($result['2faExpire'])) {
             // Correct code and not expired - proceed to secure area
-            header("Location: rabbitmqphp_example/mainMenu.php");
+            echo "<script>alert('User Verified!'); window.location.href = 'rabbitmqphp_example/mainMenu.php';</script>";
             exit();
         } else {
             // Incorrect code or expired
