@@ -1,5 +1,5 @@
 <?php
-session_start(); 
+session_start();
 require('rabbitmqphp_example/session.php');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -19,11 +19,17 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
 
     if ($result && $result['returnCode'] == '0') {
         // Login successful
-        echo "Great, we found you: " . htmlspecialchars($result['message']);
-        $_SESSION['username'] = $_POST['username'];
-        $_SESSION['user_id'] = $result['user_id']; // Ensure 'user_id' is correctly provided by the response
+        $queryValues = [
+            'type' => 'store_and_send_verification',
+            'username' => $_POST['username'],
+        ];
+        $verificationResult = publisher($queryValues);
 
-        header("Location: rabbitmqphp_example/mainMenu.php"); // Redirect to the home page or dashboard
+        if ($verificationResult['returnCode'] == '0') {
+            header("Location: rabbitmqphp_example/verify.php"); // Redirect to verification page
+        } else {
+            echo "<script>alert('" . htmlspecialchars($verificationResult['message']) . "');</script>";
+        }
         exit();
     } else {
         // Login failed or result is not properly formatted

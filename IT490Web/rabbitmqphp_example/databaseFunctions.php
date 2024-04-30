@@ -1304,6 +1304,86 @@ function fetchStoreItems()
     ];
 }
 
+function sendVerificationEmail($email, $code)
+{
+    $response = ['status' => false, 'message' => ''];
+    try {
+        $mail = new PHPMailer(true);
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'earlybird6900@gmail.com';
+        $mail->Password = 'mtxekiuhxgpllxqu';
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port = 465;
+        $mail->setFrom('earlybird6900@gmail.com', 'Early Bird Platform');
+
+        $mail->addAddress($email);
+        $mail->isHTML(true);
+        $mail->Subject = 'Your Verification Code';
+        $mail->Body = "Your 2FA verification code is: <strong>$code</strong>";
+
+        $mail->send();
+        $response['status'] = true;
+        $response['message'] = 'Verification code has been sent successfully.';
+    } catch (Exception $e) {
+        $response['message'] = 'Failed to send the verification code. Mailer Error: ' . $mail->ErrorInfo;
+    }
+    return $response;
+}
+
+function storeVerificationCode($username)
+{
+    $response = ['status' => false, 'message' => '', 'code' => ''];
+    try {
+        $conn = getDatabaseConnection();
+        $verificationCode = rand(100, 999); // Generate a 3-digit verification code
+        $expiryTime = new DateTime('+10 minutes'); // Set expiry time for the code
+
+        $sql = "UPDATE users SET 2fa = :code, 2faExpire = :expiry WHERE username = :username";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':code', $verificationCode, PDO::PARAM_INT);
+        $stmt->bindParam(':expiry', $expiryTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            $response['status'] = true;
+            $response['message'] = "Verification code stored successfully.";
+            $response['code'] = $verificationCode;
+        } else {
+            $response['message'] = "Failed to store verification code.";
+        }
+    } catch (PDOException $e) {
+        $response['message'] = "Database error: " . $e->getMessage();
+    }
+    return $response;
+}
+
+function getUserInfoByUsername($username)
+{
+    $response = ['status' => false, 'message' => '', 'data' => []];
+    try {
+        $conn = getDatabaseConnection(); // Make sure this function is correctly returning a PDO connection
+
+        $sql = "SELECT id, email, 2fa, 2faExpire FROM users WHERE username = :username LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            $response['status'] = true;
+            $response['message'] = "User found";
+            $response['data'] = $stmt->fetch(PDO::FETCH_ASSOC);
+        } else {
+            $response['message'] = "No user found with the username: $username";
+        }
+    } catch (PDOException $e) {
+        $response['message'] = "Database error: " . $e->getMessage();
+    }
+    return $response;
+}
+
 
 
 

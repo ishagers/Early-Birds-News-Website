@@ -45,6 +45,36 @@ function doLogin($username, $password)
     }
 }
 
+function doStoreAndSendVerification($username)
+{
+    // Fetch the user's email from the database using the username
+    $userInfo = getUserInfoByUsername($username); // Make sure this function exists and is included from 'databaseFunctions.php'
+
+    if (!$userInfo) {
+        return ["returnCode" => '1', 'message' => "User not found"];
+    }
+
+    $userEmail = $userInfo['email'];
+
+    // Store the verification code in the database
+    $storeResult = storeVerificationCode($username); // Ensure this function returns both 'status' and 'code'
+
+    if (!$storeResult['status']) {
+        return ["returnCode" => '1', 'message' => "Failed to store verification code"];
+    }
+
+    $verificationCode = $storeResult['code']; // Get the verification code from the store result
+
+    // Send the verification code to the user's email
+    $emailResult = sendVerificationEmail($userEmail, $verificationCode); // Ensure 'sendVerificationEmail' function is defined and included
+
+    if ($emailResult['status']) {
+        return ["returnCode" => '0', 'message' => "Verification code sent to user's email"];
+    } else {
+        return ["returnCode" => '1', 'message' => "Failed to send email: " . $emailResult['message']];
+    }
+}
+
 function doCreateAccount($name, $email, $username, $hashedPassword)
 {
     $result = createUser($name, $username, $email, $hashedPassword, 'defaultRole');
@@ -54,6 +84,24 @@ function doCreateAccount($name, $email, $username, $hashedPassword)
     } else {
         // Account creation failed
         return ["returnCode" => '1', 'message' => $result['message']]; // Use $result['message'] directly
+    }
+}
+
+function doTwoFactorAuthCheck($username, $submittedCode)
+{
+    $userInfo = getUserInfoByUsername($username);
+
+    if (!$userInfo) {
+        return ["returnCode" => '1', 'message' => "User not found"];
+    }
+
+    $currentDateTime = new DateTime();
+    $expireDateTime = new DateTime($userInfo['2faExpire']);
+
+    if ($userInfo['2fa'] === $submittedCode && $currentDateTime < $expireDateTime) {
+        return ["returnCode" => '0', 'message' => "2FA verification successful"];
+    } else {
+        return ["returnCode" => '1', 'message' => "Invalid 2FA code or code has expired"];
     }
 }
 
@@ -68,6 +116,14 @@ function requestProcessor($request)
         case "login":
             echo "You have succesfully logged in.\n ";
             return doLogin($request['username'], $request['password']);
+
+        case "store_and_send_verification":
+            // You need to pass the username and the verification code here
+            return doStoreAndSendVerification($request['username']); // Make sure these are the correct keys from the RMQ message
+
+        case "2fa_check":
+            echo "Performing 2FA check\n";
+            return doTwoFactorAuthCheck($request['username'], $request['2fa_code']);
 
         case "create_account":
             echo "You have succesfully created an account! \n";
