@@ -33,27 +33,6 @@ function doStoreAndSendVerification($username)
     }
 }
 
-function doTwoFactorAuthCheck($username, $submittedCode)
-{
-    $userInfoResponse = getUserInfoByUsername($username);
-    if (!$userInfoResponse['status']) {
-        return ["returnCode" => '1', 'message' => $userInfoResponse['message']];
-    }
-
-    $userInfo = $userInfoResponse['data'];
-    if (!isset($userInfo['2fa'], $userInfo['2faExpire'])) {
-        return ["returnCode" => '1', 'message' => "2FA details not found"];
-    }
-
-    $currentDateTime = new DateTime();
-    $expireDateTime = new DateTime($userInfo['2faExpire']);
-    if ($userInfo['2fa'] === $submittedCode && $currentDateTime < $expireDateTime) {
-        return ["returnCode" => '0', 'message' => "2FA verification successful"];
-    } else {
-        return ["returnCode" => '1', 'message' => "Invalid 2FA code or code has expired"];
-    }
-}
-
 if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];

@@ -11,24 +11,22 @@ function redirectWithError($message, $redirect = 'verify.php')
     exit();
 }
 
-function checkTwoFactorCode($username, $submittedCode)
+function verifyTwoFactorAuthentication($username, $submittedCode)
 {
-    $conn = getDatabaseConnection();
-    $stmt = $conn->prepare("SELECT two_fa_code, two_fa_expire FROM users WHERE username = ?");
-    $stmt->execute([$username]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($user && $stmt->rowCount() > 0) {
-        $currentDateTime = new DateTime();
-        $expireDateTime = new DateTime($user['two_fa_expire']);
-
-        if ($submittedCode == $user['two_fa_code'] && $currentDateTime < $expireDateTime) {
-            return ['status' => true];
-        } else {
-            return ['status' => false, 'message' => "Invalid code or the code has expired"];
-        }
+    $userInfo = getUserInfoByUsername($username);
+    if (!$userInfo['status']) {
+        return ['status' => false, 'message' => $userInfo['message']];
     }
-    return ['status' => false, 'message' => "No 2FA details found"];
+
+    $user = $userInfo['data'];
+    $currentDateTime = new DateTime();
+    $expireDateTime = new DateTime($user['2faExpire']);
+
+    if ($submittedCode == $user['2fa'] && $currentDateTime < $expireDateTime) {
+        return ['status' => true];
+    } else {
+        return ['status' => false, 'message' => "Invalid code or the code has expired"];
+    }
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['2fa_code'])) {
@@ -38,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['2fa_code'])) {
     if (!preg_match('/^\d{3}$/', $submittedCode)) {
         redirectWithError("Invalid code format. Please try again.");
     } else {
-        $result = checkTwoFactorCode($username, $submittedCode);
+        $result = verifyTwoFactorAuthentication($username, $submittedCode);
 
         if ($result['status']) {
             header("Location: rabbitmqphp_example/mainMenu.php");
