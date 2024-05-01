@@ -63,8 +63,6 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
 
     if ($loginResult) {
         $_SESSION['username'] = $username;
-        // Assume we fetch user_id or similar unique identifier from DB
-        $_SESSION['user_id'] = getUserID($username);
 
         $verificationResult = doStoreAndSendVerification($username);
         if ($verificationResult && $verificationResult['returnCode'] == '0') {
