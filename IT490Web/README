@@ -34,8 +34,22 @@ Once everything has been installed. Connect each VM to the network. In our case,
 #How To Setup Development, Quality Assurance, Production Clusters:
 
 #Setting up Frontend
+- Make sure apache 2 is installed and running
 
+- under /etc/apache2/ports.conf, make sure the line 'Listen 8000' exists
 
+- Install PHP version 8.1 and configure it to work with apache
+    #make sure to enable the module via sudo a2enmod php8.1
+
+- We installed openSSL for HTTPS
+
+- Moved the github repo into the /var/www/html folder
+
+- Website access via <Web Server IP>:8000/IT490-Project/IT490Web/index.php
+
+- Important to restart apache after every change made to apache2 files or installations
+
+- Not necessary, but we used auto pull command script attached to the front end for ease of remote work
 
 
 #Setting up BackEnd 
@@ -44,7 +58,8 @@ Once everything has been installed. Connect each VM to the network. In our case,
     - Define your programming language of choice. It is recommended to use PHP and JavaScript for simplicity.
 
 #Database
-
+ - Access the Earlybirds database via mysql to view all tables (mysql password & user are 'IT490DB')
+ - Change ip permissions within mysql to new machine when creating new clusters or layers
 
 #DMZ
 
@@ -59,3 +74,16 @@ Once everything has been installed. Connect each VM to the network. In our case,
 - Copy DMZServer.service to etc/systemd/system
 
 - Start the DMZServer.php or set up a cron tab to run it everyttime it turns off.
+
+#Deployment
+- Make sure UFW permissions are properly set to interact with other VMs via ssh 
+
+- Access Deployment database and version history table via user and passwords "IT490DB"
+    #This database table handles the version, bundlename, and pass/fail of version that is rollout
+
+- Install expect tool for deployent automation
+
+- Verify IP, hostname,password, and file paths within each cluster within the deployment files to align.
+    #the file paths should be the same if everything is replicated the same, just change the IP, hostname,password from the .sh deployment scripts.
+
+
