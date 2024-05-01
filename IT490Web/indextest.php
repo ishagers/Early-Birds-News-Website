@@ -27,10 +27,13 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         ];
         $verificationResult = publisher($queryValues);
 
-        // Only redirect to verify.php if the login and verification setup is successful
-
+        if ($verificationResult && $verificationResult['returnCode'] == '0') {
             header("Location: verify.php");
             exit();
+        } else {
+            // Handle the error if verification fails
+            echo "<script>alert('Verification failed: " . htmlspecialchars($verificationResult['message']) . "');</script>";
+        }
     } else {
         // Login failed or result not properly formatted
         $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
