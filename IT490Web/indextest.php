@@ -28,12 +28,9 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
         $verificationResult = publisher($queryValues);
 
         // Only redirect to verify.php if the login and verification setup is successful
-        if (headers_sent($file, $line)) {
-            echo "Headers already sent in $file on line $line";
-        } else {
+
             header("Location: verify.php");
             exit();
-        }
     } else {
         // Login failed or result not properly formatted
         $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";

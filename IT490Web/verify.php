@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['2fa_code'])) {
 
         $result = publisher($queryValues);
 
-        if ($result && isset($result['2fa'], $result['2faExpire'])) {
+        if ($result && isset($result['2fa'])) {
             $currentDateTime = new DateTime();
             $expireDateTime = new DateTime($result['2faExpire']);
 
