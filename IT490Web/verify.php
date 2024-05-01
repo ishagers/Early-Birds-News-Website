@@ -1,4 +1,5 @@
 <?php
+require('session.php');
 session_start();
 require('rabbitmqphp_example/session.php');
 require('rabbitmqphp_example/SQLPublish.php');

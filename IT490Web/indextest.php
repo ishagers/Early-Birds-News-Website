@@ -1,43 +1,80 @@
 <?php
 ob_start();
 session_start();
-require('rabbitmqphp_example/session.php');
-require('rabbitmqphp_example/SQLPublish.php');
+require('databaseFunctions.php'); // Database connection and utility functions
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+function doStoreAndSendVerification($username)
+{
+    $userInfoResponse = getUserInfoByUsername($username);
+    if (!$userInfoResponse['status']) {
+        return ["returnCode" => '1', 'message' => $userInfoResponse['message']];
+    }
+
+    $userInfo = $userInfoResponse['data'];
+    if (!isset($userInfo['email'])) {
+        echo "Email key not found. Check the database query and result.";
+        return;
+    }
+    $userEmail = $userInfo['email'];
+    $storeResult = storeVerificationCode($username);
+    if (!$storeResult['status']) {
+        return ["returnCode" => '1', 'message' => "Failed to store verification code"];
+    }
+
+    $verificationCode = $storeResult['code'];
+    $emailResult = sendVerificationEmail($userEmail, $verificationCode);
+    if ($emailResult['status']) {
+        return ["returnCode" => '0', 'message' => "Verification code sent to user's email"];
+    } else {
+        return ["returnCode" => '1', 'message' => "Failed to send email: " . $emailResult['message']];
+    }
+}
+
+function doTwoFactorAuthCheck($username, $submittedCode)
+{
+    $userInfoResponse = getUserInfoByUsername($username);
+    if (!$userInfoResponse['status']) {
+        return ["returnCode" => '1', 'message' => $userInfoResponse['message']];
+    }
+
+    $userInfo = $userInfoResponse['data'];
+    if (!isset($userInfo['2fa'], $userInfo['2faExpire'])) {
+        return ["returnCode" => '1', 'message' => "2FA details not found"];
+    }
+
+    $currentDateTime = new DateTime();
+    $expireDateTime = new DateTime($userInfo['2faExpire']);
+    if ($userInfo['2fa'] === $submittedCode && $currentDateTime < $expireDateTime) {
+        return ["returnCode" => '0', 'message' => "2FA verification successful"];
+    } else {
+        return ["returnCode" => '1', 'message' => "Invalid 2FA code or code has expired"];
+    }
+}
+
 if (!empty($_POST['username']) && !empty($_POST['password'])) {
-    $queryValues = [
-        'type' => 'login',
-        'username' => $_POST['username'],
-        'password' => $_POST['password'],
-    ];
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-    $result = publisher($queryValues);
+    // Assume a function for verifying username and password
+    $loginResult = verifyLogin($username, $password);
 
-    if ($result && $result['returnCode'] == '0') {
-        $_SESSION['username'] = $_POST['username'];
-        $_SESSION['user_id'] = $result['user_id']; // Assuming 'user_id' is provided by the response
+    if ($loginResult) {
+        $_SESSION['username'] = $username;
+        // Assume we fetch user_id or similar unique identifier from DB
+        $_SESSION['user_id'] = getUserID($username);
 
-        // Proceed to send and store the 2FA verification code
-        $queryValues = [
-            'type' => 'store_and_send_verification',
-            'username' => $_POST['username'],
-        ];
-        $verificationResult = publisher($queryValues);
-
+        $verificationResult = doStoreAndSendVerification($username);
         if ($verificationResult && $verificationResult['returnCode'] == '0') {
             header("Location: verify.php");
             exit();
         } else {
-            // Handle the error if verification fails
-            echo "<script>alert('Verification failed: " . htmlspecialchars($verificationResult['message']) . "');</script>";
+            echo "<script>alert('{$verificationResult['message']}');</script>";
         }
     } else {
-        // Login failed or result not properly formatted
-        $errorMessage = isset($result['message']) ? $result['message'] : "Login failed. Please try again.";
-        echo "<script>alert('" . htmlspecialchars($errorMessage) . "');</script>";
+        echo "<script>alert('Login failed. Please try again.');</script>";
     }
 }
 ?>
@@ -64,7 +101,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
                 <button type="submit">Login</button>
             </p>
             <p>
-                <a href="rabbitmqphp_example/createAccount.php">Create Account</a>
+                <a href="createAccount.php">Create Account</a>
             </p>
         </form>
     </div>
