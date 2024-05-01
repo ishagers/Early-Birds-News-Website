@@ -59,7 +59,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
     $password = $_POST['password'];
 
     // Assume a function for verifying username and password
-    $loginResult = verifyLogin($username, $password);
+    $loginResult = login($username, $password);
 
     if ($loginResult) {
         $_SESSION['username'] = $username;
