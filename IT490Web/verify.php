@@ -1,6 +1,6 @@
 <?php
 session_start();
-require('databaseFunctions.php'); // Make sure this file includes your database connection and necessary functions
+require('rabbitmqphp_example/databaseFunctions.php'); // Make sure this file includes your database connection and necessary functions
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
