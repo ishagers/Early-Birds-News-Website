@@ -78,7 +78,7 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
                 <button type="submit">Login</button>
             </p>
             <p>
-                <a href="createAccount.php">Create Account</a>
+                <a href="rabbitmqphp_example/createAccount.php">Create Account</a>
             </p>
         </form>
     </div>
